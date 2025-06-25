@@ -1,6 +1,6 @@
 // --- Parallax Effect ---
 const stage = document.getElementById('stage');
-const maxRotate = 4;
+const maxRotate = 3;
 
 window.addEventListener('mousemove', (e) => {
     const x = (e.clientX / window.innerWidth - 0.5) * 2;
