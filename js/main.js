@@ -13,14 +13,7 @@ window.addEventListener('mousemove', (e) => {
 });
 
 
-// In js/main.js - THE FINAL, CORRECTED VERSION
 
-// --- WIDGET GRID SYSTEM ---
-// In js/main.js
-// In js/main.js - THE CORRECTED VERSION
-
-// --- WIDGET GRID SYSTEM ---
-// In js/main.js
 
 const grid = GridStack.init({
     // --- General Options ---
@@ -65,18 +58,14 @@ function applyPreset(presetName) {
     }
 }
 
-// The new, more powerful reset function
 function resetLayout() {
     console.log("Resetting layout...");
 
-    // 1. Tell the Gridstack instance to shut down and release control.
-    // The 'false' parameter means "don't delete the child elements".
+   
     if (grid) {
         grid.destroy(false);
     }
 
-    // 2. Remove the saved layout from localStorage.
-    // Replace 'gridstack' with the key you found in Step 1 if it's different.
     localStorage.removeItem('gridstack');
 
     // 3. Force a reload of the page.
@@ -87,8 +76,7 @@ function resetLayout() {
 
 const resetButton = document.getElementById('reset-layout-btn');
 
-// 2. If the button exists, attach a 'click' listener to it.
-// When clicked, it will run our existing resetLayout function.
+
 if (resetButton) {
     resetButton.addEventListener('click', resetLayout);
 }
