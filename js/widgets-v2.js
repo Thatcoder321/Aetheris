@@ -215,13 +215,13 @@ class WeatherWidget extends BaseWidget {
             id: 'weather',
             className: 'weather',
             x: 0, y: 3, // Positioned in the left column
-            width: 4, height: 2
+            width: 7, height: 2
         });
         
         // --- THIS IS THE CORRECTED LINE ---
         // It now correctly looks for the _WEATHER_ variable.
         this.apiKey = window.AETHERIS_WEATHER_API_KEY; 
-        console.log('The browser sees this value for the API key:', this.apiKey);
+
         // This check will now pass on the live Vercel deployment.
         if (!this.apiKey) {
             this.contentElement.innerHTML = `<p style="color: yellow; text-align: center;">API Key not found.</p>`;
