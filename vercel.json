@@ -1,7 +1,15 @@
 {
-    "functions": {
-      "api/chat.js": {
-        "maxDuration": 15
+    "version": 2,
+    "builds": [
+      {
+        "src": "api/chat.js",
+        "use": "@vercel/node"
       }
-    }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "/public/$1"
+      }
+    ]
   }
