@@ -366,20 +366,19 @@ class AIWidget extends BaseWidget {
 
 // In AIWidget class
 
+// In js/widgets-v2.js, inside the AIWidget class
+// The new sendMessage function with debugging logs
+
 async sendMessage(userInput) {
     this.isAwaitingReply = true;
     this.inputElement.value = '';
     this.submitButton.disabled = true;
 
-    // We no longer need to add the user message to our internal this.history
-    // since the new back-end doesn't need the full context.
-    // Display the user's message bubble
     const userMessageDiv = document.createElement('div');
     userMessageDiv.className = 'chat-message user';
     userMessageDiv.textContent = userInput;
     this.historyElement.appendChild(userMessageDiv);
 
-    // Show a "typing..." indicator
     const typingIndicator = document.createElement('div');
     typingIndicator.className = 'chat-message ai typing';
     typingIndicator.textContent = '...';
@@ -390,7 +389,6 @@ async sendMessage(userInput) {
         const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            // We only need to send the single user message now
             body: JSON.stringify({ message: userInput })
         });
 
@@ -399,13 +397,19 @@ async sendMessage(userInput) {
         }
 
         const data = await response.json();
-        const aiReplyText = data.reply; // data.reply is now just the string
 
-        // Remove the "typing..." indicator
+        // --- DEBUG STEP 1: Let's see the entire data object we got back ---
+        console.log('1. Received data object from server:', data);
+        
+        const aiReplyText = data.reply;
+
+        // --- DEBUG STEP 2: Let's see what we extracted from the object ---
+        console.log('2. Extracted AI reply text:', aiReplyText);
+
+
+        // --- The rest of the rendering code ---
         typingIndicator.remove();
-
-        // --- THIS IS THE FIX ---
-        // Create and display the new AI message bubble
+        
         const aiMessageDiv = document.createElement('div');
         aiMessageDiv.className = 'chat-message ai';
         aiMessageDiv.textContent = aiReplyText;
