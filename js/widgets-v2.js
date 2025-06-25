@@ -364,51 +364,62 @@ class AIWidget extends BaseWidget {
         this.historyElement.scrollTop = this.historyElement.scrollHeight;
     }
 
-    async sendMessage(userInput) {
-        this.isAwaitingReply = true;
-        this.inputElement.value = ''; // Clear the input field
-        this.submitButton.disabled = true; // Disable the send button
+// In AIWidget class
 
-        // Display the user's message immediately
-        this.addMessageToHistory('user', userInput);
+async sendMessage(userInput) {
+    this.isAwaitingReply = true;
+    this.inputElement.value = '';
+    this.submitButton.disabled = true;
 
-        // Show a "typing..." indicator
-        const typingIndicator = document.createElement('div');
-        typingIndicator.className = 'chat-message ai typing';
-        typingIndicator.textContent = '...';
-        this.historyElement.appendChild(typingIndicator);
+    // We no longer need to add the user message to our internal this.history
+    // since the new back-end doesn't need the full context.
+    // Display the user's message bubble
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'chat-message user';
+    userMessageDiv.textContent = userInput;
+    this.historyElement.appendChild(userMessageDiv);
+
+    // Show a "typing..." indicator
+    const typingIndicator = document.createElement('div');
+    typingIndicator.className = 'chat-message ai typing';
+    typingIndicator.textContent = '...';
+    this.historyElement.appendChild(typingIndicator);
+    this.historyElement.scrollTop = this.historyElement.scrollHeight;
+
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            // We only need to send the single user message now
+            body: JSON.stringify({ message: userInput })
+        });
+
+        if (!response.ok) {
+            throw new Error('API request failed.');
+        }
+
+        const data = await response.json();
+        const aiReplyText = data.reply; // data.reply is now just the string
+
+        // Remove the "typing..." indicator
+        typingIndicator.remove();
+
+        // --- THIS IS THE FIX ---
+        // Create and display the new AI message bubble
+        const aiMessageDiv = document.createElement('div');
+        aiMessageDiv.className = 'chat-message ai';
+        aiMessageDiv.textContent = aiReplyText;
+        this.historyElement.appendChild(aiMessageDiv);
         this.historyElement.scrollTop = this.historyElement.scrollHeight;
 
-        try {
-            // --- This is the key part: Calling our OWN back-end ---
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: userInput }) // Send the whole conversation
-            });
-
-            if (!response.ok) {
-                throw new Error('API request failed.');
-            }
-
-            const data = await response.json();
-            const aiReply = data.reply;
-
-            // Remove the "typing..." indicator
-            typingIndicator.remove();
-
-            // Add the AI's real message to the history
-            this.addMessageToHistory(aiReply.role, aiReply.content);
-
-        } catch (error) {
-            console.error('Chat Error:', error);
-            typingIndicator.textContent = 'Sorry, something went wrong.';
-        } finally {
-            // Re-enable the form whether the request succeeded or failed
-            this.isAwaitingReply = false;
-            this.submitButton.disabled = false;
-        }
+    } catch (error) {
+        console.error('Chat Error:', error);
+        typingIndicator.textContent = 'Sorry, something went wrong.';
+    } finally {
+        this.isAwaitingReply = false;
+        this.submitButton.disabled = false;
     }
+}
 }
 new ClockWidget();
 new GreetingWidget();
