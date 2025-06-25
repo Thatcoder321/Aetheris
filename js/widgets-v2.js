@@ -212,7 +212,7 @@ class TodoWidget extends BaseWidget {
 class WeatherWidget extends BaseWidget {
     constructor() {
         // --- This is our Control Panel for the widget's size ---
-        const defaultWidth = 5;
+        const defaultWidth = 3;
         const defaultHeight = 2;
 
         // 1. Call super() FIRST with the desired layout.
