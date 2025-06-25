@@ -211,13 +211,20 @@ class TodoWidget extends BaseWidget {
 
 class WeatherWidget extends BaseWidget {
     constructor() {
+        // --- This is our Control Panel for the widget's size ---
+        const defaultWidth = 5;
+        const defaultHeight = 2;
+
+        // 1. Call super() FIRST with the desired layout.
         super({
             id: 'weather',
             className: 'weather',
-            x: 0, y: 3, // Positioned in the left column
-            width: 7, height: 2
+            x: 0,
+            y: 3,
+            width: defaultWidth,
+            height: defaultHeight
         });
-        
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
         // --- THIS IS THE CORRECTED LINE ---
         // It now correctly looks for the _WEATHER_ variable.
         this.apiKey = window.AETHERIS_WEATHER_API_KEY; 
