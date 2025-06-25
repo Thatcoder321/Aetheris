@@ -296,8 +296,8 @@ constructor() {
 class AIWidget extends BaseWidget {
     constructor() {
         // This widget needs a lot of space, so we'll give it a generous default size.
-        const defaultWidth = 7;
-        const defaultHeight = 6;
+        const defaultWidth = 3;
+        const defaultHeight = 4;
 
         super({
             id: 'ai-chat',
