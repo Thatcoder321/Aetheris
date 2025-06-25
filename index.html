@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aetheris</title>
+    
+    <!-- Local Gridstack CSS -->
+    <link rel="stylesheet" href="css/gridstack.min.css" />
+    
+    <!-- Your App's CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/widgets.css">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <main id="stage" class="grid-stack"></main>
+    <div class="preset-buttons">
+        <button onclick="applyPreset('default')">Default</button>
+        <button onclick="applyPreset('sidebar-left')">Sidebar</button>
+        <button onclick="applyPreset('focused-center')">Focused</button>
+        <button id="reset-layout-btn">Reset Layout</button> 
+    </div>
+    <!-- Local Gridstack JS (Correct File Name) -->
+    <script src="js/gridstack-all.js" defer></script>
+
+    <!-- Your App's JS -->
+    <script src="js/main.js" defer></script>
+    <script src="js/env.js" defer></script>
+    <script src="js/widgets-v2.js" defer></script>
+
+</body>
+</html>

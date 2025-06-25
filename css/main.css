@@ -1,0 +1,74 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-image: url('../../assets/images/Abstract Gradient Image.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    overflow: hidden;
+
+    perspective: 1500px;
+}
+
+
+#stage {
+   
+    width: 100%;
+    height: 100vh;
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease-out;
+}
+
+.preset-buttons {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    gap: 10px;
+}
+.preset-buttons button {
+    padding: 8px 16px;
+    border: 1px solid rgba(255,255,255,0.5);
+    background: rgba(0,0,0,0.3);
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+
+.hidden {
+    display: none !important;
+}
+
+.grid-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 20px;
+    padding: 20px;
+    z-index: -1; /* Place it behind all widgets */
+    pointer-events: none; /* Make it unclickable */
+}
+
+.grid-column {
+    background: rgba(135, 206, 250, 0.15); /* A light blue, semi-transparent background */
+    border: 1px dashed rgba(135, 206, 250, 0.4);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.5);
+    padding-top: 20px;
+}
