@@ -207,28 +207,30 @@ class TodoWidget extends BaseWidget {
 }
 
 
+// In js/widgets-v2.js - The FINAL WeatherWidget with the CORRECT variable name
+
 class WeatherWidget extends BaseWidget {
-   
+    constructor() {
+        super({
+            id: 'weather',
+            className: 'weather',
+            x: 0, y: 3, // Positioned in the left column
+            width: 4, height: 2
+        });
+        
+        // --- THIS IS THE CORRECTED LINE ---
+        // It now correctly looks for the _WEATHER_ variable.
+        this.apiKey = window.AETHERIS_WEATHER_API_KEY; 
 
-constructor() {
-    super({
-        id: 'weather',
-        className: 'weather',
-        x: 0, y: 2, width: 5, height: 10
-    });
-    
-    // --- THIS IS YOUR API KEY LINE ---
-    this.apiKey = window.AETHERIS_API_KEY; 
+        // This check will now pass on the live Vercel deployment.
+        if (!this.apiKey) {
+            this.contentElement.innerHTML = `<p style="color: yellow; text-align: center;">API Key not found.</p>`;
+            return; 
+        }
 
-
-    if (!this.apiKey || this.apiKey === 'YOUR_API_KEY_HERE') {
-        this.contentElement.innerHTML = `<p style="color: yellow; text-align: center;">Add API Key to widgets-v2.js</p>`;
-        return; 
+        this.addHandle();
+        this.run();
     }
-    this.addHandle();
-
-    this.run();
-}
 
     run() {
         const savedCity = localStorage.getItem('aetheris-city');
@@ -241,8 +243,8 @@ constructor() {
 
     askForLocation() {
         this.contentElement.innerHTML = `<input type="text" class="weather-location-input" placeholder="Your City?">`;
+        this.addHandle(); // Re-add handle
         const input = this.contentElement.querySelector('.weather-location-input');
-        grid.update(this.element, { w: 3, h: 2 }); 
         input.focus();
         
         input.addEventListener('keypress', (e) => {
@@ -250,7 +252,6 @@ constructor() {
                 const city = input.value;
                 localStorage.setItem('aetheris-city', city);
                 this.getWeather(city);
-                this.addHandle();
             }
         });
     }
@@ -258,27 +259,20 @@ constructor() {
     async getWeather(city) {
         this.contentElement.innerHTML = `<p>Loading Weather...</p>`;
         try {
-            grid.update(this.element, { w: 3, h: 2 }); 
             const weatherAPI = `https://api.weatherapi.com/v1/current.json?key=${this.apiKey}&q=${encodeURIComponent(city)}&aqi=no`;
-            
             const response = await fetch(weatherAPI);
-            if (!response.ok) { throw new Error('City not found or API error.'); }
-            
+            if (!response.ok) { throw new Error('API error.'); }
             const data = await response.json();
             this.renderWeather(data);
-
         } catch (error) {
-            console.error("Weather Error:", error);
             this.contentElement.innerHTML = `<p>Could not load weather.</p>`;
         }
     }
 
     renderWeather(data) {
-        
         const temp = Math.round(data.current.temp_c);
         const cityName = data.location.name;
         const iconUrl = data.current.condition.icon;
-
        
         this.contentElement.innerHTML = `
             <div class="weather-icon">
@@ -289,13 +283,13 @@ constructor() {
                 <span class="weather-city">${cityName}</span>
             </div>
         `;
-        this.addHandle();
+        this.addHandle(); // Re-add handle after final render
     }
-}// In js/widgets-v2.js - The NEW AI Chat Widget Class
+}
 
 class AIWidget extends BaseWidget {
     constructor() {
-        // This widget needs a lot of space, so we'll give it a generous default size.
+
         const defaultWidth = 3;
         const defaultHeight = 4;
 
@@ -310,14 +304,14 @@ class AIWidget extends BaseWidget {
         // The "Constructor Hammer" to enforce our size.
         grid.update(this.element, { w: defaultWidth, h: defaultHeight });
         
-        // This will hold our conversation history, including the system prompt.
+
         this.history = [
             { role: 'system', content: 'You are a helpful and concise assistant built into a dashboard called Aetheris.' }
         ];
 
         this.isAwaitingReply = false; // Prevents sending multiple messages at once
 
-        // Build the initial HTML structure
+       
         this.contentElement.innerHTML = `
             <div class="ai-chat-history"></div>
             <form class="ai-chat-input-form">
@@ -328,16 +322,16 @@ class AIWidget extends BaseWidget {
             </form>
         `;
 
-        // Get references to our key elements
+  
         this.historyElement = this.contentElement.querySelector('.ai-chat-history');
         this.formElement = this.contentElement.querySelector('.ai-chat-input-form');
         this.inputElement = this.formElement.querySelector('input');
         this.submitButton = this.formElement.querySelector('button');
 
-        // Attach the event listener for the form
+   
         this.attachListener();
 
-        this.addHandle(); // Let's make it resizable!
+        this.addHandle();
     }
 
     attachListener() {
@@ -364,10 +358,7 @@ class AIWidget extends BaseWidget {
         this.historyElement.scrollTop = this.historyElement.scrollHeight;
     }
 
-// In AIWidget class
 
-// In js/widgets-v2.js, inside the AIWidget class
-// The new sendMessage function with debugging logs
 
 async sendMessage(userInput) {
     this.isAwaitingReply = true;
@@ -404,7 +395,7 @@ async sendMessage(userInput) {
        
 
 
-        // --- The rest of the rendering code ---
+   
         typingIndicator.remove();
         
         const aiMessageDiv = document.createElement('div');
