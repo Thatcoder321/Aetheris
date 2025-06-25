@@ -384,7 +384,7 @@ class AIWidget extends BaseWidget {
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ history: this.history }) // Send the whole conversation
+                body: JSON.stringify({ message: userInput }) // Send the whole conversation
             });
 
             if (!response.ok) {
