@@ -84,17 +84,7 @@ function resetLayout() {
     location.reload();
 }
 
-function createGridDebugger() {
-    const overlay = document.createElement('div');
-    overlay.className = 'grid-overlay';
-    for (let i = 0; i < 12; i++) {
-        const column = document.createElement('div');
-        column.className = 'grid-column';
-        column.textContent = i; // Show the column number
-        overlay.appendChild(column);
-    }
-    document.body.appendChild(overlay);
-}
+
 const resetButton = document.getElementById('reset-layout-btn');
 
 // 2. If the button exists, attach a 'click' listener to it.
@@ -102,5 +92,5 @@ const resetButton = document.getElementById('reset-layout-btn');
 if (resetButton) {
     resetButton.addEventListener('click', resetLayout);
 }
-createGridDebugger(); // Run the function
+
 

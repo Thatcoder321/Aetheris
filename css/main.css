@@ -47,28 +47,3 @@ body {
     display: none !important;
 }
 
-.grid-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 20px;
-    padding: 20px;
-    z-index: -1; /* Place it behind all widgets */
-    pointer-events: none; /* Make it unclickable */
-}
-
-.grid-column {
-    background: rgba(135, 206, 250, 0.15); /* A light blue, semi-transparent background */
-    border: 1px dashed rgba(135, 206, 250, 0.4);
-    border-radius: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    font-size: 1.5rem;
-    color: rgba(255, 255, 255, 0.5);
-    padding-top: 20px;
-}
