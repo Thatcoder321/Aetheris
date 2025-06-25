@@ -221,7 +221,7 @@ class WeatherWidget extends BaseWidget {
         // --- THIS IS THE CORRECTED LINE ---
         // It now correctly looks for the _WEATHER_ variable.
         this.apiKey = window.AETHERIS_WEATHER_API_KEY; 
-
+        console.log('The browser sees this value for the API key:', this.apiKey);
         // This check will now pass on the live Vercel deployment.
         if (!this.apiKey) {
             this.contentElement.innerHTML = `<p style="color: yellow; text-align: center;">API Key not found.</p>`;
