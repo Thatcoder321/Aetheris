@@ -398,13 +398,10 @@ async sendMessage(userInput) {
 
         const data = await response.json();
 
-        // --- DEBUG STEP 1: Let's see the entire data object we got back ---
-        console.log('1. Received data object from server:', data);
-        
+      
         const aiReplyText = data.reply;
 
-        // --- DEBUG STEP 2: Let's see what we extracted from the object ---
-        console.log('2. Extracted AI reply text:', aiReplyText);
+       
 
 
         // --- The rest of the rendering code ---
