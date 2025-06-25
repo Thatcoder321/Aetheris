@@ -405,3 +405,97 @@
 .grid-stack-item-content:hover .widget-resize-handle {
     opacity: 1;
 }
+
+
+/*--- AI Chat Widget ---*/
+
+.ai-chat {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 10px;
+}
+
+.ai-chat-history {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px;
+}
+
+/* The custom scrollbar for the chat history */
+.ai-chat-history::-webkit-scrollbar { width: 8px; background: transparent; }
+.ai-chat-history::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 4px; }
+.ai-chat-history::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 4px; }
+.ai-chat-history::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.6); }
+
+.chat-message {
+    padding: 10px 14px;
+    border-radius: 12px;
+    max-width: 85%;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+.chat-message.user {
+    background-color: rgba(90,120,255,0.5);
+    align-self: flex-end;
+    border-bottom-right-radius: 3px;
+}
+
+.chat-message.ai {
+    background-color: rgba(255, 255, 255, 0.15);
+    align-self: flex-start;
+    border-bottom-left-radius: 3px;
+}
+
+.chat-message.typing {
+    color: rgba(255,255,255,0.7);
+    font-style: italic;
+}
+
+.ai-chat-input-form {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ai-chat-input-form input {
+    flex-grow: 1;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    outline: none;
+    font-size: 1rem;
+}
+
+.ai-chat-input-form input:focus {
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.ai-chat-input-form button {
+    background: rgba(90,120,255,0.6);
+    border: none;
+    color: white;
+    padding: 0 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ai-chat-input-form button:hover {
+    background: rgba(90,120,255,0.8);
+}
+
+.ai-chat-input-form button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

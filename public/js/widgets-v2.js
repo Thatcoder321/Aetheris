@@ -291,8 +291,127 @@ constructor() {
         `;
         this.addHandle();
     }
+}// In js/widgets-v2.js - The NEW AI Chat Widget Class
+
+class AIWidget extends BaseWidget {
+    constructor() {
+        // This widget needs a lot of space, so we'll give it a generous default size.
+        const defaultWidth = 7;
+        const defaultHeight = 6;
+
+        super({
+            id: 'ai-chat',
+            className: 'ai-chat',
+            x: 5, y: 1, // Place it on the right side
+            width: defaultWidth,
+            height: defaultHeight,
+        });
+
+        // The "Constructor Hammer" to enforce our size.
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+        
+        // This will hold our conversation history, including the system prompt.
+        this.history = [
+            { role: 'system', content: 'You are a helpful and concise assistant built into a dashboard called Aetheris.' }
+        ];
+
+        this.isAwaitingReply = false; // Prevents sending multiple messages at once
+
+        // Build the initial HTML structure
+        this.contentElement.innerHTML = `
+            <div class="ai-chat-history"></div>
+            <form class="ai-chat-input-form">
+                <input type="text" placeholder="Ask anything..." required>
+                <button type="submit">
+                    <i class="ph-paper-plane-tilt-fill"></i>
+                </button>
+            </form>
+        `;
+
+        // Get references to our key elements
+        this.historyElement = this.contentElement.querySelector('.ai-chat-history');
+        this.formElement = this.contentElement.querySelector('.ai-chat-input-form');
+        this.inputElement = this.formElement.querySelector('input');
+        this.submitButton = this.formElement.querySelector('button');
+
+        // Attach the event listener for the form
+        this.attachListener();
+
+        this.addHandle(); // Let's make it resizable!
+    }
+
+    attachListener() {
+        this.formElement.addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevents the page from reloading on form submit
+            const userInput = this.inputElement.value.trim();
+            if (userInput && !this.isAwaitingReply) {
+                this.sendMessage(userInput);
+            }
+        });
+    }
+
+    addMessageToHistory(role, content) {
+        // Add the new message to our internal history array
+        this.history.push({ role, content });
+
+        // Create and display the new message bubble
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${role}`;
+        messageDiv.textContent = content;
+        this.historyElement.appendChild(messageDiv);
+
+        // Automatically scroll to the bottom to see the new message
+        this.historyElement.scrollTop = this.historyElement.scrollHeight;
+    }
+
+    async sendMessage(userInput) {
+        this.isAwaitingReply = true;
+        this.inputElement.value = ''; // Clear the input field
+        this.submitButton.disabled = true; // Disable the send button
+
+        // Display the user's message immediately
+        this.addMessageToHistory('user', userInput);
+
+        // Show a "typing..." indicator
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'chat-message ai typing';
+        typingIndicator.textContent = '...';
+        this.historyElement.appendChild(typingIndicator);
+        this.historyElement.scrollTop = this.historyElement.scrollHeight;
+
+        try {
+            // --- This is the key part: Calling our OWN back-end ---
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ history: this.history }) // Send the whole conversation
+            });
+
+            if (!response.ok) {
+                throw new Error('API request failed.');
+            }
+
+            const data = await response.json();
+            const aiReply = data.reply;
+
+            // Remove the "typing..." indicator
+            typingIndicator.remove();
+
+            // Add the AI's real message to the history
+            this.addMessageToHistory(aiReply.role, aiReply.content);
+
+        } catch (error) {
+            console.error('Chat Error:', error);
+            typingIndicator.textContent = 'Sorry, something went wrong.';
+        } finally {
+            // Re-enable the form whether the request succeeded or failed
+            this.isAwaitingReply = false;
+            this.submitButton.disabled = false;
+        }
+    }
 }
 new ClockWidget();
 new GreetingWidget();
 new TodoWidget();
 new WeatherWidget();
+new AIWidget();

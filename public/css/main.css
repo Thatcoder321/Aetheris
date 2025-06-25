@@ -5,7 +5,7 @@
 }
 
 body {
-    background-image: url('../../assets/images/Abstract Gradient Image.jpg');
+    background-image: url('/assets/images/abstract-gradient-image.jpg');
     background-size: cover;
     background-position: center;
     color: white;
