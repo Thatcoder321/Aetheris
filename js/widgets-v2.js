@@ -249,8 +249,17 @@ class WeatherWidget extends BaseWidget {
     }
 
     askForLocation() {
-        this.contentElement.innerHTML = `<input type="text" class="weather-location-input" placeholder="Your City?">`;
-        this.addHandle(); // Re-add handle
+        // We wrap the input in a div to allow for easy centering
+        this.contentElement.innerHTML = `
+            <div class="weather-input-container">
+                <input type="text" class="weather-location-input" placeholder="Your City?">
+            </div>
+        `;
+        
+        // Re-assert the size after changing innerHTML
+        
+        this.addHandle();
+    
         const input = this.contentElement.querySelector('.weather-location-input');
         input.focus();
         
