@@ -25,11 +25,11 @@ body {
 }
 
 .preset-buttons {
-    position: absolute;
+    position: fixed; /* Use fixed positioning */
     bottom: 20px;
     left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
+    transform: translateX(-50%); /* This centers it */
+    z-index: 9998; /* A high number to keep it on top */
     display: flex;
     gap: 10px;
 }
@@ -51,29 +51,27 @@ body {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    z-index: 1001;
-
-    background: rgba(255,255,255,0.1);
-    backdrop-filer: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.2);
+    z-index: 9999; /* A HIGHER number, so it's on top of the preset buttons */
+    
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
     width: 50px;
     height: 50px;
     border-radius: 50%;
-
+    
     display: flex;
     justify-content: center;
     align-items: center;
-
+    
     font-size: 1.8rem;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
 }
-
 #settings-btn:hover {
     transform: rotate(45deg);
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 /* --- Settings Panel --- */
