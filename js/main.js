@@ -81,26 +81,120 @@ if (resetButton) {
     resetButton.addEventListener('click', resetLayout);
 }
 
+const WIDGET_REGISTRY = {
+    'greeting': {name: 'Greeting', class: 'GreetingWidget'},
+    'clock': {name: 'Clock', class: 'ClockWidget'},
+    'weather': {name: 'Weather', class: 'WeatherWidget'},
+    'todo': {name: 'To-Do List', class: 'TodoWidget'},
+    'ai-chat': {name: 'AI Chat', class: 'AIWidget'}
+};
+// In js/widgets-v2.js
 
+class WidgetManager {
+    constructor() {
+        this.activeWidgets = new Map();
+    }
+
+    addWidget(id) {
+        if (this.activeWidgets.has(id) || !WIDGET_REGISTRY[id]) {
+            console.warn(`Widget ${id} is already active or does not exist.`);
+            return;
+        }
+        
+        console.log(`Adding widget: ${id}`);
+        // This is the corrected way to create a new class instance
+        const WidgetClass = WIDGET_REGISTRY[id].class;
+        const newWidgetInstance = new WidgetClass(); 
+        
+        this.activeWidgets.set(id, newWidgetInstance);
+    }
+
+    removeWidget(id) {
+        if (!this.activeWidgets.has(id)) return;
+
+        console.log(`Removing widget: ${id}`);
+        const widgetInstance = this.activeWidgets.get(id);
+        
+        // This is the corrected spelling of 'grid'
+        grid.removeWidget(widgetInstance.element, false); // Vercel recommends just two args
+        
+        this.activeWidgets.delete(id);
+    }
+}
+
+
+
+const widgetManager = new WidgetManager();
 
 
 // --- SETTINGS PANEL LOGIC ---
-const settingsBtn = document.getElementById('settings-btn');
-const settingsPanel = document.getElementById('settings-panel');
-const settingsCloseBtn = document.getElementById('settings-close-btn');
+// In js/main.js - The CORRECTED Settings Panel Logic
 
-if (settingsBtn && settingsPanel && settingsCloseBtn) {
-    // Function to open the panel
-    const openPanel = () => {
-        settingsPanel.classList.add('is-open');
-    };
+// We wait for the entire document, including all scripts, to be ready
+document.addEventListener('DOMContentLoaded', () => {
 
-    // Function to close the panel
-    const closePanel = () => {
-        settingsPanel.classList.remove('is-open');
-    };
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsPanel = document.getElementById('settings-panel');
+    const settingsCloseBtn = document.getElementById('settings-close-btn');
 
-    // Attach event listeners
-    settingsBtn.addEventListener('click', openPanel);
-    settingsCloseBtn.addEventListener('click', closePanel);
-}
+    // This function now lives inside the listener, so it has access
+    // to variables from other files, like widgetManager.
+    function renderWidgetLibrary() {
+        const content = settingsPanel.querySelector('.settings-content');
+        if (!content) return;
+
+        const libraryGrid = document.createElement('div');
+        libraryGrid.className = 'widget-library-grid';
+        
+        // Loop through every widget in our master list from widgets-v2.js
+        for (const id in WIDGET_REGISTRY) {
+            const widget = WIDGET_REGISTRY[id];
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'widget-library-item';
+            
+            const isActive = widgetManager.activeWidgets.has(id);
+            
+            itemDiv.innerHTML = `
+                <span>${widget.name}</span>
+                <button class="widget-toggle-btn" data-widget-id="${id}">
+                    ${isActive ? 'Remove' : 'Add'}
+                </button>
+            `;
+            libraryGrid.appendChild(itemDiv);
+        }
+        
+        content.innerHTML = '';
+        content.appendChild(libraryGrid);
+
+        // Remove old listener before adding new one to prevent duplicates
+        libraryGrid.removeEventListener('click', handleWidgetToggle);
+        libraryGrid.addEventListener('click', handleWidgetToggle);
+    }
+    
+    // Moved the event handler logic into its own function for clarity
+    function handleWidgetToggle(e) {
+        if (e.target.matches('.widget-toggle-btn')) {
+            const widgetId = e.target.dataset.widgetId;
+            if (widgetManager.activeWidgets.has(widgetId)) {
+                widgetManager.removeWidget(widgetId);
+            } else {
+                widgetManager.addWidget(widgetId);
+            }
+            renderWidgetLibrary(); 
+        }
+    }
+
+    if (settingsBtn && settingsPanel && settingsCloseBtn) {
+        settingsBtn.addEventListener('click', () => {
+            settingsPanel.classList.add('is-open');
+            renderWidgetLibrary(); // Draw the library when the panel opens
+        });
+        settingsCloseBtn.addEventListener('click', () => {
+            settingsPanel.classList.remove('is-open');
+        });
+    }
+
+}); 
+widgetManager.addWidget('greeting');
+widgetManager.addWidget('clock');
+widgetManager.addWidget('todo');

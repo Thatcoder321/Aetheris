@@ -1,47 +1,4 @@
-const WIDGET_REGISTRY = {
-    'greeting': {name: 'Greeting', class: 'GreetingWidget'},
-    'clock': {name: 'Clock', class: 'ClockWidget'},
-    'weather': {name: 'Weather', class: 'WeatherWidget'},
-    'todo': {name: 'To-Do List', class: 'TodoWidget'},
-    'ai-chat': {name: 'AI Chat', class: 'AIWidget'}
-};
-// In js/widgets-v2.js
 
-class WidgetManager {
-    constructor() {
-        this.activeWidgets = new Map();
-    }
-
-    addWidget(id) {
-        if (this.activeWidgets.has(id) || !WIDGET_REGISTRY[id]) {
-            console.warn(`Widget ${id} is already active or does not exist.`);
-            return;
-        }
-        
-        console.log(`Adding widget: ${id}`);
-        // This is the corrected way to create a new class instance
-        const WidgetClass = WIDGET_REGISTRY[id].class;
-        const newWidgetInstance = new WidgetClass(); 
-        
-        this.activeWidgets.set(id, newWidgetInstance);
-    }
-
-    removeWidget(id) {
-        if (!this.activeWidgets.has(id)) return;
-
-        console.log(`Removing widget: ${id}`);
-        const widgetInstance = this.activeWidgets.get(id);
-        
-        // This is the corrected spelling of 'grid'
-        grid.removeWidget(widgetInstance.element, false); // Vercel recommends just two args
-        
-        this.activeWidgets.delete(id);
-    }
-}
-
-
-
-const widgetManager = new WidgetManager();
 class BaseWidget {
     constructor(options) {
         this.element = document.createElement('div');
