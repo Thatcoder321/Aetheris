@@ -82,3 +82,25 @@ if (resetButton) {
 }
 
 
+
+
+// --- SETTINGS PANEL LOGIC ---
+const settingsBtn = document.getElementById('settings-btn');
+const settingsPanel = document.getElementById('settings-panel');
+const settingsCloseBtn = document.getElementById('settings-close-btn');
+
+if (settingsBtn && settingsPanel && settingsCloseBtn) {
+    // Function to open the panel
+    const openPanel = () => {
+        settingsPanel.classList.add('is-open');
+    };
+
+    // Function to close the panel
+    const closePanel = () => {
+        settingsPanel.classList.remove('is-open');
+    };
+
+    // Attach event listeners
+    settingsBtn.addEventListener('click', openPanel);
+    settingsCloseBtn.addEventListener('click', closePanel);
+}

@@ -47,3 +47,85 @@ body {
     display: none !important;
 }
 
+#settings-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1001;
+
+    background: rgba(255,255,255,0.1);
+    backdrop-filer: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+#settings-btn:hover {
+    transform: rotate(45deg);
+    background: rgba(255,255,255,0.2);
+}
+
+/* --- Settings Panel --- */
+#settings-panel {
+    position: fixed;
+    top: 0;
+    right: -400px; /* Start it 400px off-screen to the right */
+    width: 400px;
+    height: 100%;
+    z-index: 1000;
+    
+    background: rgba(30, 30, 30, 0.5); /* A slightly darker glass */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    
+    display: flex;
+    flex-direction: column;
+    transition: right 0.4s cubic-bezier(0.23, 1, 0.32, 1); /* Smooth sliding animation */
+}
+
+/* This class will be added by JavaScript to show the panel */
+#settings-panel.is-open {
+    right: 0; /* Slide it into view */
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settings-header h2 {
+    font-weight: 500;
+}
+
+#settings-close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    opacity: 0.7;
+}
+#settings-close-btn:hover {
+    opacity: 1;
+}
+
+.settings-content {
+    padding: 20px;
+    flex-grow: 1;
+    overflow-y: auto;
+}
