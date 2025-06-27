@@ -531,3 +531,72 @@
     justify-content: center; 
     align-items: center;    
 }
+
+/* --- Widget Library --- */
+.widget-library-grid {
+    display: grid;
+    /* Create a grid with 2 columns */
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 15px;
+}
+
+.widget-library-item {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: center;   /* Center everything */
+    background: rgba(0, 0, 0, 0.25);
+    padding: 20px 15px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    gap: 15px; /* Space between preview, name, and button */
+}
+
+.widget-library-item span {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* --- The Add/Remove Button --- */
+.widget-toggle-btn {
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    background: rgba(90, 120, 255, 0.5); 
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.widget-toggle-btn:hover {
+    background-color: rgba(90, 120, 255, 0.7);
+}
+
+
+.widget-toggle-btn.is-active {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+.widget-toggle-btn.is-active:hover {
+    background-color: rgba(229, 80, 80, 0.7); /* A red color for removal on hover */
+}
+
+/* --- Widget Preview Styling --- */
+.widget-preview {
+    width: 100%;
+    height: 100px; /* Give it a fixed height */
+    background: rgba(255, 255, 255, 0.05); /* A subtle background for the container */
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.widget-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 4px; /* Optional: slightly rounded corners for the image itself */
+}

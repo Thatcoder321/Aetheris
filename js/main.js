@@ -1,4 +1,13 @@
 // --- Parallax Effect ---
+
+
+const WIDGET_REGISTRY = {
+    'greeting': { name: 'Greeting', class: GreetingWidget, preview: '/assets/widget-previews/greeting-preview.png' },
+    'clock': { name: 'Clock', class: ClockWidget, preview: '/assets/widget-previews/clock-preview.png' },
+    'weather': { name: 'Weather', class: WeatherWidget, preview: '/assets/widget-previews/weather-preview.png' },
+    'todo': { name: 'To-Do List', class: TodoWidget, preview: '/assets/widget-previews/todo-preview.png' },
+    'ai-chat': { name: 'AI Chat', class: AIWidget, preview: '/assets/widget-previews/ai-chat-preview.png' },
+};
 const stage = document.getElementById('stage');
 const maxRotate = 3;
 
@@ -81,13 +90,7 @@ if (resetButton) {
     resetButton.addEventListener('click', resetLayout);
 }
 
-const WIDGET_REGISTRY = {
-    'greeting': {name: 'Greeting', class: 'GreetingWidget'},
-    'clock': {name: 'Clock', class: 'ClockWidget'},
-    'weather': {name: 'Weather', class: 'WeatherWidget'},
-    'todo': {name: 'To-Do List', class: 'TodoWidget'},
-    'ai-chat': {name: 'AI Chat', class: 'AIWidget'}
-};
+
 // In js/widgets-v2.js
 
 class WidgetManager {
@@ -147,21 +150,28 @@ document.addEventListener('DOMContentLoaded', () => {
         libraryGrid.className = 'widget-library-grid';
         
         // Loop through every widget in our master list from widgets-v2.js
-        for (const id in WIDGET_REGISTRY) {
-            const widget = WIDGET_REGISTRY[id];
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'widget-library-item';
-            
-            const isActive = widgetManager.activeWidgets.has(id);
-            
-            itemDiv.innerHTML = `
-                <span>${widget.name}</span>
-                <button class="widget-toggle-btn" data-widget-id="${id}">
-                    ${isActive ? 'Remove' : 'Add'}
-                </button>
-            `;
-            libraryGrid.appendChild(itemDiv);
-        }
+// In the renderWidgetLibrary function of main.js
+
+for (const id in WIDGET_REGISTRY) {
+    const widget = WIDGET_REGISTRY[id];
+    const itemDiv = document.createElement('div');
+    itemDiv.className = 'widget-library-item';
+    
+    const isActive = widgetManager.activeWidgets.has(id);
+
+    // This is the corrected HTML structure with the closing backtick
+    itemDiv.innerHTML = `
+        <div class="widget-preview">
+            <img src="${widget.preview}" alt="${widget.name} preview">
+        </div>
+        <span>${widget.name}</span>
+        <button class="widget-toggle-btn ${isActive ? 'is-active' : ''}" data-widget-id="${id}">
+            ${isActive ? 'Remove' : 'Add'}
+        </button>
+    `; // <-- THE FIX: Added the closing backtick here.
+
+    libraryGrid.appendChild(itemDiv);
+}
         
         content.innerHTML = '';
         content.appendChild(libraryGrid);
