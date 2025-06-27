@@ -2,12 +2,13 @@
 
 // --- The Master List of All Widgets ---
 const WIDGET_REGISTRY = {
-    'greeting': { name: 'Greeting', class: GreetingWidget, preview: '/assets/widget-previews/greeting-preview.png' },
-    'clock': { name: 'Clock', class: ClockWidget, preview: '/assets/widget-previews/clock-preview.png' },
-    'weather': { name: 'Weather', class: WeatherWidget, preview: '/assets/widget-previews/weather-preview.png' },
-    'todo': { name: 'To-Do List', class: TodoWidget, preview: '/assets/widget-previews/todo-preview.png' },
-    'ai-chat': { name: 'AI Chat', class: AIWidget, preview: '/assets/widget-previews/ai-chat-preview.png' },
+    'greeting': { name: 'Greeting', class: GreetingWidget, preview: '/images/greeting-preview.png' },
+    'clock': { name: 'Clock', class: ClockWidget,  preview: '/images/clock-preview.png' },
+    'weather': { name: 'Weather', class: WeatherWidget, preview: '/images/weather-preview.png' },
+    'todo': { name: 'To-Do List', class: TodoWidget, preview: '/images/todo-preview.png' },
+    'ai-chat': { name: 'AI Chat', class: AIWidget, preview: '/images/ai-chat-preview.png' },
 };
+
 
 // --- The Brain that Manages Widgets ---
 class WidgetManager {
