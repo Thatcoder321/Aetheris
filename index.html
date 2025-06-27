@@ -38,10 +38,21 @@
     <!-- Local Gridstack JS (Correct File Name) -->
     <script src="js/gridstack-all.js" defer></script>
 
-    <!-- Your App's JS -->
-    <script src="js/main.js" defer></script>
-    <script src="js/env.js" defer></script>
-    <script src="js/widgets-v2.js" defer></script>
+
+<!-- 1. Load Libraries FIRST -->
+<script src="/js/gridstack-all.js" defer></script>
+
+<!-- 2. Load the World Setup -->
+<script src="/js/main.js" defer></script>
+
+<!-- 3. Load the Blueprints for all Widgets -->
+<script src="/js/widgets-v2.js" defer></script>
+
+<!-- 4. Load the Environment Variables -->
+<script src="/js/env.js" defer></script>
+
+<!-- 5. Load and RUN the main application logic LAST -->
+<script src="/js/app.js" defer></script>
 
 </body>
 </html>
