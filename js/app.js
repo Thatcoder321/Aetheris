@@ -21,7 +21,7 @@ class WidgetManager {
     removeWidget(id) {
         if (!this.activeWidgets.has(id)) return;
         const widgetInstance = this.activeWidgets.get(id);
-        grid.removeWidget(widgetInstance.element, false);
+        grid.removeWidget(widgetInstance.element); 
         this.activeWidgets.delete(id);
     }
 }
