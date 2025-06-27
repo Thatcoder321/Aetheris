@@ -428,8 +428,3 @@ async sendMessage(userInput) {
     }
 }
 }
-new ClockWidget();
-new GreetingWidget();
-new TodoWidget();
-new WeatherWidget();
-new AIWidget();
