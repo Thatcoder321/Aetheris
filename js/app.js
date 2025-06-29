@@ -1,4 +1,4 @@
-// app.js: The main application entry point. Runs last.
+
 
 // --- The Master List of All Widgets ---
 const WIDGET_REGISTRY = {
@@ -89,3 +89,48 @@ if (resetButton) {
 widgetManager.addWidget('greeting');
 widgetManager.addWidget('clock');
 widgetManager.addWidget('todo');
+
+// In public/js/app.js
+
+// --- AI Reorganization Modal Logic ---
+const reorganizeBtn = document.getElementById('reorganize-btn');
+const reorganizeModalOverlay = document.getElementById('reorganize-modal-overlay');
+const reorganizeCancelBtn = document.getElementById('reorganize-cancel-btn');
+const reorganizeForm = document.getElementById('reorganize-form');
+
+if (reorganizeBtn && reorganizeModalOverlay && reorganizeCancelBtn && reorganizeForm) {
+
+    // Function to show the modal
+    const showReorganizeModal = () => {
+        reorganizeModalOverlay.classList.remove('hidden');
+    };
+
+    // Function to hide the modal
+    const hideReorganizeModal = () => {
+        reorganizeModalOverlay.classList.add('hidden');
+    };
+
+    // Attach event listeners
+    reorganizeBtn.addEventListener('click', showReorganizeModal);
+    reorganizeCancelBtn.addEventListener('click', hideReorganizeModal);
+    
+    // Also hide the modal if the user clicks on the dark overlay background
+    reorganizeModalOverlay.addEventListener('click', (e) => {
+        if (e.target === reorganizeModalOverlay) {
+            hideReorganizeModal();
+        }
+    });
+
+    // Handle the form submission
+    reorganizeForm.addEventListener('submit', (e) => {
+        e.preventDefault(); // Stop the page from reloading
+        
+        const userInput = document.getElementById('reorganize-input').value;
+        console.log("User wants to reorganize with this prompt:", userInput);
+        
+        // In the future, this is where we will call our data gathering
+        // and API functions. For now, we just log the input.
+        
+        hideReorganizeModal(); // Hide the modal after submission
+    });
+}

@@ -16,6 +16,11 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
+    <div class ="action-buttons-container">
+        <div id="reorganize-btn" class="action-btn">
+            <i class="ph-magic-wand-fill"></i>
+        </div>
+    </div>
     <div id="settings-btn">
         <i class="ph-gear-fill"></i>
     </div>
@@ -28,6 +33,19 @@
             <p>Widget Library Coming Soon...</p>
         </div>
     </aside>
+
+    <div id="reorganize-modal-overlay" class="hidden">
+        <div id="reorganize-modal">
+            <h3>Describe your ideal layout</h3>
+            <p>For example: "Minimalist and clean" or "Put my productivity tools on the right".</p>
+            <form id="reorganize-form">
+                <input type="text" id="reorganize-input" placeholder="Type here..." required>
+                <button type="submit">Reorganize</button>
+            </form>
+            <button id="reorganize-cancel-btn">×</button>
+                
+        </div>
+    </div>
     <main id="stage" class="grid-stack"></main>
     <div class="preset-buttons">
         <button onclick="applyPreset('default')">Default</button>

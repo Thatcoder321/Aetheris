@@ -586,8 +586,8 @@
 /* --- Widget Preview Styling --- */
 .widget-preview {
     width: 100%;
-    height: 100px; /* Give it a fixed height */
-    background: rgba(255, 255, 255, 0.05); /* A subtle background for the container */
+    height: 100px; 
+    background: rgba(255, 255, 255, 0.05); 
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -598,5 +598,5 @@
 .widget-preview img {
     max-width: 100%;
     max-height: 100%;
-    border-radius: 4px; /* Optional: slightly rounded corners for the image itself */
+    border-radius: 4px; 
 }
