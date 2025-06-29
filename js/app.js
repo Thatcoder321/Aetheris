@@ -7,6 +7,8 @@ const WIDGET_REGISTRY = {
     'weather': { name: 'Weather', class: WeatherWidget, preview: '/images/weather-preview.png' },
     'todo': { name: 'To-Do List', class: TodoWidget, preview: '/images/todo-preview.png' },
     'ai-chat': { name: 'AI Chat', class: AIWidget, preview: '/images/ai-chat-preview.png' },
+    'ai-chat': { name: 'AI Chat', class: AIWidget, preview: '/images/ai-chat-preview.png' },
+    'pomodoro': { name: 'Pomodoro Timer', class: PomodoroWidget, preview: '/images/todo-preview.png' }, // Using a placeholder preview for now
 };
 
 

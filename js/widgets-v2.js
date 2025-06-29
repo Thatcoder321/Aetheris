@@ -428,3 +428,151 @@ async sendMessage(userInput) {
     }
 }
 }
+
+
+class PomodoroWidget extends BaseWidget {
+    constructor() {
+        const defaultWidth = 4;
+        const defaultHeight = 3;
+
+        super({
+            id: 'pomodoro',
+            className: 'pomodoro',
+            x: 0,
+            y: 5, 
+            width: defaultWidth,
+            height: defaultHeight
+        });
+
+      
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+
+        this.timerId = null; 
+        this.totalSeconds = 25 * 60; // Default to 25 minutes
+        this.secondsRemaining = this.totalSeconds;
+        this.isWorkSession = true;
+        this.isRunning = false;
+
+        // --- Build the HTML Shell ---
+        this.contentElement.innerHTML = `
+            <div class="pomodoro-timer-container">
+                <svg class="pomodoro-progress-ring">
+                    <circle class="progress-ring-background" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="transparent" r="90" cx="90" cy="90"/>
+                    <circle class="progress-ring-circle" stroke="#5a78ff" stroke-width="4" fill="transparent" r="80" cx="90" cy="90"/>
+                </svg>
+                <div class="pomodoro-time-display">25:00</div>
+            </div>
+            <div class="pomodoro-mode-display">WORK</div>
+            <div class="pomodoro-controls">
+                <button data-action="start">Start</button>
+        <button data-action="reset">Reset</button>
+            </div>
+        `;
+        if (window.phosphor) {
+            phosphor.embed();
+        }
+
+        // --- Element References ---
+        this.timeDisplay = this.contentElement.querySelector('.pomodoro-time-display');
+        this.modeDisplay = this.contentElement.querySelector('.pomodoro-mode-display');
+        this.progressCircle = this.contentElement.querySelector('.progress-ring-circle');
+        this.controlsContainer = this.contentElement.querySelector('.pomodoro-controls');
+        this.mainActionButton = this.controlsContainer.querySelector('button[data-action="start"]');
+
+        // --- Initial Setup ---
+        const radius = this.progressCircle.r.baseVal.value;
+        this.circumference = 2 * Math.PI * radius;
+        this.progressCircle.style.strokeDasharray = `${this.circumference} ${this.circumference}`;
+        this.updateProgress();
+
+        // --- Attach Event Listener ---
+        this.controlsContainer.addEventListener('click', (e) => this.handleControlClick(e));
+
+        this.addHandle();
+    }
+
+    handleControlClick(e) {
+        const action = e.target.closest('button')?.dataset.action;
+        if (!action) return;
+
+        switch (action) {
+            case 'start':
+                this.startTimer();
+                break;
+            case 'pause':
+                this.pauseTimer();
+                break;
+            case 'reset':
+                this.resetTimer();
+                break;
+        }
+    }
+
+    startTimer() {
+        if (this.isRunning) return;
+        this.isRunning = true;
+        
+        // Change the button to a "pause" button
+        this.mainActionButton.dataset.action = 'pause';
+        this.mainActionButton.textContent = 'Pause';
+        this.mainActionButton.innerHTML = `<i class="ph-pause-fill"></i>`;
+        if (window.phosphor) { phosphor.embed(); }
+        this.mainActionButton.classList.add('main-action'); 
+
+        this.timerId = setInterval(() => {
+            this.secondsRemaining--;
+            this.updateDisplay();
+            
+            if (this.secondsRemaining <= 0) {
+                this.sessionEnd();
+            }
+        }, 1000);
+    }
+
+    pauseTimer() {
+        if (!this.isRunning) return;
+        this.isRunning = false;
+        clearInterval(this.timerId);
+        
+        // Change the button back to a "start" button
+        this.mainActionButton.dataset.action = 'start';
+        this.mainActionButton.textContent = 'Start'
+        this.mainActionButton.innerHTML = `<i class="ph-play-fill"></i>`;
+        if (window.phosphor) { phosphor.embed(); }
+        this.mainActionButton.classList.remove('main-action'); 
+    }
+
+    resetTimer() {
+        this.pauseTimer();
+        this.secondsRemaining = this.totalSeconds;
+        this.updateDisplay();
+    }
+    
+    sessionEnd() {
+        this.pauseTimer();
+        // Switch session type
+        this.isWorkSession = !this.isWorkSession;
+        if (this.isWorkSession) {
+            this.totalSeconds = 25 * 60; // 25 min work
+            this.modeDisplay.textContent = 'WORK';
+        } else {
+            this.totalSeconds = 5 * 60; // 5 min break
+            this.modeDisplay.textContent = 'BREAK';
+        }
+        this.resetTimer();
+        
+    }
+
+    updateDisplay() {
+        const minutes = Math.floor(this.secondsRemaining / 60);
+        const seconds = this.secondsRemaining % 60;
+        this.timeDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        this.updateProgress();
+    }
+
+    updateProgress() {
+        const progress = (this.totalSeconds - this.secondsRemaining) / this.totalSeconds;
+        const offset = this.circumference * (1 - progress);
+        this.progressCircle.style.strokeDashoffset = offset;
+    }
+}
