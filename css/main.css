@@ -11,10 +11,25 @@ body {
     color: white;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     overflow: hidden;
+    height: 100vh;
 
-    perspective: 1500px;
+    overflow: hidden;
+
+    
 }
-
+/* --- New 3D Wrapper --- */
+.perspective-wrapper {
+    /* These properties are moved from the body */
+    perspective: 1500px;
+    
+    /* These ensure it still fills the screen */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Hide any overflow from the 3D stage */
+}
 
 #stage {
    
@@ -56,27 +71,50 @@ body {
     flex-direction: column;
     gap: 15px;
 }
+/* --- UI Overlay Buttons (Corrected) --- */
 
+/* This is a generic style for how ALL action buttons should look */
 .action-btn {
-    background: rgba(255,255,255,0.1);
+    position: fixed; /* Position relative to the window */
+    z-index: 1001;   /* A high number to keep it on top */
+    
+    background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
     width: 50px;
     height: 50px;
     border-radius: 50%;
+    
     display: flex;
     justify-content: center;
     align-items: center;
+    
     font-size: 1.8rem;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .action-btn:hover {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
     transform: scale(1.1) rotate(25deg);
 }
+
+
+/* --- Specific Positioning for EACH Button --- */
+
+/* Position for the Settings (Gear) Button */
+#settings-btn {
+    bottom: 20px;
+    right: 20px; 
+}
+
+/* Position for the Reorganize (Wand) Button */
+#reorganize-btn {
+    bottom: 85px; /* Place it 85px from the bottom (50px for the button + 15px gap + 20px base) */
+    right: 20px;
+}
+
 /* --- Settings Panel --- */
 #settings-panel {
     position: fixed;

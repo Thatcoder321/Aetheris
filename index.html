@@ -5,72 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aetheris</title>
     
-    <!-- Local Gridstack CSS -->
     <link rel="stylesheet" href="/css/gridstack.min.css" />
-    
-    <!-- Your App's CSS -->
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/widgets.css">
-
-    <!-- Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
-    <div class ="action-buttons-container">
+
+    <!-- ================================== -->
+    <!-- === UI OVERLAYS (Outside 3D Space) === -->
+    <!-- ================================== -->
+    
+    <!-- All Action Buttons are grouped here for positioning -->
+    <div class="action-buttons-container">
         <div id="reorganize-btn" class="action-btn">
             <i class="ph-magic-wand-fill"></i>
         </div>
+        <div id="settings-btn" class="action-btn">
+            <i class="ph-gear-fill"></i>
+        </div>
     </div>
-    <div id="settings-btn">
-        <i class="ph-gear-fill"></i>
-    </div>
+
+    <!-- The Settings Panel -->
     <aside id="settings-panel">
         <div class="settings-header">
             <h2>Settings</h2>
             <button id="settings-close-btn">×</button>
         </div>
         <div class="settings-content">
-            <p>Widget Library Coming Soon...</p>
+            <!-- Content is drawn by JavaScript -->
         </div>
     </aside>
 
+    <!-- The AI Reorganization Modal -->
     <div id="reorganize-modal-overlay" class="hidden">
         <div id="reorganize-modal">
             <h3>Describe your ideal layout</h3>
-            <p>For example: "Minimalist and clean" or "Put my productivity tools on the right".</p>
+            <p>For example: "Minimalist and clean" or "Put my productivity tools on the right."</p>
             <form id="reorganize-form">
                 <input type="text" id="reorganize-input" placeholder="Type here..." required>
                 <button type="submit">Reorganize</button>
             </form>
             <button id="reorganize-cancel-btn">×</button>
-                
         </div>
     </div>
-    <main id="stage" class="grid-stack"></main>
+
+    <!-- The Preset Buttons -->
     <div class="preset-buttons">
         <button onclick="applyPreset('default')">Default</button>
         <button onclick="applyPreset('sidebar-left')">Sidebar</button>
         <button onclick="applyPreset('focused-center')">Focused</button>
         <button id="reset-layout-btn">Reset Layout</button> 
     </div>
-    <!-- Local Gridstack JS (Correct File Name) -->
-    <script src="js/gridstack-all.js" defer></script>
 
 
-<!-- 1. Load Libraries FIRST -->
-<script src="/js/gridstack-all.js" defer></script>
+    <!-- ================================== -->
+    <!-- === 3D STAGE (Inside Wrapper) === -->
+    <!-- ================================== -->
 
-<!-- 2. Load the World Setup -->
-<script src="/js/main.js" defer></script>
+    <div class="perspective-wrapper">
+        <main id="stage" class="grid-stack"></main>
+    </div>
 
-<!-- 3. Load the Blueprints for all Widgets -->
-<script src="/js/widgets-v2.js" defer></script>
 
-<!-- 4. Load the Environment Variables -->
-<script src="/js/env.js" defer></script>
-
-<!-- 5. Load and RUN the main application logic LAST -->
-<script src="/js/app.js" defer></script>
+    <!-- ================================== -->
+    <!-- === SCRIPT TAGS (At the very end) === -->
+    <!-- ================================== -->
+    
+    <!-- Libraries FIRST -->
+    <script src="/js/gridstack-all.js" defer></script>
+    
+    <!-- World Setup -->
+    <script src="/js/main.js" defer></script>
+    
+    <!-- Widget Blueprints -->
+    <script src="/js/widgets-v2.js" defer></script>
+    
+    <!-- Environment Variables -->
+    <script src="/js/env.js" defer></script>
+    
+    <!-- Main Application Logic (Runs Last) -->
+    <script src="/js/app.js" defer></script>
 
 </body>
 </html>

@@ -28,26 +28,29 @@ class WidgetManager {
 }
 const widgetManager = new WidgetManager();
 // In public/js/app.js - The new, unified logic block
+// In public/js/app.js
 
-// --- UI Panel Management ---
+// --- UI Panel & Modal Management ---
 
-// Settings Panel Elements
+// 1. Get references to ALL our interactive UI elements
 const settingsBtn = document.getElementById('settings-btn');
 const settingsPanel = document.getElementById('settings-panel');
 const settingsCloseBtn = document.getElementById('settings-close-btn');
 
-// Reorganize Modal Elements
 const reorganizeBtn = document.getElementById('reorganize-btn');
 const reorganizeModalOverlay = document.getElementById('reorganize-modal-overlay');
 const reorganizeCancelBtn = document.getElementById('reorganize-cancel-btn');
 const reorganizeForm = document.getElementById('reorganize-form');
 
+const resetButton = document.getElementById('reset-layout-btn');
 
-// --- Logic for Settings Panel ---
+
+// 2. Logic for the Settings Panel (The Gear Icon)
 if (settingsBtn && settingsPanel && settingsCloseBtn) {
     settingsBtn.addEventListener('click', () => {
         settingsPanel.classList.add('is-open');
-        renderWidgetLibrary(); // Draw the library when the panel opens
+        // Use the setTimeout trick to ensure the panel is ready before drawing
+        setTimeout(renderWidgetLibrary, 0); 
     });
 
     settingsCloseBtn.addEventListener('click', () => {
@@ -55,7 +58,76 @@ if (settingsBtn && settingsPanel && settingsCloseBtn) {
     });
 }
 
-// Function to draw the widget library (this remains unchanged)
+// 3. Logic for the Reorganize Modal (The Magic Wand Icon)
+if (reorganizeBtn && reorganizeModalOverlay && reorganizeCancelBtn && reorganizeForm) {
+    const showReorganizeModal = () => reorganizeModalOverlay.classList.remove('hidden');
+    const hideReorganizeModal = () => reorganizeModalOverlay.classList.add('hidden');
+
+    reorganizeBtn.addEventListener('click', showReorganizeModal);
+    reorganizeCancelBtn.addEventListener('click', hideReorganizeModal);
+    
+    reorganizeModalOverlay.addEventListener('click', (e) => {
+        if (e.target === reorganizeModalOverlay) hideReorganizeModal();
+    });
+
+
+
+reorganizeForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const userInput = document.getElementById('reorganize-input').value;
+    if (!userInput) return;
+
+    const submitButton = reorganizeForm.querySelector('button[type="submit"]');
+    submitButton.textContent = 'Thinking...';
+    submitButton.disabled = true;
+
+    try {
+        
+        const currentLayout = grid.save();
+        const viewport = { width: window.innerWidth, height: window.innerHeight };
+        
+      
+        const response = await fetch('/api/reorganize', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                currentLayout: currentLayout,
+                viewport: viewport,
+                userPrompt: userInput
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to get new layout from server.');
+        }
+
+        const data = await response.json();
+        
+   
+        if (data.newLayout) {
+            grid.load(data.newLayout); 
+        }
+
+    } catch (error) {
+        console.error("Reorganization failed:", error);
+        alert("Sorry, the AI architect failed to create a new layout.");
+    } finally {
+        // 4. Clean up
+        submitButton.textContent = 'Reorganize';
+        submitButton.disabled = false;
+        hideReorganizeModal();
+    }
+});
+}
+
+// 4. Logic for the Reset Button
+if (resetButton) {
+    resetButton.addEventListener('click', resetLayout);
+}
+
+
+// --- Supporting Functions for the Settings Panel ---
+
 function renderWidgetLibrary() {
     const content = settingsPanel.querySelector('.settings-content');
     if (!content) return;
@@ -80,7 +152,6 @@ function renderWidgetLibrary() {
     libraryGrid.addEventListener('click', handleWidgetToggle);
 }
 
-// Function to handle add/remove clicks (this remains unchanged)
 function handleWidgetToggle(e) {
     if (e.target.matches('.widget-toggle-btn')) {
         const widgetId = e.target.dataset.widgetId;
@@ -92,37 +163,6 @@ function handleWidgetToggle(e) {
         renderWidgetLibrary(); 
     }
 }
-
-
-// --- Logic for Reorganize Modal ---
-if (reorganizeBtn && reorganizeModalOverlay && reorganizeCancelBtn && reorganizeForm) {
-    const showReorganizeModal = () => reorganizeModalOverlay.classList.remove('hidden');
-    const hideReorganizeModal = () => reorganizeModalOverlay.classList.add('hidden');
-
-    reorganizeBtn.addEventListener('click', showReorganizeModal);
-    reorganizeCancelBtn.addEventListener('click', hideReorganizeModal);
-    reorganizeModalOverlay.addEventListener('click', (e) => {
-        if (e.target === reorganizeModalOverlay) {
-            hideReorganizeModal();
-        }
-    });
-
-    reorganizeForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const userInput = document.getElementById('reorganize-input').value;
-        console.log("User wants to reorganize with this prompt:", userInput);
-        // We will add the API call here later
-        hideReorganizeModal();
-    });
-}
-
-// Attach listener for the main reset button (this can stay here)
-const resetButton = document.getElementById('reset-layout-btn');
-if (resetButton) {
-    resetButton.addEventListener('click', resetLayout);
-}
-
-// ... the "Initialize Default Widgets" section comes after this
 
 // --- Initialize Default Widgets ---
 widgetManager.addWidget('greeting');
