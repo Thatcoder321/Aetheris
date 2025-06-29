@@ -104,8 +104,10 @@ reorganizeForm.addEventListener('submit', async (e) => {
         const data = await response.json();
         
    
-        if (data.newLayout) {
-            grid.load(data.newLayout); 
+        if (data.layout && Array.isArray(data.layout)) {
+            grid.load(data.layout); 
+        } else {
+            throw new Error("Received invalid layout data from server.");
         }
 
     } catch (error) {

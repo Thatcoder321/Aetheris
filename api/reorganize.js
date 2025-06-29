@@ -25,7 +25,9 @@ export default async function handler(req, res) {
 - The x coordinate must be between 0 and 11.
 - The sum of a widget's x and w cannot exceed 12.
 - Prioritize the user's request, but also apply good design principles.
-- Your response MUST be ONLY the new layout in a valid, minified JSON array format, and nothing else. No explanatory text.`;
+- Your response MUST be ONLY the new layout in a valid, minified JSON array format, and nothing else. No explanatory text.
+Your response MUST be ONLY a single, valid JSON object in the format: { "layout": [...] }. The value for the "layout" key must be the JSON array of the new widget positions. Do not include any other text, explanations, or markdown.`;
+
 
         const userQuery = `Current layout: ${JSON.stringify(currentLayout)}\nUser request: "${userPrompt}"`;
 
@@ -54,14 +56,18 @@ export default async function handler(req, res) {
         }
 
 
-        const newLayoutString = data.choices[0].message.content;
-        const newLayout = JSON.parse(newLayoutString); 
+        const responseContent = data.choices[0].message.content;
+        const responseObject = JSON.parse(responseContent);
+        
 
+        const newLayoutArray = responseObject.layout;
+        
+        if (!Array.isArray(newLayoutArray)) {
+            throw new Error('AI did not return a valid layout array.');
+        }
+        
 
-const newLayoutObject = JSON.parse(newLayoutString);
-
-const finalLayout = newLayoutObject.layout || newLayoutObject;
-
+        res.status(200).json({ layout: newLayoutArray });
 res.status(200).json({ newLayout: finalLayout });
 
     } catch (err) {
