@@ -1,25 +1,24 @@
 {
-    "version": 2,
-    "routes": [
-      {
-        "src": "/api/(.*)",
-        "dest": "/api/$1"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/public/$1"
-      }
-    ],
-    "headers": [
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/chat.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "headers": [
     {
       "source": "/(.*)",
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net/npm/gridstack@7.2.3/dist/gridstack.min.css; img-src 'self' https: data:; font-src 'self'; connect-src 'self' https://api.weatherapi.com https://api.openai.com;"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' https: data:; font-src 'self'; connect-src 'self' https://api.weatherapi.com https://api.openai.com;"
         }
       ]
     }
   ]
 }
-  
