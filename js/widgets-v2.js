@@ -576,3 +576,56 @@ class PomodoroWidget extends BaseWidget {
         this.progressCircle.style.strokeDashoffset = offset;
     }
 }
+
+class NotepadWidget extends BaseWidget {
+    constructor() {
+        const defaultWidth = 3;
+        const defaultHeight = 3;
+
+        // 1. Standard widget initialization
+        super({
+            id: 'notepad',
+            className: 'notepad',
+            x: 8, // A sensible default position
+            y: 5,
+            width: defaultWidth,
+            height: defaultHeight
+        });
+
+        // 2. The Aetheris Law: Enforce size immediately.
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+
+        // 3. Define the widget's internal structure. A textarea is perfect.
+        this.contentElement.innerHTML = `
+            <textarea class="notepad-area" placeholder="Scratchpad..."></textarea>
+        `;
+
+        // 4. Get a reference to the interactive element
+        this.textarea = this.contentElement.querySelector('.notepad-area');
+
+        // 5. Add the universal resize handle
+        this.addHandle();
+
+        // 6. Load saved content and attach the auto-save listener
+        this.loadContent();
+        this.attachListener();
+    }
+
+    loadContent() {
+        const savedText = localStorage.getItem('aetheris-notepad-text');
+        if (savedText) {
+            this.textarea.value = savedText;
+        }
+    }
+
+    saveContent() {
+        localStorage.setItem('aetheris-notepad-text', this.textarea.value);
+    }
+
+    attachListener() {
+        // The 'input' event is best for auto-saving as it fires on any change
+        this.textarea.addEventListener('input', () => {
+            this.saveContent();
+        });
+    }
+}

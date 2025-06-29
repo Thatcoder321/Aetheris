@@ -1,5 +1,4 @@
 
-
 // --- The Master List of All Widgets ---
 const WIDGET_REGISTRY = {
     'greeting': { name: 'Greeting', class: GreetingWidget, preview: '/images/greeting-preview.png' },
@@ -7,8 +6,8 @@ const WIDGET_REGISTRY = {
     'weather': { name: 'Weather', class: WeatherWidget, preview: '/images/weather-preview.png' },
     'todo': { name: 'To-Do List', class: TodoWidget, preview: '/images/todo-preview.png' },
     'ai-chat': { name: 'AI Chat', class: AIWidget, preview: '/images/ai-chat-preview.png' },
-    'ai-chat': { name: 'AI Chat', class: AIWidget, preview: '/images/ai-chat-preview.png' },
     'pomodoro': { name: 'Pomodoro Timer', class: PomodoroWidget, preview: '/images/todo-preview.png' }, // Using a placeholder preview for now
+    'notepad': { name: 'Notepad', class: NotepadWidget, preview: '/images/notepad-preview.png' }, 
 };
 
 
@@ -29,12 +28,7 @@ class WidgetManager {
     }
 }
 const widgetManager = new WidgetManager();
-// In public/js/app.js - The new, unified logic block
-// In public/js/app.js
 
-// --- UI Panel & Modal Management ---
-
-// 1. Get references to ALL our interactive UI elements
 const settingsBtn = document.getElementById('settings-btn');
 const settingsPanel = document.getElementById('settings-panel');
 const settingsCloseBtn = document.getElementById('settings-close-btn');
@@ -51,7 +45,7 @@ const resetButton = document.getElementById('reset-layout-btn');
 if (settingsBtn && settingsPanel && settingsCloseBtn) {
     settingsBtn.addEventListener('click', () => {
         settingsPanel.classList.add('is-open');
-        // Use the setTimeout trick to ensure the panel is ready before drawing
+        
         setTimeout(renderWidgetLibrary, 0); 
     });
 
