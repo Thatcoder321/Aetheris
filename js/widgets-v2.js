@@ -276,7 +276,7 @@ async fetchFullForecast(city) {
         }
         this.fullForecastData = await response.json();
 
-        const initialSize = grid.getCell(this.element);
+        const initialSize = grid.getNode(this.element);
         this.updateLayout(initialSize.w, initialSize.h);
 
     } catch (error) {
