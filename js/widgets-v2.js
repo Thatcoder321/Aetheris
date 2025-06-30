@@ -225,8 +225,8 @@ class WeatherWidget extends BaseWidget {
         // Listen for resize events from Gridstack
         this.element.addEventListener('resizestop', (event) => {
         
-            const node = event.detail.node;
-            this.updateLayout(node.w, node.h);
+            //const node = event.detail.node;
+            //this.updateLayout(node.w, node.h);
         });
     }
 
