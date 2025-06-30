@@ -623,9 +623,67 @@ class NotepadWidget extends BaseWidget {
     }
 
     attachListener() {
-        // The 'input' event is best for auto-saving as it fires on any change
+
         this.textarea.addEventListener('input', () => {
             this.saveContent();
         });
+    }
+}
+
+class NewsTickerWidget extends BaseWidget {
+    constructor() {
+
+        const defaultWidth = 12;
+        const defaultHeight = 1;
+
+        super({
+            id: 'news-ticker',
+            className: 'news-ticker',
+            x: 0,
+            y: 1,
+            width: defaultWidth,
+            height: defaultHeight
+        });
+
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+        this.contentElement.innerHTML = `<div class="ticker-wrap"><div class="ticker-content"><span>Loading news...</span></div></div>`;
+        this.addHandle();
+        this.fetchNews();
+    }
+
+    async fetchNews() {
+        try {
+            const response = await fetch('/api/news');
+            if (!response.ok) throw new Error('Failed to fetch news feed.');
+            
+            const data = await response.json();
+            if (data.articles && data.articles.length > 0) {
+                this.renderNews(data.articles);
+            } else {
+                this.renderError('No articles found.');
+            }
+        } catch (error) {
+            console.error('News Widget Error:', error);
+            this.renderError(error.message);
+        }
+    }
+
+    renderNews(articles) {
+        const tickerContent = articles.map(article => 
+            `<a href="${article.url}" target="_blank" rel="noopener noreferrer">${article.title}</a>`
+        ).join('<span class="ticker-separator">◆</span>');
+
+        this.contentElement.innerHTML = `
+            <div class="ticker-wrap">
+                <div class="ticker-content">${tickerContent}</div>
+            </div>
+        `;
+
+        this.addHandle();
+    }
+
+    renderError(message) {
+        this.contentElement.innerHTML = `<div class="ticker-wrap"><div class="ticker-content"><span>Error: ${message}</span></div></div>`;
+        this.addHandle();
     }
 }
