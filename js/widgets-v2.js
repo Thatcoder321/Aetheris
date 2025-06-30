@@ -998,28 +998,39 @@ class StockTickerWidget extends BaseWidget {
         this.addHandle();
     }
 
-    startScrolling() {
-        this.cleanup();
-        const list = this.contentElement.querySelector('.stock-list');
-        const firstItem = list.querySelector('.stock-item');
-        if (!firstItem) return;
+startScrolling() {
+    this.cleanup();
+    
+    const list = this.contentElement.querySelector('.stock-list');
+    if (!list || list.children.length === 0) return;
 
-        const itemHeight = firstItem.offsetHeight;
 
-        this.timerId = setInterval(() => {
-            this.scrollIndex++;
-            list.style.transform = `translateY(-${this.scrollIndex * itemHeight}px)`;
-            list.style.transition = 'transform 0.5s ease-in-out';
+    const numStocks = list.children.length / 2;
+    if (numStocks <= 0) return;
 
-            if (this.scrollIndex >= this.stocks.length) {
-                setTimeout(() => {
-                    list.style.transition = 'none';
-                    this.scrollIndex = 0;
-                    list.style.transform = `translateY(0)`;
-                }, 500); 
-            }
-        }, 3000); // Scroll every 3 seconds
-    }
+    const itemHeight = list.children[0].offsetHeight;
+    let currentIndex = 0;
+
+    this.timerId = setInterval(() => {
+        currentIndex++;
+        
+        // This moves the list up by one item's height
+        list.style.transform = `translateY(-${currentIndex * itemHeight}px)`;
+        // Apply a smooth transition for the scroll
+        list.style.transition = 'transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1.0)';
+
+
+        if (currentIndex >= numStocks) {
+
+            setTimeout(() => {
+
+                list.style.transition = 'none';
+                currentIndex = 0;
+                list.style.transform = 'translateY(0)';
+            }, 800); 
+        }
+    }, 3000); 
+}
 
     cleanup() {
         if (this.timerId) {
