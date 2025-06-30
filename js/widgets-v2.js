@@ -1166,7 +1166,7 @@ class QuoteWidget extends BaseWidget {
     async fetchQuote() {
         this.contentElement.innerHTML = `<p> class="quote-loading">Finding some wisdom...</p>`;
         try {
-            const response = await fetch('https://api.quotable.io/random');
+            const response = await fetch('https://zenquotes.io/api/random');
             if (!response.ok) throw new Error('API was not avaliable,');
             const data = await response.json();
             this.renderQuote(data);
@@ -1175,12 +1175,16 @@ class QuoteWidget extends BaseWidget {
             console.error('Quote Widget Error:', error);
         }
     }
-    renderQuote(data){
-        this.contentElement.innerHTML = `
-        <blockquote class="quote-text">“${data.content}”</blockquote>
-            <cite class="quote-author">— ${data.author}</cite>
-        `;
-        this.addHandle();
-    }
+
+renderQuote(data) {
+
+    const quote = data[0]; 
+    this.contentElement.innerHTML = `
+        <blockquote class="quote-text">“${quote.q}”</blockquote>
+        <cite class="quote-author">— ${quote.a}</cite>
+    `;
+
+    this.addHandle();
+}
     cleanup() {}
 }
