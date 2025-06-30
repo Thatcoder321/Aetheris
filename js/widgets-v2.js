@@ -779,8 +779,8 @@ class CountdownWidget extends BaseWidget {
             className: 'countdown',
             x: 8,
             y: 0,
-            width: 4,
-            height: 2
+            width: 6,
+            height: 3
         });
 
         this.timerId = null;
