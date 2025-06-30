@@ -25,13 +25,14 @@ export default async function handler(req, res) {
         const data = await fetchResponse.json();
 
         if (data.error) {
+            console.error("Error from WeatherAPI:", data.error.message);
             throw new Error(data.error.message);
         }
 
         res.status(200).json(data);
 
     } catch (error) {
-        console.error("Weather API Error:", error.message);
+        console.error("Full Weather API Error:", error);
         res.status(500).json({ error: 'Failed to fetch weather data.' });
     }
 }
