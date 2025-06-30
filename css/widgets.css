@@ -964,12 +964,14 @@
 
 
 /* --- Stock Ticker Widget --- */
+/* --- Stock Ticker Widget --- */
 .stock-ticker {
+    display: flex; 
+    flex-direction: column; 
     padding: 0;
-    overflow: hidden;
-    position: relative; 
+    overflow: hidden; 
+    position: relative;
 }
-
 
 .stock-setup-form {
     display: flex; flex-direction: column; justify-content: center;
@@ -983,7 +985,13 @@
 .stock-setup-form button { background: rgba(90, 120, 255, 0.6); cursor: pointer; }
 
 .loading-stocks { padding: 20px; text-align: center; }
-.stock-list { list-style: none; margin: 0; padding: 0; }
+
+.stock-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; 
+}
 .stock-item {
     display: grid;
     grid-template-columns: 1fr 1fr;
