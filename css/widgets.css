@@ -767,3 +767,89 @@
     0%   { transform: translateX(0); }
     100% { transform: translateX(-100%); }
 }
+
+/* --- Adaptive Weather Widget --- */
+
+/* Base container: Prevents scrollbars on the widget itself */
+.weather {
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+
+/* Tier 1: Compact View */
+.weather-compact {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.weather-compact img { width: 60px; height: 60px; }
+.weather-compact .weather-details { display: flex; flex-direction: column; text-align: left; line-height: 1.1; }
+
+/* Tier 2: Detailed View */
+.weather-detailed {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    justify-content: space-around;
+}
+.weather-detailed-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+.weather-detailed-top img { width: 50px; height: 50px; }
+.weather-hourly-forecast {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+.hourly-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+}
+.hourly-item img { width: 40px; height: 40px; }
+
+/* Tier 3: Full Forecast View */
+.weather-full-forecast {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+}
+.forecast-header {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 500;
+    opacity: 0.9;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 5px;
+}
+.daily-forecast-list {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-around;
+    align-items: center;
+}
+.daily-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+.daily-item .daily-day { font-size: 1rem; font-weight: 500; }
+.daily-item img { width: 50px; height: 50px; }
+.daily-temps {
+    display: flex;
+    gap: 10px;
+    font-size: 0.9rem;
+}
+.daily-temps .temp-low { opacity: 0.6; }
