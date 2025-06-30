@@ -1008,7 +1008,9 @@
 .stock-item.is-down .stock-change { color: #f87171; /* Red */ }
 
 /* --- GitHub Stats Widget --- */
-.github-stats { padding: 20px; }
+.github-stats { padding: 20px;
+    overflow: hidden;
+ }
 
 /* Login View */
 .github-login-view { text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%; gap: 15px; }

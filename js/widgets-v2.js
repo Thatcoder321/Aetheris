@@ -1040,20 +1040,37 @@ startScrolling() {
 }
 
 
+
+
 class GitHubStatsWidget extends BaseWidget {
     constructor() {
+
+        const defaultWidth = 4;
+        const defaultHeight = 3;
+
+
         super({
             id: 'github-stats',
             className: 'github-stats',
-            x: 4, y: 5,
-            width: 4, height: 3
+            x: 4, 
+            y: 5,
+            width: defaultWidth,
+            height: defaultHeight
         });
+
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+
+
         this.addHandle();
         this.checkAuthStatus();
     }
 
     async checkAuthStatus() {
         try {
+
+            this.contentElement.innerHTML = `<p>Checking GitHub Status...</p>`;
+            grid.update(this.element, { w: 4, h: 3 }); 
+
             const response = await fetch('/api/github/stats');
             if (response.status === 401) {
                 this.renderLogin();
@@ -1069,6 +1086,7 @@ class GitHubStatsWidget extends BaseWidget {
     }
 
     renderLogin() {
+
         this.contentElement.innerHTML = `
             <div class="github-login-view">
                 <h4>GitHub Stats</h4>
@@ -1076,10 +1094,13 @@ class GitHubStatsWidget extends BaseWidget {
                 <a href="/api/auth/github/redirect" class="github-connect-btn">Connect with GitHub</a>
             </div>
         `;
-        this.addHandle();
+
+        grid.update(this.element, { w: 4, h: 3 });
+        this.addHandle(); 
     }
 
     renderStats(data) {
+
         this.contentElement.innerHTML = `
             <div class="github-stats-view">
                 <div class="github-header">
@@ -1102,7 +1123,10 @@ class GitHubStatsWidget extends BaseWidget {
                 </div>
             </div>
         `;
-        this.addHandle();
+
+        grid.update(this.element, { w: 4, h: 3 });
+        this.addHandle(); 
+        
         this.contentElement.querySelector('.github-logout-btn').addEventListener('click', async () => {
             await fetch('/api/auth/github/logout');
             this.renderLogin();
@@ -1110,8 +1134,13 @@ class GitHubStatsWidget extends BaseWidget {
     }
 
     renderError(message) {
+
         this.contentElement.innerHTML = `<p>Error: ${message}</p>`;
+
+        grid.update(this.element, { w: 4, h: 3 });
     }
 
-    cleanup() {} 
+    cleanup() {
+
+    } 
 }
