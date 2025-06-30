@@ -770,3 +770,114 @@ class NewsTickerWidget extends BaseWidget {
         this.addHandle();
     }
 }
+
+
+class CountdownWidget extends BaseWidget {
+    constructor() {
+        super({
+            id: 'countdown',
+            className: 'countdown',
+            x: 8,
+            y: 0,
+            width: 4,
+            height: 2
+        });
+
+        this.timerId = null;
+        this.addHandle();
+        this.run();
+    }
+
+    run() {
+        this.targetDate = localStorage.getItem('aetheris-countdown-target');
+        this.targetTitle = localStorage.getItem('aetheris-countdown-title') || "Countdown";
+        if(this.targetDate) {
+            this.startCountdown();
+        } else {
+            this.showSetupForm();
+        }
+    }
+
+    showSetupForm() {
+        this.cleanup();
+        this.contentElement.innerHTML = `
+        <form class = "countdown-setup-form">
+        <input type="text" id="countdown-title-input" placeholder="Event Name (e.g., Vacation)" required>
+        <input type="datetime-local" id="countdown-date-input" required>
+        <button type="submit">Start Countdown</button>
+        </form>
+        `;
+        this.addHandle();
+        this.contentElement.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = document.getElementById('countdown-title-input').value;
+            const date = document.getElementById('countdown-date-input').value;
+            localStorage.setItem('aetheris-countdown-title', title);
+            localStorage.setItem('aetheris-countdown-target', date);
+            this.run();
+        });
+    }
+    
+    startCountdown() {
+        this.contentElement.innerHTML = `
+        <div class="countdown-display">
+                <div class="countdown-title">${this.targetTitle}</div>
+                <div class="countdown-timer">
+                    <div class="time-segment">
+                        <span id="days">0</span>
+                        <label>Days</label>
+                    </div>
+                    <div class="time-segment">
+                        <span id="hours">0</span>
+                        <label>Hours</label>
+                    </div>
+                    <div class="time-segment">
+                        <span id="minutes">0</span>
+                        <label>Mins</label>
+                    </div>
+                    <div class="time-segment">
+                        <span id="seconds">0</span>
+                        <label>Secs</label>
+                    </div>
+                </div>
+                <button class="countdown-edit-btn">Edit</button>
+            </div>
+        `;
+        this.addHandle();
+        this.contentElement.querySelector('.countdown-edit-btn').addEventListener('click', () => {
+            this.showSetupForm();
+        });
+
+        this.updateDisplay(); // Run once immediately
+        this.timerId = setInterval(() => this.updateDisplay(), 1000);
+    }
+
+    updateDisplay() {
+        const now = new Date();
+        const target = new Date(this.targetDate);
+        const diff = target - now;
+
+        if (diff <= 0) {
+            this.contentElement.querySelector('.countdown-timer').innerHTML = "<div class='countdown-finished'>Countdown Finished!</div>";
+            this.cleanup();
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / 1000 / 60) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+
+        document.getElementById('days').textContent = days;
+        document.getElementById('hours').textContent = hours;
+        document.getElementById('minutes').textContent = minutes;
+        document.getElementById('seconds').textContent = seconds;
+    }
+
+
+    cleanup() {
+        if (this.timerId) {
+            clearInterval(this.timerId);
+        }
+    }
+}

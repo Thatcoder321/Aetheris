@@ -9,6 +9,7 @@ const WIDGET_REGISTRY = {
     'pomodoro': { name: 'Pomodoro Timer', class: PomodoroWidget, preview: '/images/todo-preview.png' }, // Using a placeholder preview for now
     'notepad': { name: 'Notepad', class: NotepadWidget, preview: '/images/notepad-preview.png' }, 
     'news-ticker': { name: 'News Ticker', class: NewsTickerWidget, preview: '/images/news-preview.png' },
+    'countdown': { name: 'Countdown', class: CountdownWidget, preview: '/images/countdown-preview.png' },
 };
 
 
@@ -24,7 +25,11 @@ class WidgetManager {
     removeWidget(id) {
         if (!this.activeWidgets.has(id)) return;
         const widgetInstance = this.activeWidgets.get(id);
-        grid.removeWidget(widgetInstance.element); 
+        if (typeof widgetInstance.cleanup === 'function') {
+            widgetInstance.cleanup();
+        }
+
+        grid.removeWidget(widgetInstance.element);
         this.activeWidgets.delete(id);
     }
 }
