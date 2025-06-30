@@ -1183,8 +1183,450 @@ renderQuote(data) {
         <blockquote class="quote-text">“${quote.q}”</blockquote>
         <cite class="quote-author">— ${quote.a}</cite>
     `;
-
+    grid.update(this.element, { w: 4, h: 2 });
     this.addHandle();
 }
+    cleanup() {}
+}
+
+// In js/widgets-v2.js
+
+class QuickLinksWidget extends BaseWidget {
+    constructor() {
+        // --- This is our Control Panel ---
+        const defaultWidth = 4;
+        const defaultHeight = 3;
+
+        // 1. Call super() FIRST.
+        super({
+            id: 'quick-links',
+            className: 'quick-links',
+            x: 0, 
+            y: 2,
+            width: defaultWidth,
+            height: defaultHeight
+        });
+
+        // --- THE CONSTRUCTOR HAMMER ---
+        // 2. Immediately enforce the size.
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+
+        // --- The rest of the setup ---
+        this.links = JSON.parse(localStorage.getItem('aetheris-quick-links')) || [];
+        this.isEditMode = false;
+        
+        this.render();
+        this.addHandle();
+    }
+
+    render() {
+        // This function sets up the container, then calls another function to fill it.
+        // This is a good pattern.
+        this.contentElement.innerHTML = `<div class="quick-links-container"></div>`;
+        this.container = this.contentElement.querySelector('.quick-links-container');
+        
+        if (this.isEditMode) {
+            this.renderEditView();
+        } else {
+            this.renderDisplayView();
+        }
+    }
+
+    renderDisplayView() {
+        // This function changes the innerHTML.
+        let html = '<div class="links-grid">';
+        this.links.forEach(link => {
+            html += `
+                <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="link-item">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain_url=${link.url}" alt="${link.title}">
+                    <span>${link.title}</span>
+                </a>
+            `;
+        });
+        html += `<button class="quick-links-add-btn">+</button></div>`;
+        
+        this.container.innerHTML = html;
+
+        const editBtn = document.createElement('button');
+        editBtn.className = 'quick-links-edit-btn';
+        editBtn.textContent = 'Edit';
+        this.contentElement.appendChild(editBtn); // Append instead of innerHTML to avoid destroying the grid
+
+        // Re-assert the size after drawing.
+        grid.update(this.element, { w: 4, h: 3 });
+        this.addHandle();
+        
+        this.attachDisplayListeners();
+    }
+
+    renderEditView() {
+        // This function changes the innerHTML.
+        let html = '<h4>Edit Links</h4><div class="links-grid-edit">';
+        this.links.forEach((link, index) => {
+            html += `
+                <div class="link-item-edit">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain_url=${link.url}" alt="${link.title}">
+                    <span>${link.title}</span>
+                    <button class="delete-link-btn" data-index="${index}">×</button>
+                </div>
+            `;
+        });
+        html += '</div><button class="quick-links-done-btn">Done</button>';
+        
+        this.container.innerHTML = html;
+        
+        // Re-assert the size after drawing.
+        grid.update(this.element, { w: 4, h: 3 });
+        this.addHandle();
+
+        this.attachEditListeners();
+    }
+
+    attachDisplayListeners() {
+        // Use optional chaining (?) for safety, in case an element isn't found
+        this.contentElement.querySelector('.quick-links-edit-btn')?.addEventListener('click', () => {
+            this.isEditMode = true;
+            this.render();
+        });
+
+        this.container.querySelector('.quick-links-add-btn')?.addEventListener('click', () => {
+            this.showAddForm();
+        });
+    }
+
+    attachEditListeners() {
+        this.container.querySelector('.quick-links-done-btn')?.addEventListener('click', () => {
+            this.isEditMode = false;
+            this.render();
+        });
+
+        this.container.querySelectorAll('.delete-link-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                this.deleteLink(parseInt(e.target.dataset.index));
+            });
+        });
+    }
+
+    showAddForm() {
+        // This function changes the innerHTML.
+        const formHtml = `
+            <form class="add-link-form">
+                <h4>Add New Link</h4>
+                <input type="text" id="link-title" placeholder="Title (e.g., Google)" required>
+                <input type="url" id="link-url" placeholder="URL (e.g., https://google.com)" required>
+                <div>
+                    <button type="submit">Save</button>
+                    <button type="button" class="cancel-add-btn">Cancel</button>
+                </div>
+            </form>
+        `;
+        this.container.innerHTML = formHtml;
+
+        // Re-assert the size after drawing.
+        grid.update(this.element, { w: 4, h: 3 });
+        this.addHandle();
+        
+        this.container.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = document.getElementById('link-title').value;
+            const url = document.getElementById('link-url').value;
+            this.addLink(title, url);
+        });
+        this.container.querySelector('.cancel-add-btn').addEventListener('click', () => this.render());
+    }
+
+    addLink(title, url) {
+        this.links.push({ title, url });
+        this.saveAndRerender();
+    }
+
+    deleteLink(index) {
+        this.links.splice(index, 1);
+        this.saveAndRerender();
+    }
+
+    saveAndRerender() {
+        localStorage.setItem('aetheris-quick-links', JSON.stringify(this.links));
+        this.render();
+    }
+
+    cleanup() {}
+}
+
+class SystemStatsWidget extends BaseWidget {
+    constructor() {
+        const defaultWidth = 4;
+        const defaultHeight = 2;
+
+        super({
+            id: 'system-stats',
+            className: 'system-stats',
+            x: 8, 
+            y: 5,
+            width: defaultWidth,
+            height: defaultHeight
+        });
+
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+
+        this.batteryManager = null;
+        this.boundUpdateBattery = this.updateBattery.bind(this);
+
+        this.addHandle();
+        this.renderInitial();
+    }
+
+    async renderInitial() {
+        this.contentElement.innerHTML = `
+            <div class="stats-grid">
+                <div id="battery-stat" class="stat-container hidden"></div>
+                <div id="network-stat" class="stat-container hidden"></div>
+                <div id="memory-stat" class="stat-container hidden"></div>
+            </div>
+        `;
+        
+        grid.update(this.element, { w: 4, h: 2 });
+        this.addHandle();
+
+        this.initBattery();
+        this.initNetwork();
+        this.initMemory();
+    }
+
+    async initBattery() {
+        if ('getBattery' in navigator) {
+            try {
+                this.batteryManager = await navigator.getBattery();
+                this.contentElement.querySelector('#battery-stat').classList.remove('hidden');
+                
+                this.batteryManager.addEventListener('chargingchange', this.boundUpdateBattery);
+                this.batteryManager.addEventListener('levelchange', this.boundUpdateBattery);
+                
+                this.updateBattery(); 
+            } catch(e) {
+                console.error("Battery API not available or permission denied.");
+            }
+        }
+    }
+
+    updateBattery() {
+        if (!this.batteryManager) return;
+        const isCharging = this.batteryManager.charging;
+        const level = Math.round(this.batteryManager.level * 100);
+        const icon = isCharging ? 'ph-charging-station-fill' : 'ph-battery-high-fill';
+
+        const batteryStatElement = this.contentElement.querySelector('#battery-stat');
+        if (batteryStatElement) {
+            batteryStatElement.innerHTML = `
+                <i class="ph ${icon}"></i>
+                <div>
+                    <span class="stat-label">Battery</span>
+                    <span class="stat-value">${level}% ${isCharging ? '(Charging)' : ''}</span>
+                </div>
+            `;
+        }
+        grid.update(this.element, { w: 4, h: 2 });
+    }
+
+    initNetwork() {
+        if ('connection' in navigator) {
+            const connection = navigator.connection;
+            const networkStatElement = this.contentElement.querySelector('#network-stat');
+            if(networkStatElement) {
+                networkStatElement.classList.remove('hidden');
+                networkStatElement.innerHTML = `
+                    <i class="ph ph-wifi-high-fill"></i>
+                    <div>
+                        <span class="stat-label">Network</span>
+                        <span class="stat-value">${connection.effectiveType.toUpperCase()}</span>
+                    </div>
+                `;
+            }
+            grid.update(this.element, { w: 4, h: 2 });
+        }
+    }
+
+    initMemory() {
+        if ('performance' in window && 'memory' in performance) {
+            const memory = performance.memory;
+            const memoryStatElement = this.contentElement.querySelector('#memory-stat');
+            if(memoryStatElement) {
+                memoryStatElement.classList.remove('hidden');
+                const usedMb = (memory.usedJSHeapSize / 1048576).toFixed(1);
+                const totalMb = (memory.totalJSHeapSize / 1048576).toFixed(1);
+
+                memoryStatElement.innerHTML = `
+                    <i class="ph ph-memory-fill"></i>
+                    <div>
+                        <span class="stat-label">Memory</span>
+                        <span class="stat-value">${usedMb} / ${totalMb} MB</span>
+                    </div>
+                `;
+            }
+            grid.update(this.element, { w: 4, h: 2 });
+        }
+    }
+
+    cleanup() {
+        if (this.batteryManager) {
+            this.batteryManager.removeEventListener('chargingchange', this.boundUpdateBattery);
+            this.batteryManager.removeEventListener('levelchange', this.boundUpdateBattery);
+        }
+    }
+}
+
+class UnitConverterWidget extends BaseWidget {
+    constructor() {
+        const defaultWidth = 4;
+        const defaultHeight = 2;
+
+        super({ 
+            id: 'unit-converter',
+            className: 'unit-converter',
+            x: 0,
+            y: 5,
+            width: defaultWidth,
+            height: defaultHeight
+        });
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+
+        this.CONVERSIONS = {
+            length: {
+                name: 'length',
+                baseUnit: 'meter',
+                units: {
+                    meter: {name: 'Meter', toBase: 1},
+                    kilometer: {name: 'Kilometer', toBase: 1000},
+                    mile: {name: 'Mile', toBase: 1609.34},
+                    foot: {name: 'Foot', toBase: 0.3048},
+                }
+            },
+            mass: {
+                name: 'mass',
+                baseUnit: 'kilogram',
+                units: {
+                    kilogram: {name: 'Kilogram', toBase: 1},
+                    gram: {name: 'Gram', toBase: 0.001},
+                    pound: {name: 'Pound', toBase: 0.453592},
+                    ounce: {name: 'Ounce', toBase: 0.0283495},
+                }
+            },
+            temperature: {
+                name: 'temperature',
+                baseUnit: 'celsius',
+                units: {
+                    celsius: {name: 'Celsius'},
+                    fahrenheit: {name: 'Fahrenheit'},
+                }
+            }
+        };
+        this.render();
+        this.addHandle();
+    }
+
+    render() {
+        this.contentElement.innerHTML = `
+        <div class="converter-header">
+        <select id="catagory-select"></select>
+        </div>
+        <div class="converter-body">
+        <div class="converter-side">
+        <input type="number" id="from-value" value="1">
+        <select id="from-unit"></select>
+        </div>
+        <i class="ph ph-arrow-right"></i>
+        <div class="converter-side">
+        <span id="to-value">?</span>
+        <select id="to-unit"></select>
+        </div>
+        </div>
+        `;
+        grid.update(this.element, { w: 4, h: 2 });
+        this.addHandle();
+        this.populateCategories();
+        this.populateUnits();
+        this.attachListeners();
+        this.convert();
+
+    }
+
+    populateCategories() {
+        const catagorySelect= this.contentElement.querySelector('#catagory-select');
+        if (!catagorySelect) return;
+        catagorySelect.innerHTML = '';
+        for(const key in this.CONVERSIONS) {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = this.CONVERSIONS[key].name;
+            categorySelect.appendChild(option);
+        }}
+        populateUnits() {
+            const categorySelect = this.contentElement.querySelector('#catagory-select');
+            const fromUnitSelect = this.contentElement.querySelector('#from-unit');
+            const toUnitSelect = this.contentElement.querySelector('#to-unit');
+            if (!categorySelect || !fromSelect || !toSelect) return;
+
+            const category = categorySelect.value;
+            const {units} = this.CONVERSIONS[category];
+            fromSelect.innerHTML = '';
+            toSelect.innerHTML = '';
+
+            for (const key in units) {
+                const option1 = document.createElement('option');
+                const option2 = document.createElement('option');
+                option1.value = key;
+                option1.textContent = units[key].name;
+                option2.value = key;
+                option2.textContent = units[key].name;
+                fromSelect.appendChild(option1);
+                toSelect.appendChild(option2);
+            }
+
+            if(toSelect.options.length > 1) {
+                toSelect.selectedIndex = 1; 
+            }
+        }
+    attachListeners() {
+        const categorySelect = this.contentElement.querySelector('#catagory-select');
+        const fromValueInput = this.contentElement.querySelector('#from-value');
+        const fromUnitSelect = this.contentElement.querySelector('#from-unit');
+        const toUnitSelect = this.contentElement.querySelector('#to-unit');
+
+        if (categorySelect) categorySelect.addEventListener('change', () => { this.populateUnits(); this.convert(); });
+        if (fromValueInput) fromValueInput.addEventListener('input', () => this.convert());
+        if (fromUnitSelect) fromUnitSelect.addEventListener('change', () => this.convert());
+        if (toUnitSelect) toUnitSelect.addEventListener('change', () => this.convert());
+    }
+    convert() {
+        const categorySelect = this.contentElement.querySelector('#catagory-select');
+        const fromValueInput = this.contentElement.querySelector('#from-value');
+        const fromUnitSelect = this.contentElement.querySelector('#from-unit');
+        const toUnitSelect = this.contentElement.querySelector('#to-unit');
+        const toValueSpan = this.contentElement.querySelector('#to-value');
+        if (!categorySelect || !fromValueInput || !fromUnitSelect || !toUnitSelect || !toValueSpan) return;
+
+        const category = categorySelect.value;
+        const fromValue = parseFloat(fromValueInput.value);
+        const fromUnit = fromUnitSelect.value;
+        const toUnit = toUnitSelect.value;
+
+        if (isNaN(fromValue)) {
+            toValueSpan.textContent = '?';
+            return;
+        }
+
+        let result;
+        if(category ==='temperature') {
+            if (fromUnit === toUnit) result=fromValue;
+            else if (fromUnit === 'celsius') result = (fromValue * 9/5) + 32; 
+            else result = (fromValue - 32) * 5/9;
+        } else {
+            const fromData = this.CONVERSIONS[category].units[fromUnit];
+            const toData = this.CONVERSIONS[category].units[toUnit];
+            const valueInBase = fromValue * fromData.toBase;
+            result = valueInBase / toData.toBase;
+        }
+        toValueSpan.textContent = result.toFixed(3).replace(/\.?0+$/, '');
+    }
     cleanup() {}
 }

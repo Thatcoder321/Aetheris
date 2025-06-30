@@ -13,6 +13,9 @@ const WIDGET_REGISTRY = {
     'stock-ticker': { name: 'Stock Ticker', class: StockTickerWidget, preview: '/images/stock-ticker-preview.png' },
     'github-stats': { name: 'GitHub Stats', class: GitHubStatsWidget, preview: '/images/github-preview.png' },
     'quote-of-day': { name: 'Quote of the Day', class: QuoteWidget, preview: '/images/quote-preview.png' },
+    'quick-links': { name: 'Quick Links', class: QuickLinksWidget, preview: '/images/quick-links-preview.png' },
+    'system-stats': { name: 'System Stats', class: SystemStatsWidget, preview: '/images/system-stats-preview.png' },
+    'unit-converter': { name: 'Unit Converter', class: UnitConverterWidget, preview: '/images/unit-converter-preview.png' },
 };
 
 
