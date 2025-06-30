@@ -259,30 +259,33 @@ class WeatherWidget extends BaseWidget {
         });
     }
 
-    async fetchFullForecast(city) {
-        this.contentElement.innerHTML = `<p>Loading Weather...</p>`;
-        try {
 
-            const response = await fetch(`/api/weather`, {
-                 method: 'POST',
-                 headers: { 'Content-Type': 'application/json' },
-                 body: JSON.stringify({ city: city }),
-            });
-            if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.error || 'API request failed');
-            }
-            this.fullForecastData = await response.json();
-            
-            // Initial render based on default size
-            const initialSize = grid.getCell(this.element);
-            this.updateLayout(initialSize.w, initialSize.h);
 
-        } catch (error) {
-            console.error('Weather Fetch Error:', error);
-            this.contentElement.innerHTML = `<p style="color: #ffcccc;">Error: ${error.message}</p>`;
+async fetchFullForecast(city) {
+    this.contentElement.innerHTML = `<p>Loading Weather...</p>`;
+    try {
+
+        const response = await fetch(`/api/weather`, {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({ city: city }),
+        });
+        if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(errData.error || 'API request failed');
         }
+        this.fullForecastData = await response.json();
+
+        const initialSize = grid.getCell(this.element);
+        this.updateLayout(initialSize.w, initialSize.h);
+
+    } catch (error) {
+        console.error('Weather Fetch Error:', error);
+        this.contentElement.innerHTML = `<p style="color: #ffcccc;">Error: ${error.message}</p>`;
+
+        this.addHandle(); 
     }
+}
 
     updateLayout(width, height) {
         if (!this.fullForecastData) return; 
