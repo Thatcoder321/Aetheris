@@ -20,7 +20,7 @@ body {
 /* --- New 3D Wrapper --- */
 .perspective-wrapper {
     /* These properties are moved from the body */
-    /* perspective: 1500px;
+    perspective: 1500px;
     
     /* These ensure it still fills the screen */
     position: absolute;

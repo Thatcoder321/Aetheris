@@ -16,7 +16,7 @@ class BaseWidget {
     addHandle() {
 
         const resizeHandle = document.createElement('div');
-        resizeHandle.className = 'widget-resize-handle';
+        resizeHandle.className = 'widget-resize-handle ui-resizable-handle';
         this.contentElement.appendChild(resizeHandle);
     
 

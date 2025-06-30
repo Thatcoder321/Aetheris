@@ -8,12 +8,9 @@ const grid = GridStack.init({
     minRow: 1,
     cellHeight: '10vh',
     margin: 10,
-    placeholderClass: 'widget-ghost',
-    float: true,
-    resizable: { handles: '.widget-resize-handle' },
-    draggable: { cancel: '.widget-resize-handle' }
+    // We are intentionally removing float, resizable, and draggable options
+    // to see if the library's default behavior works at all.
 });
-
 // --- PARALLAX EFFECT ---
 window.addEventListener('mousemove', (e) => {
     if (window.innerWidth <= 768) return; // Disable on mobile
@@ -21,7 +18,7 @@ window.addEventListener('mousemove', (e) => {
     const y = (e.clientY / window.innerHeight - 0.5) * 2;
     const rotateX = -y * 3; // Using maxRotate of 3
     const rotateY = x * 3;
-    // stage.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    stage.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 });
 
 // --- LAYOUT FUNCTIONS ---
