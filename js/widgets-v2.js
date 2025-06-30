@@ -1038,3 +1038,80 @@ startScrolling() {
         }
     }
 }
+
+
+class GitHubStatsWidget extends BaseWidget {
+    constructor() {
+        super({
+            id: 'github-stats',
+            className: 'github-stats',
+            x: 4, y: 5,
+            width: 4, height: 3
+        });
+        this.addHandle();
+        this.checkAuthStatus();
+    }
+
+    async checkAuthStatus() {
+        try {
+            const response = await fetch('/api/github/stats');
+            if (response.status === 401) {
+                this.renderLogin();
+            } else if (response.ok) {
+                const data = await response.json();
+                this.renderStats(data);
+            } else {
+                throw new Error('Failed to check auth status.');
+            }
+        } catch (error) {
+            this.renderError(error.message);
+        }
+    }
+
+    renderLogin() {
+        this.contentElement.innerHTML = `
+            <div class="github-login-view">
+                <h4>GitHub Stats</h4>
+                <p>Connect your GitHub account to see your stats.</p>
+                <a href="/api/auth/github/redirect" class="github-connect-btn">Connect with GitHub</a>
+            </div>
+        `;
+        this.addHandle();
+    }
+
+    renderStats(data) {
+        this.contentElement.innerHTML = `
+            <div class="github-stats-view">
+                <div class="github-header">
+                    <img src="${data.avatar_url}" alt="GitHub Avatar">
+                    <div>
+                        <span class="github-name">${data.name}</span>
+                        <span class="github-login">@${data.login}</span>
+                    </div>
+                    <button class="github-logout-btn">X</button>
+                </div>
+                <div class="github-body">
+                    <div class="stat-item">
+                        <span class="stat-value">${data.public_repos}</span>
+                        <span class="stat-label">Repositories</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">${data.followers}</span>
+                        <span class="stat-label">Followers</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        this.addHandle();
+        this.contentElement.querySelector('.github-logout-btn').addEventListener('click', async () => {
+            await fetch('/api/auth/github/logout');
+            this.renderLogin();
+        });
+    }
+
+    renderError(message) {
+        this.contentElement.innerHTML = `<p>Error: ${message}</p>`;
+    }
+
+    cleanup() {} 
+}

@@ -1006,3 +1006,28 @@
 
 .stock-item.is-up .stock-change { color: #4ade80; /* Green */ }
 .stock-item.is-down .stock-change { color: #f87171; /* Red */ }
+
+/* --- GitHub Stats Widget --- */
+.github-stats { padding: 20px; }
+
+/* Login View */
+.github-login-view { text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%; gap: 15px; }
+.github-login-view h4 { font-size: 1.2rem; margin: 0; }
+.github-login-view p { font-size: 0.9rem; opacity: 0.7; margin: 0; }
+.github-connect-btn {
+    background: #24292e; color: white; padding: 10px 15px;
+    border-radius: 8px; text-decoration: none; font-weight: 500;
+}
+
+/* Stats View */
+.github-stats-view { display: flex; flex-direction: column; height: 100%; }
+.github-header { display: flex; align-items: center; gap: 15px; position: relative; }
+.github-header img { width: 50px; height: 50px; border-radius: 50%; }
+.github-header div { display: flex; flex-direction: column; }
+.github-name { font-size: 1.1rem; font-weight: 500; }
+.github-login { font-size: 0.9rem; opacity: 0.6; }
+.github-logout-btn { position: absolute; top: -10px; right: -10px; background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; opacity: 0.5; }
+.github-body { flex-grow: 1; display: flex; justify-content: space-around; align-items: center; }
+.stat-item { text-align: center; }
+.stat-value { font-size: 2rem; font-weight: 600; }
+.stat-label { font-size: 0.8rem; opacity: 0.7; }
