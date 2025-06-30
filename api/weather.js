@@ -8,7 +8,7 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: 'Weather API key not configured on server.' });
     }
 
-    const { city } = req.query;
+    const { city } = req.body;
     if (!city) {
         return res.status(400).json({ error: 'City parameter is required.' });
     }
