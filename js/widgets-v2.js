@@ -800,7 +800,7 @@ class CountdownWidget extends BaseWidget {
         const targetTitle = localStorage.getItem('aetheris-countdown-title') || "Countdown";
 
         if (targetDate) {
-            this.startCountdown(targetDate, targetTitle);
+            this.startCountdown();
         } else {
             this.showSetupForm();
         }
