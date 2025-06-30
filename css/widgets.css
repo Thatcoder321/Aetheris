@@ -869,6 +869,9 @@
 }
 
 
+/* --- Final Fix: Pointer Events --- */
+
+
 .grid-stack-item-content {
     pointer-events: none;
 }
@@ -879,6 +882,7 @@
 .widget input,
 .widget textarea,
 .widget a,
+.widget select,
 .todo-item span,
 .checkbox-container {
     pointer-events: auto;
@@ -886,8 +890,12 @@
 
 
 .ui-resizable-handle {
-    pointer-events: auto !important;
-    cursor: se-resize !important;
-    background: red !important;
-    z-index: 999 !important;
+    pointer-events: auto !important; 
+    
+    /* Our beautiful 3-dot style */
+    background-image:
+        radial-gradient(circle at 2px 2px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px),
+        radial-gradient(circle at 7px 7px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px),
+        radial-gradient(circle at 12px 12px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px);
+    opacity: 0.8;
 }
