@@ -3,13 +3,22 @@
 // --- GLOBAL OBJECTS ---
 // These are created here so all other scripts can access them.
 const stage = document.getElementById('stage');
+
 const grid = GridStack.init({
     column: 12,
     minRow: 1,
     cellHeight: '10vh',
     margin: 10,
-    // We are intentionally removing float, resizable, and draggable options
-    // to see if the library's default behavior works at all.
+    float: true,
+    // We are enabling resizable, but NOT specifying a custom handle.
+    // This tells Gridstack to create its own default handle.
+    resizable: {
+        handles: 'se' // 'se' means south-east corner, which is what we want.
+    },
+    // We keep our working drag handle logic.
+    draggable: {
+        handle: '.widget-drag-handle'
+    }
 });
 // --- PARALLAX EFFECT ---
 window.addEventListener('mousemove', (e) => {

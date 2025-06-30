@@ -111,22 +111,21 @@
     overflow: visible !important;
 }
 
-/* --- Widget Resize Handle --- */
-.widget-resize-handle {
-    position: absolute; 
+/* --- Styling Gridstack's Default Resize Handle --- */
+.ui-resizable-handle {
+    position: absolute;
     bottom: 5px;
     right: 5px;
-    width: 12px;
-    height: 12px;
-    cursor: se-resize; 
-    z-index: 99;
-    /* Create a subtle visual grip pattern with CSS gradients */
+    width: 15px;
+    height: 15px;
+    z-index: 99; /* Put it on top of everything */
+    
+    /* Our custom 3-dot look */
     background-image:
-        radial-gradient(circle at 2px 2px, rgba(255,255,255,0.7) 1px, transparent 1px),
-        radial-gradient(circle at 6px 6px, rgba(255,255,255,0.7) 1px, transparent 1px),
-        radial-gradient(circle at 10px 10px, rgba(255,255,255,0.7) 1px, transparent 1px);
-    opacity: 0.7;
-    transition: opacity 0.2s ease-in-out;
+        radial-gradient(circle at 2px 2px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px),
+        radial-gradient(circle at 7px 7px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px),
+        radial-gradient(circle at 12px 12px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px);
+    opacity: 0.8;
 }
 
 .grid-stack-item-content:hover .widget-resize-handle {
