@@ -774,14 +774,20 @@ class NewsTickerWidget extends BaseWidget {
 
 class CountdownWidget extends BaseWidget {
     constructor() {
+
+        const defaultWidth = 4;
+        const defaultHeight = 2;
+
         super({
             id: 'countdown',
             className: 'countdown',
             x: 8,
             y: 0,
-            width: 6,
-            height: 3
+            width: defaultWidth,
+            height: defaultHeight
         });
+
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
 
         this.timerId = null;
         this.addHandle();
@@ -789,10 +795,12 @@ class CountdownWidget extends BaseWidget {
     }
 
     run() {
-        this.targetDate = localStorage.getItem('aetheris-countdown-target');
-        this.targetTitle = localStorage.getItem('aetheris-countdown-title') || "Countdown";
-        if(this.targetDate) {
-            this.startCountdown();
+
+        const targetDate = localStorage.getItem('aetheris-countdown-target');
+        const targetTitle = localStorage.getItem('aetheris-countdown-title') || "Countdown";
+
+        if (targetDate) {
+            this.startCountdown(targetDate, targetTitle);
         } else {
             this.showSetupForm();
         }
@@ -807,6 +815,7 @@ class CountdownWidget extends BaseWidget {
         <button type="submit">Start Countdown</button>
         </form>
         `;
+        grid.update(this.element, { w: 4, h: 2 });
         this.addHandle();
         this.contentElement.querySelector('form').addEventListener('submit', (e) => {
             e.preventDefault();
@@ -843,6 +852,7 @@ class CountdownWidget extends BaseWidget {
                 <button class="countdown-edit-btn">Edit</button>
             </div>
         `;
+        grid.update(this.element, { w: 4, h: 2 });
         this.addHandle();
         this.contentElement.querySelector('.countdown-edit-btn').addEventListener('click', () => {
             this.showSetupForm();
