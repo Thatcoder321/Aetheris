@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
 "scripts": {
-  "test": "echo \"Error: no test specified\" && exit 1",
-  "build": "mkdir -p public/js && echo \"window.AETHERIS_WEATHER_API_KEY = '$AETHERIS_WEATHER_API_KEY_PLACEHOLDER';\" > public/js/env.js"
+  "test": "echo \"Error: no test specified\" && exit 1"
 },
   "repository": {
     "type": "git",

@@ -205,58 +205,46 @@ class TodoWidget extends BaseWidget {
     }
 }
 
-
-// In js/widgets-v2.js - The FINAL WeatherWidget with the CORRECT variable name
-
+//  Adaptive WeatherWidget
 class WeatherWidget extends BaseWidget {
     constructor() {
-        // --- This is our Control Panel for the widget's size ---
-        const defaultWidth = 3;
-        const defaultHeight = 2;
-
-        // 1. Call super() FIRST with the desired layout.
         super({
             id: 'weather',
             className: 'weather',
             x: 0,
             y: 3,
-            width: defaultWidth,
-            height: defaultHeight
+            width: 3, // Default compact size
+            height: 2
         });
-        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
-        // --- THIS IS THE CORRECTED LINE ---
-        // It now correctly looks for the _WEATHER_ variable.
-        this.apiKey = window.AETHERIS_WEATHER_API_KEY; 
 
-        // This check will now pass on the live Vercel deployment.
-        if (!this.apiKey) {
-            this.contentElement.innerHTML = `<p style="color: yellow; text-align: center;">API Key not found.</p>`;
-            return; 
-        }
+        this.fullForecastData = null;
 
         this.addHandle();
         this.run();
+
+        // Listen for resize events from Gridstack
+        this.element.addEventListener('resizestop', (event) => {
+        
+            const node = event.detail.node;
+            this.updateLayout(node.w, node.h);
+        });
     }
 
     run() {
         const savedCity = localStorage.getItem('aetheris-city');
         if (savedCity) {
-            this.getWeather(savedCity);
+            this.fetchFullForecast(savedCity);
         } else {
             this.askForLocation();
         }
     }
 
     askForLocation() {
-        // We wrap the input in a div to allow for easy centering
         this.contentElement.innerHTML = `
             <div class="weather-input-container">
-                <input type="text" class="weather-location-input" placeholder="Your City?">
+                <input type="text" class="weather-location-input" placeholder="Enter Your City">
             </div>
         `;
-        
-        // Re-assert the size after changing innerHTML
-        
         this.addHandle();
     
         const input = this.contentElement.querySelector('.weather-location-input');
@@ -266,39 +254,121 @@ class WeatherWidget extends BaseWidget {
             if (e.key === 'Enter' && input.value) {
                 const city = input.value;
                 localStorage.setItem('aetheris-city', city);
-                this.getWeather(city);
+                this.fetchFullForecast(city);
             }
         });
     }
 
-    async getWeather(city) {
+    async fetchFullForecast(city) {
         this.contentElement.innerHTML = `<p>Loading Weather...</p>`;
         try {
-            const weatherAPI = `https://api.weatherapi.com/v1/current.json?key=${this.apiKey}&q=${encodeURIComponent(city)}&aqi=no`;
-            const response = await fetch(weatherAPI);
-            if (!response.ok) { throw new Error('API error.'); }
-            const data = await response.json();
-            this.renderWeather(data);
+
+            const response = await fetch(`/api/weather`, {
+                 method: 'POST',
+                 headers: { 'Content-Type': 'application/json' },
+                 body: JSON.stringify({ city: city }),
+            });
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || 'API request failed');
+            }
+            this.fullForecastData = await response.json();
+            
+            // Initial render based on default size
+            const initialSize = grid.getCell(this.element);
+            this.updateLayout(initialSize.w, initialSize.h);
+
         } catch (error) {
-            this.contentElement.innerHTML = `<p>Could not load weather.</p>`;
+            console.error('Weather Fetch Error:', error);
+            this.contentElement.innerHTML = `<p style="color: #ffcccc;">Error: ${error.message}</p>`;
         }
     }
 
-    renderWeather(data) {
-        const temp = Math.round(data.current.temp_c);
-        const cityName = data.location.name;
-        const iconUrl = data.current.condition.icon;
-       
+    updateLayout(width, height) {
+        if (!this.fullForecastData) return; 
+
+        const area = width * height;
+
+        // The Breakpoint System
+        if (area > 18) {
+            this.renderForecast(width); 
+        } else if (area > 8) {
+            this.renderDetailed();
+        } else {
+            this.renderCompact();
+        }
+        
+
+        this.addHandle();
+    }
+
+    // Tier 1 Renderer
+    renderCompact() {
+        const { current, location } = this.fullForecastData;
         this.contentElement.innerHTML = `
-            <div class="weather-icon">
-                <img src="${iconUrl}" alt="Weather icon" style="width: 64px; height: 64px;">
-            </div>
-            <div class="weather-details">
-                <span class="weather-temp">${temp}°C</span>
-                <span class="weather-city">${cityName}</span>
+            <div class="weather-compact">
+                <img src="https:${current.condition.icon}" alt="${current.condition.text}">
+                <div class="weather-details">
+                    <span class="weather-temp">${Math.round(current.temp_c)}°C</span>
+                    <span class="weather-city">${location.name}</span>
+                </div>
             </div>
         `;
-        this.addHandle(); // Re-add handle after final render
+    }
+
+    // Tier 2 Renderer
+    renderDetailed() {
+        const { current, location, forecast } = this.fullForecastData;
+        const hourlyForecast = forecast.forecastday[0].hour; // Today's hourly data
+
+        // Get the next 4 hours from now
+        const now = new Date().getHours();
+        const nextHours = hourlyForecast.filter(h => new Date(h.time).getHours() > now).slice(0, 4);
+
+        this.contentElement.innerHTML = `
+            <div class="weather-detailed">
+                <div class="weather-detailed-top">
+                    <img src="https:${current.condition.icon}" alt="${current.condition.text}">
+                    <div>
+                        <span class="weather-temp">${Math.round(current.temp_c)}°C</span>
+                        <span class="weather-city">${location.name}</span>
+                    </div>
+                </div>
+                <div class="weather-hourly-forecast">
+                    ${nextHours.map(hour => `
+                        <div class="hourly-item">
+                            <span>${new Date(hour.time).getHours()}:00</span>
+                            <img src="https:${hour.condition.icon}" alt="${hour.condition.text}">
+                            <span>${Math.round(hour.temp_c)}°</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // Tier 3 Renderer
+    renderForecast() {
+        const { location, forecast } = this.fullForecastData;
+        const dailyForecast = forecast.forecastday;
+
+        this.contentElement.innerHTML = `
+            <div class="weather-full-forecast">
+                <div class="forecast-header">${location.name} - 3 Day Forecast</div>
+                <div class="daily-forecast-list">
+                    ${dailyForecast.map(day => `
+                        <div class="daily-item">
+                            <span class="daily-day">${new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' })}</span>
+                            <img src="https:${day.day.condition.icon}" alt="${day.day.condition.text}">
+                            <div class="daily-temps">
+                                <span class="temp-high">${Math.round(day.day.maxtemp_c)}°</span>
+                                <span class="temp-low">${Math.round(day.day.mintemp_c)}°</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
     }
 }
 
