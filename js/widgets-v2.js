@@ -213,23 +213,28 @@ class WeatherWidget extends BaseWidget {
             className: 'weather',
             x: 0,
             y: 3,
-            width: 3, // Default compact size
+            width: 3,
             height: 2
         });
-
+    
         this.fullForecastData = null;
-
         this.addHandle();
         this.run();
+    
 
-        // Listen for resize events from Gridstack
-        this.element.addEventListener('resizestop', (event) => {
-        
-            //const node = event.detail.node;
-            //this.updateLayout(node.w, node.h);
+        grid.on('resizestop', (event, element) => {
+
+            if (element === this.element) {
+                
+
+                const width = parseInt(element.getAttribute('gs-w'));
+                const height = parseInt(element.getAttribute('gs-h'));
+    
+
+                this.updateLayout(width, height);
+            }
         });
     }
-
     run() {
         const savedCity = localStorage.getItem('aetheris-city');
         if (savedCity) {
