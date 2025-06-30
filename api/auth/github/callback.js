@@ -47,7 +47,7 @@ export default async function handler(req, res) {
         res.setHeader('Set-Cookie', cookie);
 
 
-        res.redirect('/');
+        res.redirect('/?github_auth=success');
 
     } catch (error) {
         console.error('GitHub auth callback error:', error);

@@ -1,4 +1,10 @@
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has('github_auth')) {
 
+    window.history.replaceState({}, document.title, "/");
+    
+    location.reload();
+}
 const stage = document.getElementById('stage');
 
 
