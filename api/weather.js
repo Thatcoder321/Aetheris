@@ -2,7 +2,7 @@
 
 export default async function handler(req, res) {
 
-    const apiKey = process.env.AETHERIS_WEATHER_API_KEY;
+    const apiKey = process.env.AETHERIS_WEATHER_API_KEY_PLACEHOLDER;
 
     if (!apiKey) {
         return res.status(500).json({ error: 'Weather API key not configured on server.' });
