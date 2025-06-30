@@ -771,11 +771,10 @@ class NewsTickerWidget extends BaseWidget {
     }
 }
 
-
 class CountdownWidget extends BaseWidget {
     constructor() {
-
-        const defaultWidth = 4;
+        // I'm using your default size variables. This is good practice.
+        const defaultWidth = 5;
         const defaultHeight = 2;
 
         super({
@@ -787,6 +786,7 @@ class CountdownWidget extends BaseWidget {
             height: defaultHeight
         });
 
+        // The "Aetheris Law"
         grid.update(this.element, { w: defaultWidth, h: defaultHeight });
 
         this.timerId = null;
@@ -795,11 +795,11 @@ class CountdownWidget extends BaseWidget {
     }
 
     run() {
+        // --- FIX #1: Store the date on "this" so the widget remembers it. ---
+        this.targetDate = localStorage.getItem('aetheris-countdown-target');
+        this.targetTitle = localStorage.getItem('aetheris-countdown-title') || "Countdown";
 
-        const targetDate = localStorage.getItem('aetheris-countdown-target');
-        const targetTitle = localStorage.getItem('aetheris-countdown-title') || "Countdown";
-
-        if (targetDate) {
+        if (this.targetDate) {
             this.startCountdown();
         } else {
             this.showSetupForm();
@@ -809,14 +809,16 @@ class CountdownWidget extends BaseWidget {
     showSetupForm() {
         this.cleanup();
         this.contentElement.innerHTML = `
-        <form class = "countdown-setup-form">
-        <input type="text" id="countdown-title-input" placeholder="Event Name (e.g., Vacation)" required>
-        <input type="datetime-local" id="countdown-date-input" required>
-        <button type="submit">Start Countdown</button>
-        </form>
+            <form class="countdown-setup-form">
+                <input type="text" id="countdown-title-input" placeholder="Event Name" required>
+                <input type="datetime-local" id="countdown-date-input" required>
+                <button type="submit">Start Countdown</button>
+            </form>
         `;
-        grid.update(this.element, { w: 4, h: 2 });
+        grid.update(this.element, { w: 5, h: 2 });
         this.addHandle();
+        
+        // No change here, this logic is good.
         this.contentElement.querySelector('form').addEventListener('submit', (e) => {
             e.preventDefault();
             const title = document.getElementById('countdown-title-input').value;
@@ -828,42 +830,51 @@ class CountdownWidget extends BaseWidget {
     }
     
     startCountdown() {
+        // --- FIX #2: Use classes instead of IDs for the time spans. ---
         this.contentElement.innerHTML = `
-        <div class="countdown-display">
+            <div class="countdown-display">
                 <div class="countdown-title">${this.targetTitle}</div>
                 <div class="countdown-timer">
                     <div class="time-segment">
-                        <span id="days">0</span>
+                        <span class="countdown-days">0</span>
                         <label>Days</label>
                     </div>
                     <div class="time-segment">
-                        <span id="hours">0</span>
+                        <span class="countdown-hours">0</span>
                         <label>Hours</label>
                     </div>
                     <div class="time-segment">
-                        <span id="minutes">0</span>
+                        <span class="countdown-minutes">0</span>
                         <label>Mins</label>
                     </div>
                     <div class="time-segment">
-                        <span id="seconds">0</span>
+                        <span class="countdown-seconds">0</span>
                         <label>Secs</label>
                     </div>
                 </div>
                 <button class="countdown-edit-btn">Edit</button>
             </div>
         `;
-        grid.update(this.element, { w: 4, h: 2 });
+        grid.update(this.element, { w: 5, h: 2 });
         this.addHandle();
+
         this.contentElement.querySelector('.countdown-edit-btn').addEventListener('click', () => {
             this.showSetupForm();
         });
 
-        this.updateDisplay(); // Run once immediately
+        // Store references to the display elements for efficiency
+        this.daysSpan = this.contentElement.querySelector('.countdown-days');
+        this.hoursSpan = this.contentElement.querySelector('.countdown-hours');
+        this.minutesSpan = this.contentElement.querySelector('.countdown-minutes');
+        this.secondsSpan = this.contentElement.querySelector('.countdown-seconds');
+        
+        this.updateDisplay();
         this.timerId = setInterval(() => this.updateDisplay(), 1000);
     }
 
     updateDisplay() {
         const now = new Date();
+        // This will now work correctly because this.targetDate is properly set.
         const target = new Date(this.targetDate);
         const diff = target - now;
 
@@ -878,12 +889,14 @@ class CountdownWidget extends BaseWidget {
         const minutes = Math.floor((diff / 1000 / 60) % 60);
         const seconds = Math.floor((diff / 1000) % 60);
 
-        document.getElementById('days').textContent = days;
-        document.getElementById('hours').textContent = hours;
-        document.getElementById('minutes').textContent = minutes;
-        document.getElementById('seconds').textContent = seconds;
+        // --- FIX #3: Update the elements safely and efficiently. ---
+        if (this.daysSpan) {
+            this.daysSpan.textContent = days;
+            this.hoursSpan.textContent = hours;
+            this.minutesSpan.textContent = minutes;
+            this.secondsSpan.textContent = seconds;
+        }
     }
-
 
     cleanup() {
         if (this.timerId) {
