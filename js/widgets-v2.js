@@ -276,8 +276,9 @@ async fetchFullForecast(city) {
         }
         this.fullForecastData = await response.json();
 
-        const initialSize = grid.getNode(this.element);
-        this.updateLayout(initialSize.w, initialSize.h);
+        const width = parseInt(this.element.getAttribute('gs-w'));
+        const height = parseInt(this.element.getAttribute('gs-h'));
+        this.updateLayout(width, height);
 
     } catch (error) {
         console.error('Weather Fetch Error:', error);
