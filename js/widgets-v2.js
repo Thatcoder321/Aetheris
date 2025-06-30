@@ -14,9 +14,15 @@ class BaseWidget {
 
     
     addHandle() {
+
         const resizeHandle = document.createElement('div');
         resizeHandle.className = 'widget-resize-handle';
         this.contentElement.appendChild(resizeHandle);
+    
+
+        const dragHandle = document.createElement('div');
+        dragHandle.className = 'widget-drag-handle';
+        this.contentElement.prepend(dragHandle);
     }
 }
 
