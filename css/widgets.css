@@ -867,3 +867,27 @@
     */
     cursor: se-resize !important;
 }
+
+
+.grid-stack-item-content {
+    pointer-events: none;
+}
+
+
+.widget-drag-handle,
+.widget button,
+.widget input,
+.widget textarea,
+.widget a,
+.todo-item span,
+.checkbox-container {
+    pointer-events: auto;
+}
+
+
+.ui-resizable-handle {
+    pointer-events: auto !important;
+    cursor: se-resize !important;
+    background: red !important;
+    z-index: 999 !important;
+}
