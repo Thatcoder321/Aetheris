@@ -1,8 +1,7 @@
-// main.js: Sets up the core environment and global objects.
 
-// --- GLOBAL OBJECTS ---
-// These are created here so all other scripts can access them.
 const stage = document.getElementById('stage');
+
+
 
 const grid = GridStack.init({
     column: 12,
@@ -10,12 +9,13 @@ const grid = GridStack.init({
     cellHeight: '10vh',
     margin: 10,
     float: true,
-    // We are enabling resizable, but NOT specifying a custom handle.
-    // This tells Gridstack to create its own default handle.
+
+    placeholderClass: 'widget-ghost',
+    
+
     resizable: {
-        handles: 'se' // 'se' means south-east corner, which is what we want.
+        handles: 'se'
     },
-    // We keep our working drag handle logic.
     draggable: {
         handle: '.widget-drag-handle'
     }
