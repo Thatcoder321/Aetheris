@@ -932,9 +932,23 @@
 }
 
 /* Display State */
-.countdown-display { text-align: center; width: 100%; }
+
+.countdown-display { 
+    position: relative; 
+    text-align: center; 
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
 .countdown-title { font-size: 1.2rem; font-weight: 500; margin-bottom: 15px; }
-.countdown-timer { display: flex; justify-content: space-around; }
+
+.countdown-timer { 
+    display: flex; 
+    justify-content: space-around; 
+    width: 100%; 
+}
 .time-segment { display: flex; flex-direction: column; }
 .time-segment span { font-size: 2.5rem; font-weight: 500; }
 .time-segment label { font-size: 0.8rem; opacity: 0.7; }
