@@ -1166,7 +1166,7 @@ class QuoteWidget extends BaseWidget {
     async fetchQuote() {
         this.contentElement.innerHTML = `<p> class="quote-loading">Finding some wisdom...</p>`;
         try {
-            const response = await fetch('https://zenquotes.io/api/random');
+            const response = await fetch('/api/quote');
             if (!response.ok) throw new Error('API was not avaliable,');
             const data = await response.json();
             this.renderQuote(data);
