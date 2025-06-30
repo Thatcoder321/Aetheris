@@ -1144,3 +1144,43 @@ class GitHubStatsWidget extends BaseWidget {
 
     } 
 }
+
+class QuoteWidget extends BaseWidget {
+    constructor() {
+        const defaultWidth = 4;
+        const defaultHeight = 2;
+
+        super({
+            id: 'quote-of-the-day',
+            className: 'quote-widget',
+            x: 0,
+            y: 0,
+            width: defaultWidth,
+            height: defaultHeight
+        });
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+        this.addHandle();
+        this.fetchQuote();
+    }
+
+    async fetchQuote() {
+        this.contentElement.innerHTML = `<p> class="quote-loading">Finding some wisdom...</p>`;
+        try {
+            const response = await fetch('https://api.quotable.io/random');
+            if (!response.ok) throw new Error('API was not avaliable,');
+            const data = await response.json();
+            this.renderQuote(data);
+        } catch (error) {
+            this.contentElement.innerHTML = `<p class="quote-loading">Could not fetch a quote.</p>`;
+            console.error('Quote Widget Error:', error);
+        }
+    }
+    renderQuote(data){
+        this.contentElement.innerHTML = `
+        <blockquote class="quote-text">“${data.content}”</blockquote>
+            <cite class="quote-author">— ${data.author}</cite>
+        `;
+        this.addHandle();
+    }
+    cleanup() {}
+}

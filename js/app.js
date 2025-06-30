@@ -12,6 +12,7 @@ const WIDGET_REGISTRY = {
     'countdown': { name: 'Countdown', class: CountdownWidget, preview: '/images/countdown-preview.png' },
     'stock-ticker': { name: 'Stock Ticker', class: StockTickerWidget, preview: '/images/stock-ticker-preview.png' },
     'github-stats': { name: 'GitHub Stats', class: GitHubStatsWidget, preview: '/images/github-preview.png' },
+    'quote-of-day': { name: 'Quote of the Day', class: QuoteWidget, preview: '/images/quote-preview.png' },
 };
 
 
