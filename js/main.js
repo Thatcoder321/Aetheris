@@ -21,7 +21,7 @@ window.addEventListener('mousemove', (e) => {
     const y = (e.clientY / window.innerHeight - 0.5) * 2;
     const rotateX = -y * 3; // Using maxRotate of 3
     const rotateY = x * 3;
-    stage.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    // stage.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 });
 
 // --- LAYOUT FUNCTIONS ---
