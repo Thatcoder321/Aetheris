@@ -10,6 +10,7 @@ const WIDGET_REGISTRY = {
     'notepad': { name: 'Notepad', class: NotepadWidget, preview: '/images/notepad-preview.png' }, 
     'news-ticker': { name: 'News Ticker', class: NewsTickerWidget, preview: '/images/news-preview.png' },
     'countdown': { name: 'Countdown', class: CountdownWidget, preview: '/images/countdown-preview.png' },
+    'stock-ticker': { name: 'Stock Ticker', class: StockTickerWidget, preview: '/images/stock-ticker-preview.png' },
 };
 
 

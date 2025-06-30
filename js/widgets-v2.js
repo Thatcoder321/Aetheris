@@ -904,3 +904,126 @@ class CountdownWidget extends BaseWidget {
         }
     }
 }
+
+class StockTickerWidget extends BaseWidget {
+    constructor() {
+        super({
+            id: 'stock-ticker',
+            className: 'stock-ticker',
+            x: 0, y: 5,
+            width: 4, height: 3 
+        });
+
+        this.stocks = [];
+        this.scrollIndex = 0;
+        this.timerId = null;
+        this.addHandle();
+        this.run();
+    }
+
+    run() {
+        const savedSymbols = localStorage.getItem('aetheris-stock-symbols');
+        if (savedSymbols) {
+            this.fetchStockData(savedSymbols);
+        } else {
+            this.showSetupForm();
+        }
+    }
+
+    showSetupForm() {
+        this.cleanup();
+        this.contentElement.innerHTML = `
+            <form class="stock-setup-form">
+                <label>Enter Stock Symbols</label>
+                <input type="text" placeholder="AAPL,TSLA,MSFT..." required>
+                <p>Enter up to 4, separated by commas.</p>
+                <button type="submit">Track Stocks</button>
+            </form>
+        `;
+        this.addHandle();
+        
+        this.contentElement.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = e.target.querySelector('input').value;
+            localStorage.setItem('aetheris-stock-symbols', input);
+            this.run();
+        });
+    }
+
+    async fetchStockData(symbolsString) {
+        this.contentElement.innerHTML = `<div class="loading-stocks">Fetching market data...</div>`;
+        const symbols = symbolsString.split(',').map(s => s.trim()).filter(Boolean);
+
+        try {
+            const response = await fetch('/api/stocks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ symbols })
+            });
+
+            if (!response.ok) throw new Error('Failed to get data from server.');
+            const data = await response.json();
+            this.stocks = data.stocks || [];
+            this.renderStocks();
+
+        } catch (error) {
+            this.contentElement.innerHTML = `<div class="loading-stocks">Error: ${error.message}</div>`;
+        }
+    }
+
+    renderStocks() {
+        if (this.stocks.length === 0) {
+            this.contentElement.innerHTML = `<div class="loading-stocks">No valid stock data found.</div>`;
+            return;
+        }
+
+        this.contentElement.innerHTML = `<ul class="stock-list"></ul>`;
+        const list = this.contentElement.querySelector('.stock-list');
+        
+        this.stocks.forEach(stock => {
+            const changeClass = stock.change >= 0 ? 'is-up' : 'is-down';
+            const sign = stock.change >= 0 ? '+' : '';
+            const item = document.createElement('li');
+            item.className = `stock-item ${changeClass}`;
+            item.innerHTML = `
+                <span class="stock-symbol">${stock.symbol}</span>
+                <span class="stock-price">$${stock.price}</span>
+                <span class="stock-change">${sign}${stock.change} (${sign}${stock.changePercent}%)</span>
+            `;
+            list.appendChild(item);
+        });
+
+        list.innerHTML += list.innerHTML;
+        this.startScrolling();
+        this.addHandle();
+    }
+
+    startScrolling() {
+        this.cleanup();
+        const list = this.contentElement.querySelector('.stock-list');
+        const firstItem = list.querySelector('.stock-item');
+        if (!firstItem) return;
+
+        const itemHeight = firstItem.offsetHeight;
+
+        this.timerId = setInterval(() => {
+            this.scrollIndex++;
+            list.style.transform = `translateY(-${this.scrollIndex * itemHeight}px)`;
+            list.style.transition = 'transform 0.5s ease-in-out';
+
+            if (this.scrollIndex >= this.stocks.length) {
+                setTimeout(() => {
+                    list.style.transition = 'none';
+                    this.scrollIndex = 0;
+                    list.style.transform = `translateY(0)`;
+                }, 500); 
+            }
+        }, 3000); // Scroll every 3 seconds
+    }
+
+    cleanup() {
+        if (this.timerId) {
+            clearInterval(this.timerId);
+        }
+    }
+}
