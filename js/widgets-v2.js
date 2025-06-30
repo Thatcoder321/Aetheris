@@ -1474,7 +1474,6 @@ class SystemStatsWidget extends BaseWidget {
         }
     }
 }
-
 class UnitConverterWidget extends BaseWidget {
     constructor() {
         const defaultWidth = 4;
@@ -1483,40 +1482,38 @@ class UnitConverterWidget extends BaseWidget {
         super({ 
             id: 'unit-converter',
             className: 'unit-converter',
-            x: 0,
-            y: 5,
-            width: defaultWidth,
-            height: defaultHeight
+            x: 0, y: 5,
+            width: defaultWidth, height: defaultHeight
         });
         grid.update(this.element, { w: defaultWidth, h: defaultHeight });
 
         this.CONVERSIONS = {
             length: {
-                name: 'length',
+                name: 'Length',
                 baseUnit: 'meter',
                 units: {
-                    meter: {name: 'Meter', toBase: 1},
-                    kilometer: {name: 'Kilometer', toBase: 1000},
-                    mile: {name: 'Mile', toBase: 1609.34},
-                    foot: {name: 'Foot', toBase: 0.3048},
+                    meter: { name: 'Meter', toBase: 1 },
+                    kilometer: { name: 'Kilometer', toBase: 1000 },
+                    mile: { name: 'Mile', toBase: 1609.34 },
+                    foot: { name: 'Foot', toBase: 0.3048 },
                 }
             },
             mass: {
-                name: 'mass',
+                name: 'Mass',
                 baseUnit: 'kilogram',
                 units: {
-                    kilogram: {name: 'Kilogram', toBase: 1},
-                    gram: {name: 'Gram', toBase: 0.001},
-                    pound: {name: 'Pound', toBase: 0.453592},
-                    ounce: {name: 'Ounce', toBase: 0.0283495},
+                    kilogram: { name: 'Kilogram', toBase: 1 },
+                    gram: { name: 'Gram', toBase: 0.001 },
+                    pound: { name: 'Pound', toBase: 0.453592 },
+                    ounce: { name: 'Ounce', toBase: 0.0283495 },
                 }
             },
             temperature: {
-                name: 'temperature',
+                name: 'Temperature',
                 baseUnit: 'celsius',
                 units: {
-                    celsius: {name: 'Celsius'},
-                    fahrenheit: {name: 'Fahrenheit'},
+                    celsius: { name: 'Celsius' },
+                    fahrenheit: { name: 'Fahrenheit' },
                 }
             }
         };
@@ -1526,68 +1523,68 @@ class UnitConverterWidget extends BaseWidget {
 
     render() {
         this.contentElement.innerHTML = `
-        <div class="converter-header">
-        <select id="catagory-select"></select>
-        </div>
-        <div class="converter-body">
-        <div class="converter-side">
-        <input type="number" id="from-value" value="1">
-        <select id="from-unit"></select>
-        </div>
-        <i class="ph ph-arrow-right"></i>
-        <div class="converter-side">
-        <span id="to-value">?</span>
-        <select id="to-unit"></select>
-        </div>
-        </div>
+            <div class="converter-header">
+                <select id="category-select"></select>
+            </div>
+            <div class="converter-body">
+                <div class="converter-side">
+                    <input type="number" id="from-value" value="1">
+                    <select id="from-unit"></select>
+                </div>
+                <i class="ph ph-arrow-right"></i>
+                <div class="converter-side">
+                    <span id="to-value">?</span>
+                    <select id="to-unit"></select>
+                </div>
+            </div>
         `;
-        grid.update(this.element, { w: 4, h: 2 });
-        this.addHandle();
         this.populateCategories();
         this.populateUnits();
         this.attachListeners();
         this.convert();
-
     }
 
     populateCategories() {
-        const catagorySelect= this.contentElement.querySelector('#catagory-select');
-        if (!catagorySelect) return;
-        catagorySelect.innerHTML = '';
-        for(const key in this.CONVERSIONS) {
+        const categorySelect = this.contentElement.querySelector('#category-select');
+        if (!categorySelect) return;
+        
+        for (const key in this.CONVERSIONS) {
             const option = document.createElement('option');
             option.value = key;
             option.textContent = this.CONVERSIONS[key].name;
             categorySelect.appendChild(option);
-        }}
-        populateUnits() {
-            const categorySelect = this.contentElement.querySelector('#catagory-select');
-            const fromUnitSelect = this.contentElement.querySelector('#from-unit');
-            const toUnitSelect = this.contentElement.querySelector('#to-unit');
-            if (!categorySelect || !fromSelect || !toSelect) return;
-
-            const category = categorySelect.value;
-            const {units} = this.CONVERSIONS[category];
-            fromSelect.innerHTML = '';
-            toSelect.innerHTML = '';
-
-            for (const key in units) {
-                const option1 = document.createElement('option');
-                const option2 = document.createElement('option');
-                option1.value = key;
-                option1.textContent = units[key].name;
-                option2.value = key;
-                option2.textContent = units[key].name;
-                fromSelect.appendChild(option1);
-                toSelect.appendChild(option2);
-            }
-
-            if(toSelect.options.length > 1) {
-                toSelect.selectedIndex = 1; 
-            }
         }
+    }
+
+    populateUnits() {
+        const categorySelect = this.contentElement.querySelector('#category-select');
+        const fromUnitSelect = this.contentElement.querySelector('#from-unit');
+        const toUnitSelect = this.contentElement.querySelector('#to-unit');
+        if (!categorySelect || !fromUnitSelect || !toUnitSelect) return;
+
+        const category = categorySelect.value;
+        const { units } = this.CONVERSIONS[category];
+        fromUnitSelect.innerHTML = '';
+        toUnitSelect.innerHTML = '';
+
+        for (const key in units) {
+            const option1 = document.createElement('option');
+            const option2 = document.createElement('option');
+            option1.value = key;
+            option1.textContent = units[key].name;
+            option2.value = key;
+            option2.textContent = units[key].name;
+            fromUnitSelect.appendChild(option1);
+            toUnitSelect.appendChild(option2);
+        }
+
+        if (toUnitSelect.options.length > 1) {
+            toUnitSelect.selectedIndex = 1; 
+        }
+    }
+    
     attachListeners() {
-        const categorySelect = this.contentElement.querySelector('#catagory-select');
+        const categorySelect = this.contentElement.querySelector('#category-select');
         const fromValueInput = this.contentElement.querySelector('#from-value');
         const fromUnitSelect = this.contentElement.querySelector('#from-unit');
         const toUnitSelect = this.contentElement.querySelector('#to-unit');
@@ -1597,8 +1594,9 @@ class UnitConverterWidget extends BaseWidget {
         if (fromUnitSelect) fromUnitSelect.addEventListener('change', () => this.convert());
         if (toUnitSelect) toUnitSelect.addEventListener('change', () => this.convert());
     }
+
     convert() {
-        const categorySelect = this.contentElement.querySelector('#catagory-select');
+        const categorySelect = this.contentElement.querySelector('#category-select');
         const fromValueInput = this.contentElement.querySelector('#from-value');
         const fromUnitSelect = this.contentElement.querySelector('#from-unit');
         const toUnitSelect = this.contentElement.querySelector('#to-unit');
@@ -1616,8 +1614,8 @@ class UnitConverterWidget extends BaseWidget {
         }
 
         let result;
-        if(category ==='temperature') {
-            if (fromUnit === toUnit) result=fromValue;
+        if (category === 'temperature') {
+            if (fromUnit === toUnit) result = fromValue;
             else if (fromUnit === 'celsius') result = (fromValue * 9/5) + 32; 
             else result = (fromValue - 32) * 5/9;
         } else {
@@ -1628,5 +1626,6 @@ class UnitConverterWidget extends BaseWidget {
         }
         toValueSpan.textContent = result.toFixed(3).replace(/\.?0+$/, '');
     }
+    
     cleanup() {}
 }
