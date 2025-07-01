@@ -1,5 +1,5 @@
 
-// --- The Master List of All Widgets ---
+// --- List of All Widgets ---
 const WIDGET_REGISTRY = {
     'greeting': { name: 'Greeting', class: GreetingWidget, preview: '/images/greeting-preview.png' },
     'clock': { name: 'Clock', class: ClockWidget,  preview: '/images/clock-preview.png' },
@@ -16,6 +16,7 @@ const WIDGET_REGISTRY = {
     'quick-links': { name: 'Quick Links', class: QuickLinksWidget, preview: '/images/quick-links-preview.png' },
     'system-stats': { name: 'System Stats', class: SystemStatsWidget, preview: '/images/system-stats-preview.png' },
     'unit-converter': { name: 'Unit Converter', class: UnitConverterWidget, preview: '/images/unit-converter-preview.png' },
+    'calculator': { name: 'Calculator', class: CalculatorWidget, preview: '/images/calculator-preview.png' },
 };
 
 

@@ -1223,3 +1223,95 @@
     padding: 8px; /* Match the height of the inputs */
     border-radius: 8px;
 }
+
+/* --- Calculator Widget --- */
+.calculator {
+
+    flex-direction: column;
+    padding: 10px;
+    background: rgba(255,255,255,0.1);
+    overflow: auto;
+}
+
+.calculator-display {
+    color: white;
+    font-size: 2.5rem;
+    text-align: right;
+    padding: 20px 15px;
+    word-wrap: break-word;
+    word-break: break-all;
+    flex-grow: 1;
+}
+
+.calculator-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.calculator-grid button{
+    padding: 20px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    transition: background-color 0.2s ease;
+}
+
+.calculator-grid button:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.calculator-grid button[data-action="operation"]{
+    background: rgba(255,165,0,0.5);
+}
+.calculator-grid button[data-action="operation"]:hover {
+    background: rgba(255, 165, 0, 0.7);
+}
+
+
+
+.calculator-grid .span-two {
+    grid-column: span 2;
+}
+
+
+.calculator {
+    overflow: auto;
+}
+
+
+.calculator::-webkit-scrollbar {
+    width: 10px; 
+}
+.calculator::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+.calculator::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.4); 
+    border-radius: 5px;
+}
+.calculator::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
+
+.settings-content::-webkit-scrollbar {
+    width: 10px; 
+}
+.settings-content::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+
+.settings-content::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.5); 
+    border-radius: 5px;
+}
+.settings-content::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.75);
+}

@@ -1629,3 +1629,132 @@ class UnitConverterWidget extends BaseWidget {
     
     cleanup() {}
 }
+class CalculatorWidget extends BaseWidget {
+    constructor() {
+        const defaultWidth = 4;
+        const defaultHeight = 4;
+
+        super({
+            id: 'calculator',
+            className: 'calculator',
+            x: 4, 
+            y: 0,
+            width: defaultWidth,
+            height: defaultHeight
+        });
+
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+
+        this.currentOperand = '';
+        this.previousOperand = '';
+        this.operation = undefined;
+
+        this.render();
+    }
+
+    render() {
+        this.contentElement.innerHTML = `
+            <div class="calculator-display">0</div>
+            <div class="calculator-grid">
+                <button data-action="clear" class="span-two">AC</button>
+                <button data-action="delete">DEL</button>
+                <button data-action="operation">÷</button>
+                <button data-action="number">1</button>
+                <button data-action="number">2</button>
+                <button data-action="number">3</button>
+                <button data-action="operation">*</button>
+                <button data-action="number">4</button>
+                <button data-action="number">5</button>
+                <button data-action="number">6</button>
+                <button data-action="operation">+</button>
+                <button data-action="number">7</button>
+                <button data-action="number">8</button>
+                <button data-action="number">9</button>
+                <button data-action="operation">-</button>
+                <button data-action="number">.</button>
+                <button data-action="number">0</button>
+                <button data-action="equals" class="span-two">=</button>
+            </div>
+        `;
+        
+        grid.update(this.element, { w: 4, h: 4 });
+        this.addHandle();
+
+        this.display = this.contentElement.querySelector('.calculator-display');
+        this.attachListeners();
+    }
+
+    attachListeners() {
+        const gridElement = this.contentElement.querySelector('.calculator-grid');
+        if (gridElement) {
+            gridElement.addEventListener('click', (e) => {
+                if (e.target.matches('button')) {
+                    const button = e.target;
+                    const { action } = button.dataset;
+                    const value = button.textContent;
+
+                    if (action === 'number') this.appendNumber(value);
+                    if (action === 'operation') this.chooseOperation(value);
+                    if (action === 'clear') this.clear();
+                    if (action === 'delete') this.delete();
+                    if (action === 'equals') this.compute();
+                }
+            });
+        }
+    }
+
+    updateDisplay() {
+        if (this.display) {
+            this.display.textContent = this.currentOperand || this.previousOperand || '0';
+        }
+    }
+
+    appendNumber(number) {
+        if (number === '.' && this.currentOperand.includes('.')) return;
+        this.currentOperand = this.currentOperand.toString() + number.toString();
+        this.updateDisplay();
+    }
+
+    chooseOperation(operation) {
+        if (this.currentOperand === '') return;
+        if (this.previousOperand !== '') {
+            this.compute();
+        }
+        this.operation = operation;
+        this.previousOperand = this.currentOperand;
+        this.currentOperand = '';
+    }
+
+    compute() {
+        let computation;
+        const prev = parseFloat(this.previousOperand);
+        const current = parseFloat(this.currentOperand);
+        if (isNaN(prev) || isNaN(current)) return;
+
+        switch (this.operation) {
+            case '+': computation = prev + current; break;
+            case '-': computation = prev - current; break;
+            case '*': computation = prev * current; break;
+            case '÷': computation = prev / current; break;
+            default: return;
+        }
+        this.currentOperand = computation.toString();
+        this.operation = undefined;
+        this.previousOperand = '';
+        this.updateDisplay();
+    }
+
+    clear() {
+        this.currentOperand = '';
+        this.previousOperand = '';
+        this.operation = undefined;
+        this.updateDisplay();
+    }
+
+    delete() {
+        this.currentOperand = this.currentOperand.toString().slice(0, -1);
+        this.updateDisplay();
+    }
+
+    cleanup() {}
+}

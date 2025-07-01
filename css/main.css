@@ -225,3 +225,11 @@ body {
 [class*="ph-"] {
     font-family: "Phosphor-Fill", "Phosphor", sans-serif !important;
 }
+
+
+.action-btn img {
+    width: 60%; 
+    height: 60%;
+
+    filter: invert(1); 
+}
