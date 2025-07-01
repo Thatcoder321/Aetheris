@@ -211,7 +211,8 @@ class TodoWidget extends BaseWidget {
     }
 }
 
-//  Adaptive WeatherWidget
+
+
 class WeatherWidget extends BaseWidget {
     constructor() {
         const defaultWidth = 3;
@@ -219,29 +220,21 @@ class WeatherWidget extends BaseWidget {
         super({
             id: 'weather',
             className: 'weather',
-            x: 0,
-            y: 3,
-            width: defaultWidth, height: defaultHeight
+            x: 0, y: 3,
+            width: defaultWidth ,height: defaultHeight
         });
         grid.update(this.element, { w: defaultWidth, h: defaultHeight });
         this.fullForecastData = null;
         this.addHandle();
         this.run();
-    
 
-        grid.on('resizestop', (event, element) => {
-
-            if (element === this.element) {
-                
-
-                const width = parseInt(element.getAttribute('gs-w'));
-                const height = parseInt(element.getAttribute('gs-h'));
-    
-
-                this.updateLayout(width, height);
-            }
+        this.element.addEventListener('resizestop', (event) => {
+            const width = parseInt(event.target.getAttribute('gs-w'));
+            const height = parseInt(event.target.getAttribute('gs-h'));
+            this.updateLayout(width, height);
         });
     }
+
     run() {
         const savedCity = localStorage.getItem('aetheris-city');
         if (savedCity) {
@@ -251,89 +244,71 @@ class WeatherWidget extends BaseWidget {
         }
     }
 
+    // --- THIS IS THE FINAL, CORRECTED METHOD ---
+    askForLocation() {
+        this.contentElement.innerHTML = `
+            <div class="weather-input-container">
+                <form id="weather-form">
+                    <input type="text" class="weather-location-input" placeholder="Enter Your City">
+                </form>
+            </div>
+        `;
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+        this.addHandle();
 
+        const form = this.contentElement.querySelector('#weather-form');
+        const input = this.contentElement.querySelector('.weather-location-input');
 
-
-askForLocation() {
-
-    this.contentElement.innerHTML = `
-        <div class="weather-input-container">
-            <form id="weather-form">
-                <input type="text" class="weather-location-input" placeholder="Enter Your City">
-            </form>
-        </div>
-    `;
-    grid.update(this.element, { w: defaultWidth, h: defaultHeight });
-    this.addHandle();
-
-
-    const form = this.contentElement.querySelector('#weather-form');
-    const input = this.contentElement.querySelector('.weather-location-input');
-
-    if (form && input) {
-        input.focus();
-        
-        form.addEventListener('submit', (e) => {
-
-            e.preventDefault(); 
+        if (form && input) {
+            input.focus();
             
-            if (input.value) {
-                const city = input.value;
-                localStorage.setItem('aetheris-city', city);
-                this.fetchFullForecast(city);
-            }
-        });
-    }
-}
-
-
-
-async fetchFullForecast(city) {
-    this.contentElement.innerHTML = `<p>Loading Weather...</p>`;
-    try {
-
-        const response = await fetch(`/api/weather`, {
-             method: 'POST',
-             headers: { 'Content-Type': 'application/json' },
-             body: JSON.stringify({ city: city }),
-        });
-        if (!response.ok) {
-            const errData = await response.json();
-            throw new Error(errData.error || 'API request failed');
+            form.addEventListener('submit', (e) => {
+                // This is the most important line. It MUST be called to stop the reload.
+                e.preventDefault(); 
+                
+                if (input.value) {
+                    const city = input.value;
+                    localStorage.setItem('aetheris-city', city);
+                    this.fetchFullForecast(city);
+                }
+            });
         }
-        this.fullForecastData = await response.json();
-
-        const width = parseInt(this.element.getAttribute('gs-w'));
-        const height = parseInt(this.element.getAttribute('gs-h'));
-        this.updateLayout(width, height);
-
-    } catch (error) {
-        console.error('Weather Fetch Error:', error);
-        this.contentElement.innerHTML = `<p style="color: #ffcccc;">Error: ${error.message}</p>`;
-
-        this.addHandle(); 
     }
-}
+
+    async fetchFullForecast(city) {
+        this.contentElement.innerHTML = `<p>Loading Weather...</p>`;
+        try {
+            const response = await fetch(`/api/weather`, {
+                 method: 'POST',
+                 headers: { 'Content-Type': 'application/json' },
+                 body: JSON.stringify({ city: city }),
+            });
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || 'API request failed');
+            }
+            this.fullForecastData = await response.json();
+            
+            const width = parseInt(this.element.getAttribute('gs-w'));
+            const height = parseInt(this.element.getAttribute('gs-h'));
+            this.updateLayout(width, height);
+
+        } catch (error) {
+            console.error('Weather Fetch Error:', error);
+            this.contentElement.innerHTML = `<p style="color: #ffcccc;">Error: ${error.message}</p>`;
+            this.addHandle(); 
+        }
+    }
 
     updateLayout(width, height) {
-        if (!this.fullForecastData) return; 
-
+        if (!this.fullForecastData) return;
         const area = width * height;
-
-        // The Breakpoint System
-        if (area > 18) {
-            this.renderForecast(width); 
-        } else if (area > 8) {
-            this.renderDetailed();
-        } else {
-            this.renderCompact();
-        }
-        
-
+        if (area > 18) { this.renderForecast(width); } 
+        else if (area > 8) { this.renderDetailed(); } 
+        else { this.renderCompact(); }
         this.addHandle();
     }
 
-    // Tier 1 Renderer
     renderCompact() {
         const { current, location } = this.fullForecastData;
         this.contentElement.innerHTML = `
@@ -348,12 +323,9 @@ async fetchFullForecast(city) {
         grid.update(this.element, { w: defaultWidth, h: defaultHeight });
     }
 
-    // Tier 2 Renderer
     renderDetailed() {
         const { current, location, forecast } = this.fullForecastData;
-        const hourlyForecast = forecast.forecastday[0].hour; // Today's hourly data
-
-        // Get the next 4 hours from now
+        const hourlyForecast = forecast.forecastday[0].hour;
         const now = new Date().getHours();
         const nextHours = hourlyForecast.filter(h => new Date(h.time).getHours() > now).slice(0, 4);
 
@@ -380,7 +352,6 @@ async fetchFullForecast(city) {
         grid.update(this.element, { w: defaultWidth, h: defaultHeight });
     }
 
-    // Tier 3 Renderer
     renderForecast() {
         const { location, forecast } = this.fullForecastData;
         const dailyForecast = forecast.forecastday;
@@ -405,7 +376,6 @@ async fetchFullForecast(city) {
         grid.update(this.element, { w: defaultWidth, h: defaultHeight });
     }
 }
-
 class AIWidget extends BaseWidget {
     constructor() {
 
