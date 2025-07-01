@@ -956,7 +956,6 @@ class StockTickerWidget extends BaseWidget {
             this.showSetupForm();
         }
     }
-
     showSetupForm() {
         this.cleanup();
         this.contentElement.innerHTML = `
@@ -970,21 +969,28 @@ class StockTickerWidget extends BaseWidget {
     
         grid.update(this.element, { w: defaultWidth, h: defaultHeight });
         this.addHandle();
-
+    
         requestAnimationFrame(() => {
             const form = this.contentElement.querySelector('form');
             if (!form) {
                 console.warn("Form not found in DOM after render.");
                 return;
             }
+    
             console.log('Attaching submit listener');
+    
             form.addEventListener('submit', (e) => {
-                e.preventDefault(); 
+                e.preventDefault();
                 console.log('Form submitted - default prevented');
-
-                const input = e.target.querySelector('input').value;
+    
+                const input = e.target.querySelector('input').value.trim();
+                if (!input) return;
+    
+                // Save input
                 localStorage.setItem('aetheris-stock-symbols', input);
-                this.run();
+    
+                // Directly call fetch instead of rerunning everything
+                this.fetchStockData(input);
             });
         });
     }
