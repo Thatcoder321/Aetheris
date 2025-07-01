@@ -232,11 +232,15 @@ class WeatherWidget extends BaseWidget {
         this.addHandle();
         this.run();
 
-        this.element.addEventListener('resizestop', (event) => {
-            const width = parseInt(event.target.getAttribute('gs-w'));
-            const height = parseInt(event.target.getAttribute('gs-h'));
-            this.updateLayout(width, height);
+        this.element.addEventListener('resizestop', () => {
+            this.updateLayout();
         });
+    }
+
+    getCurrentArea() {
+        const width = parseInt(this.element.getAttribute('gs-w')) || this.defaultWidth;
+        const height = parseInt(this.element.getAttribute('gs-h')) || this.defaultHeight;
+        return width * height;
     }
 
     run() {
@@ -283,9 +287,7 @@ class WeatherWidget extends BaseWidget {
                 throw new Error(errData.error || 'API request failed');
             }
             this.fullForecastData = await response.json();
-            const width = parseInt(this.element.getAttribute('gs-w'));
-            const height = parseInt(this.element.getAttribute('gs-h'));
-            this.updateLayout(width, height);
+            this.updateLayout();
         } catch (error) {
             console.error('Weather Fetch Error:', error);
             this.contentElement.innerHTML = `<p style="color: #ffcccc;">Error: ${error.message}</p>`;
@@ -293,11 +295,11 @@ class WeatherWidget extends BaseWidget {
         }
     }
 
-    updateLayout(width, height) {
+    updateLayout() {
         if (!this.fullForecastData) return;
-        const area = width * height;
-        if (area > 18) { this.renderForecast(); } 
-        else if (area > 8) { this.renderDetailed(); } 
+        const area = this.getCurrentArea();
+        if (area > 18) { this.renderForecast(); }
+        else if (area > 8) { this.renderDetailed(); }
         else { this.renderCompact(); }
         this.addHandle();
     }
