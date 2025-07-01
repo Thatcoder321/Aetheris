@@ -140,29 +140,28 @@ if (resetButton) {
 // --- Supporting Functions for the Settings Panel ---
 
 function renderWidgetLibrary() {
-    const content = settingsPanel.querySelector('.settings-content');
-    if (!content) return;
     const libraryGrid = document.createElement('div');
     libraryGrid.className = 'widget-library-grid';
-    for (const id in WIDGET_REGISTRY) {
+
+    for(const id in WIDGET_REGISTRY) {
         const widget = WIDGET_REGISTRY[id];
         const itemDiv = document.createElement('div');
         itemDiv.className = 'widget-library-item';
         const isActive = widgetManager.activeWidgets.has(id);
         itemDiv.innerHTML = `
-            <div class="widget-preview"><img src="${widget.preview}" alt="${widget.name} preview"></div>
-            <span>${widget.name}</span>
-            <button class="widget-toggle-btn ${isActive ? 'is-active' : ''}" data-widget-id="${id}">
-                ${isActive ? 'Remove' : 'Add'}
-            </button>
-        `;
-        libraryGrid.appendChild(itemDiv);
-    }
-    content.innerHTML = '';
-    content.appendChild(libraryGrid);
-    libraryGrid.addEventListener('click', handleWidgetToggle);
+        <div class="widget-preview"><img src="${widget.preview}" alt="${widget.name} preview"></div>
+        <span>${widget.name}</span>
+        <button class="widget-toggle-btn ${isActive ? 'is-active' : ''}" data-widget-id="${id}">
+            ${isActive ? 'Remove' : 'Add'}
+        </button>
+    `;
+    libraryGrid.appendChild(itemDiv);
 }
-
+    const libraryTab = document.getElementById('library-tab');
+    libraryTab.innerHTML = '';
+    libraryTab.appendChild(libraryGrid);
+    libraryTab.removeEventListener('click', handleWidgetToggle);
+    libraryTab.addEventListener('click', handleWidgetToggle);
 function handleWidgetToggle(e) {
     if (e.target.matches('.widget-toggle-btn')) {
         const widgetId = e.target.dataset.widgetId;
@@ -183,4 +182,68 @@ widgetManager.addWidget('todo');
 // --- Initialize and Start the Onboarding Tour ---
 const tour = new Tour();
 
-window.addEventListener('load', () => setTimeout(() => tour.start(), 500));
+window.addEventListener('load', () => setTimeout(() => tour.start(), 500));}
+
+
+const THEMES = [
+    { name: 'Default', url: '/images/abstract-gradient-image.jpg' },
+    { name: 'Cosmic', url: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop' },
+    { name: 'Mountain', url: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070&auto=format&fit=crop' },
+    { name: 'Aurora', url: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=2070&auto=format&fit=crop' }
+];
+
+function applyTheme(themeUrl) {
+    document.body.style.backgroundImage = `url(${themeUrl})`;
+    localStorage.setItem('aetheris-theme-url', themeUrl);
+}
+
+function renderThemes() {
+    const themesTab = document.getElementById('themes-tab');
+    themesTab.innerHTML = ''; 
+    const themeGrid = document.createElement('div');
+    themeGrid.className = 'theme-grid';
+
+    THEMES.forEach(theme => {
+        const themeItem = document.createElement('div');
+        themeItem.className = 'theme-item';
+        themeItem.innerHTML = `
+            <img src="${theme.url}" alt="${theme.name}" class="theme-thumbnail">
+            <span>${theme.name}</span>
+        `;
+        themeItem.addEventListener('click', () => applyTheme(theme.url));
+        themeGrid.appendChild(themeItem);
+    });
+    themesTab.appendChild(themeGrid);
+}
+
+
+function loadInitialTheme() {
+    const savedThemeUrl = localStorage.getItem('aetheris-theme-url');
+    if (savedThemeUrl) {
+        applyTheme(savedThemeUrl);
+    }
+}
+
+const tabContainer = document.querySelector('.settings-tabs');
+if (tabContainer) {
+    tabContainer.addEventListener('click', (e) => {
+        if (e.target.matches('.tab-link')) {
+            const tabId = e.target.dataset.tab;
+
+
+            tabContainer.querySelectorAll('.tab-link').forEach(btn => btn.classList.remove('is-active'));
+            e.target.classList.add('is-active');
+
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('is-active'));
+            document.getElementById(`${tabId}-tab`).classList.add('is-active');
+            
+
+            if (tabId === 'themes') {
+                renderThemes();
+            }
+        }
+    });
+}
+
+
+loadInitialTheme();
