@@ -211,8 +211,6 @@ class TodoWidget extends BaseWidget {
     }
 }
 
-
-
 class WeatherWidget extends BaseWidget {
     constructor() {
         const defaultWidth = 3;
@@ -233,15 +231,17 @@ class WeatherWidget extends BaseWidget {
         this.run();
 
         this.element.addEventListener('resizestop', () => {
+            console.log('Resize detected, updating layout...');
             this.updateLayout();
         });
     }
 
     getCurrentArea() {
-        
         const width = parseInt(this.element.getAttribute('data-gs-width')) || this.defaultWidth;
         const height = parseInt(this.element.getAttribute('data-gs-height')) || this.defaultHeight;
-        return width * height;
+        const area = width * height;
+        console.log(`Current dimensions: ${width}x${height}, Area: ${area}`);
+        return area;
     }
 
     run() {
@@ -254,13 +254,12 @@ class WeatherWidget extends BaseWidget {
     }
 
     askForLocation() {
-
         this.contentElement.innerHTML = `
             <div class="weather-input-container">
                 <input type="text" class="weather-location-input" placeholder="Enter Your City">
             </div>
         `;
-        grid.update(this.element, { w: this.defaultWidth, h: this.defaultHeight });
+        // Don't force dimensions when asking for location
         this.addHandle();
         const input = this.contentElement.querySelector('.weather-location-input');
         if (input) {
@@ -298,11 +297,23 @@ class WeatherWidget extends BaseWidget {
 
     updateLayout() {
         if (!this.fullForecastData) return;
+        
         const area = this.getCurrentArea();
         console.log('WeatherWidget area:', area);
-        if (area > 18) { this.renderForecast(); }
-        else if (area > 8) { this.renderDetailed(); }
-        else { this.renderCompact(); }
+        
+        // Adjusted thresholds for better responsiveness
+        if (area >= 12) { 
+            console.log('Rendering full forecast');
+            this.renderForecast(); 
+        }
+        else if (area >= 8) { 
+            console.log('Rendering detailed view');
+            this.renderDetailed(); 
+        }
+        else { 
+            console.log('Rendering compact view');
+            this.renderCompact(); 
+        }
         this.addHandle();
     }
 
@@ -317,7 +328,10 @@ class WeatherWidget extends BaseWidget {
                 </div>
             </div>
         `;
-        grid.update(this.element, { w: this.defaultWidth, h: this.defaultHeight });
+        // Update grid with current dimensions, not default
+        const currentWidth = parseInt(this.element.getAttribute('data-gs-width')) || this.defaultWidth;
+        const currentHeight = parseInt(this.element.getAttribute('data-gs-height')) || this.defaultHeight;
+        grid.update(this.element, { w: currentWidth, h: currentHeight });
     }
 
     renderDetailed() {
@@ -325,6 +339,7 @@ class WeatherWidget extends BaseWidget {
         const hourlyForecast = forecast.forecastday[0].hour;
         const now = new Date().getHours();
         const nextHours = hourlyForecast.filter(h => new Date(h.time).getHours() > now).slice(0, 4);
+        
         this.contentElement.innerHTML = `
             <div class="weather-detailed">
                 <div class="weather-detailed-top">
@@ -345,13 +360,16 @@ class WeatherWidget extends BaseWidget {
                 </div>
             </div>
         `;
-        grid.update(this.element, { w: this.defaultWidth, h: this.defaultHeight });
-
+        // Update grid with current dimensions, not default
+        const currentWidth = parseInt(this.element.getAttribute('data-gs-width')) || this.defaultWidth;
+        const currentHeight = parseInt(this.element.getAttribute('data-gs-height')) || this.defaultHeight;
+        grid.update(this.element, { w: currentWidth, h: currentHeight });
     }
 
     renderForecast() {
         const { location, forecast } = this.fullForecastData;
         const dailyForecast = forecast.forecastday;
+        
         this.contentElement.innerHTML = `
             <div class="weather-full-forecast">
                 <div class="forecast-header">${location.name} - 3 Day Forecast</div>
@@ -369,8 +387,10 @@ class WeatherWidget extends BaseWidget {
                 </div>
             </div>
         `;
-        grid.update(this.element, { w: this.defaultWidth, h: this.defaultHeight });
-
+        // Update grid with current dimensions, not default
+        const currentWidth = parseInt(this.element.getAttribute('data-gs-width')) || this.defaultWidth;
+        const currentHeight = parseInt(this.element.getAttribute('data-gs-height')) || this.defaultHeight;
+        grid.update(this.element, { w: currentWidth, h: currentHeight });
     }
 }
 class AIWidget extends BaseWidget {
