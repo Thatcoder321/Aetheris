@@ -179,3 +179,8 @@ function handleWidgetToggle(e) {
 widgetManager.addWidget('greeting');
 widgetManager.addWidget('clock');
 widgetManager.addWidget('todo');
+
+// --- Initialize and Start the Onboarding Tour ---
+const tour = new Tour();
+
+window.addEventListener('load', () => setTimeout(() => tour.start(), 500));

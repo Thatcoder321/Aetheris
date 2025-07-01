@@ -233,3 +233,54 @@ body {
 
     filter: invert(1); 
 }
+
+/* --- Onboarding Tour --- */
+#tour-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9990; 
+}
+
+#tour-spotlight {
+    position: fixed;
+    border-radius: 8px;
+
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
+    z-index: 9991;
+    pointer-events: none; 
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+#tour-tooltip {
+    position: fixed;
+    background: rgba(40, 40, 40, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    z-index: 9992;
+    width: 300px;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+#tour-tooltip-content {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+#tour-next-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(90, 120, 255, 0.7);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}

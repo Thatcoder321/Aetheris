@@ -61,7 +61,15 @@
         <button id="reset-layout-btn">Reset Layout</button>
     </div>
 
-
+<!-- ================================== -->
+<!-- === ONBOARDING TOUR UI         === -->
+<!-- ================================== -->
+<div id="tour-overlay" class="hidden"></div>
+<div id="tour-spotlight" class="hidden"></div>
+<div id="tour-tooltip" class="hidden">
+    <div id="tour-tooltip-content"></div>
+    <button id="tour-next-btn">Next</button>
+</div>
     <!-- ================================== -->
     <!-- === 3D STAGE (Inside Wrapper) === -->
     <!-- ================================== -->
@@ -84,7 +92,8 @@
     <!-- Widget Blueprints -->
     <script src="/js/widgets-v2.js" defer></script>
     
-
+        
+        <script src="/js/tour.js" defer></script>
     
     <!-- Main Application Logic (Runs Last) -->
     <script src="/js/app.js" defer></script>
