@@ -238,8 +238,9 @@ class WeatherWidget extends BaseWidget {
     }
 
     getCurrentArea() {
-        const width = parseInt(this.element.getAttribute('gs-w')) || this.defaultWidth;
-        const height = parseInt(this.element.getAttribute('gs-h')) || this.defaultHeight;
+        
+        const width = parseInt(this.element.getAttribute('data-gs-width')) || this.defaultWidth;
+        const height = parseInt(this.element.getAttribute('data-gs-height')) || this.defaultHeight;
         return width * height;
     }
 
