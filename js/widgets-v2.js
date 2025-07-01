@@ -286,7 +286,7 @@ class WeatherWidget extends BaseWidget {
                 <input type="text" class="weather-location-input" placeholder="Enter Your City">
             </div>
         `;
-        // Don't force dimensions when asking for location
+
         this.addHandle();
         const input = this.contentElement.querySelector('.weather-location-input');
         if (input) {
@@ -316,7 +316,7 @@ class WeatherWidget extends BaseWidget {
             this.fullForecastData = await response.json();
             this.updateLayout();
         } catch (error) {
-            console.error('Weather Fetch Error:', error);
+
             this.contentElement.innerHTML = `<p style="color: #ffcccc;">Error: ${error.message}</p>`;
             this.addHandle(); 
         }
@@ -326,19 +326,19 @@ class WeatherWidget extends BaseWidget {
         if (!this.fullForecastData) return;
         
         const area = this.getCurrentArea();
-        console.log('WeatherWidget area:', area);
+
         
-        // Render based on area - no grid updates in render methods
+
         if (area >= 12) { 
-            console.log('Rendering full forecast');
+
             this.renderForecast(); 
         }
         else if (area >= 8) { 
-            console.log('Rendering detailed view');
+
             this.renderDetailed(); 
         }
         else { 
-            console.log('Rendering compact view');
+
             this.renderCompact(); 
         }
         
@@ -967,14 +967,23 @@ class StockTickerWidget extends BaseWidget {
                 <button type="submit">Track Stocks</button>
             </form>
         `;
+    
         grid.update(this.element, { w: defaultWidth, h: defaultHeight });
         this.addHandle();
-        
-        this.contentElement.querySelector('form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const input = e.target.querySelector('input').value;
-            localStorage.setItem('aetheris-stock-symbols', input);
-            this.run();
+
+        requestAnimationFrame(() => {
+            const form = this.contentElement.querySelector('form');
+            if (!form) {
+                console.warn("Form not found in DOM after render.");
+                return;
+            }
+    
+            form.addEventListener('submit', (e) => {
+                e.preventDefault(); 
+                const input = e.target.querySelector('input').value;
+                localStorage.setItem('aetheris-stock-symbols', input);
+                this.run();
+            });
         });
     }
 
