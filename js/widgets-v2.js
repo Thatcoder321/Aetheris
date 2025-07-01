@@ -52,21 +52,23 @@ class ClockWidget extends BaseWidget {
 // --- GREETING WIDGET ---
 class GreetingWidget extends BaseWidget {
     constructor() {
-        // In GreetingWidget
+    const defaultWidth = 4;
+    const defaultHeight = 1;
 super({
     id: 'greeting',
     className: 'greeting',
     x: 0,      // Start at the far left
     y: 0,      // Move it to the very top row
-    width: 12, // Make it span the entire 12-column width
-    height: 1  // Keep it short, just one row high
+    width: defaultWidth, height: defaultHeight
 });
+grid.update(this.element, { w: defaultWidth, h: defaultHeight });
         
         // 1. Create ALL elements from the start (non-destructive)
         this.contentElement.innerHTML = `
             <span class="greeting-text hidden"></span>
             <input type="text" class="greeting-input hidden" placeholder="What's your name?">
         `;
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
         
         // 2. Add the handle to the stable DOM
         this.addHandle(); 
@@ -135,10 +137,10 @@ class TodoWidget extends BaseWidget {
             height: defaultHeight
         });
 
-        // 2. The "Constructor Hammer"
+
         grid.update(this.element, { w: defaultWidth, h: defaultHeight });
 
-        // 3. The rest of the setup logic
+
         this.tasks = JSON.parse(localStorage.getItem('aetheris-tasks')) || [];
         this.contentElement.innerHTML = `
             <input type="text" class="todo-input" placeholder="New Task...">
@@ -212,15 +214,16 @@ class TodoWidget extends BaseWidget {
 //  Adaptive WeatherWidget
 class WeatherWidget extends BaseWidget {
     constructor() {
+        const defaultWidth = 3;
+        const defaultHeight = 2;
         super({
             id: 'weather',
             className: 'weather',
             x: 0,
             y: 3,
-            width: 3,
-            height: 2
+            width: defaultWidth, height: defaultHeight
         });
-    
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
         this.fullForecastData = null;
         this.addHandle();
         this.run();
@@ -254,6 +257,7 @@ class WeatherWidget extends BaseWidget {
                 <input type="text" class="weather-location-input" placeholder="Enter Your City">
             </div>
         `;
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
         this.addHandle();
     
         const input = this.contentElement.querySelector('.weather-location-input');
@@ -327,6 +331,7 @@ async fetchFullForecast(city) {
                 </div>
             </div>
         `;
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
     }
 
     // Tier 2 Renderer
@@ -358,6 +363,7 @@ async fetchFullForecast(city) {
                 </div>
             </div>
         `;
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
     }
 
     // Tier 3 Renderer
@@ -382,6 +388,7 @@ async fetchFullForecast(city) {
                 </div>
             </div>
         `;
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
     }
 }
 
@@ -907,13 +914,16 @@ class CountdownWidget extends BaseWidget {
 
 class StockTickerWidget extends BaseWidget {
     constructor() {
+        const defaultWidth = 4;
+        const defaultHeight = 3;
         super({
             id: 'stock-ticker',
             className: 'stock-ticker',
             x: 0, y: 5,
-            width: 4, height: 3 
-        });
+            width: defaultWidth, height: defaultHeight
 
+        });
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
         this.stocks = [];
         this.scrollIndex = 0;
         this.timerId = null;
@@ -940,6 +950,7 @@ class StockTickerWidget extends BaseWidget {
                 <button type="submit">Track Stocks</button>
             </form>
         `;
+        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
         this.addHandle();
         
         this.contentElement.querySelector('form').addEventListener('submit', (e) => {
@@ -990,6 +1001,7 @@ class StockTickerWidget extends BaseWidget {
                 <span class="stock-price">$${stock.price}</span>
                 <span class="stock-change">${sign}${stock.change} (${sign}${stock.changePercent}%)</span>
             `;
+            grid.update(this.element, { w: defaultWidth, h: defaultHeight });
             list.appendChild(item);
         });
 
@@ -1188,8 +1200,6 @@ renderQuote(data) {
 }
     cleanup() {}
 }
-
-// In js/widgets-v2.js
 
 class QuickLinksWidget extends BaseWidget {
     constructor() {

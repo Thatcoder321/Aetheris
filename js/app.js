@@ -6,7 +6,7 @@ const WIDGET_REGISTRY = {
     'weather': { name: 'Weather', class: WeatherWidget, preview: '/images/weather-preview.png' },
     'todo': { name: 'To-Do List', class: TodoWidget, preview: '/images/todo-preview.png' },
     'ai-chat': { name: 'AI Chat', class: AIWidget, preview: '/images/ai-chat-preview.png' },
-    'pomodoro': { name: 'Pomodoro Timer', class: PomodoroWidget, preview: '/images/todo-preview.png' }, // Using a placeholder preview for now
+    'pomodoro': { name: 'Pomodoro Timer', class: PomodoroWidget, preview: '/images/pomodoro-preview.png' }, // Using a placeholder preview for now
     'notepad': { name: 'Notepad', class: NotepadWidget, preview: '/images/notepad-preview.png' }, 
     'news-ticker': { name: 'News Ticker', class: NewsTickerWidget, preview: '/images/news-preview.png' },
     'countdown': { name: 'Countdown', class: CountdownWidget, preview: '/images/countdown-preview.png' },
@@ -54,18 +54,6 @@ const reorganizeForm = document.getElementById('reorganize-form');
 const resetButton = document.getElementById('reset-layout-btn');
 
 
-// 2. Logic for the Settings Panel (The Gear Icon)
-if (settingsBtn && settingsPanel && settingsCloseBtn) {
-    settingsBtn.addEventListener('click', () => {
-        settingsPanel.classList.add('is-open');
-        
-        setTimeout(renderWidgetLibrary, 0); 
-    });
-
-    settingsCloseBtn.addEventListener('click', () => {
-        settingsPanel.classList.remove('is-open');
-    });
-}
 
 // 3. Logic for the Reorganize Modal (The Magic Wand Icon)
 if (reorganizeBtn && reorganizeModalOverlay && reorganizeCancelBtn && reorganizeForm) {
@@ -209,8 +197,10 @@ const THEMES = [
     { name: 'Aurora', url: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=2070&auto=format&fit=crop' }
 ];
 
+
 function applyTheme(themeUrl) {
-    document.body.style.backgroundImage = `url(${themeUrl})`;
+
+    document.body.style.setProperty('--current-theme-url', `url(${themeUrl})`);
     localStorage.setItem('aetheris-theme-url', themeUrl);
 }
 
@@ -241,26 +231,60 @@ function loadInitialTheme() {
     }
 }
 
+
+
 const tabContainer = document.querySelector('.settings-tabs');
-if (tabContainer) {
+const contentPanes = document.querySelectorAll('.tab-content');
+
+function showActiveTabContent() {
+    const activeTabButton = tabContainer.querySelector('.tab-link.is-active');
+    if (!activeTabButton) {
+
+        tabContainer.querySelector('.tab-link').classList.add('is-active');
+    }
+    
+    const activeTabId = tabContainer.querySelector('.tab-link.is-active').dataset.tab;
+
+
+    contentPanes.forEach(pane => pane.classList.remove('is-active'));
+    
+
+    const activeContentPane = document.getElementById(`${activeTabId}-tab`);
+    if (activeContentPane) {
+        activeContentPane.classList.add('is-active');
+    }
+}
+
+
+if (settingsBtn && settingsPanel && settingsCloseBtn && tabContainer) {
+
+    settingsBtn.addEventListener('click', () => {
+        settingsPanel.classList.add('is-open');
+
+        showActiveTabContent();
+    });
+
+
+    settingsCloseBtn.addEventListener('click', () => {
+        settingsPanel.classList.remove('is-open');
+    });
+
     tabContainer.addEventListener('click', (e) => {
         if (e.target.matches('.tab-link')) {
-            const tabId = e.target.dataset.tab;
-
 
             tabContainer.querySelectorAll('.tab-link').forEach(btn => btn.classList.remove('is-active'));
             e.target.classList.add('is-active');
 
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('is-active'));
-            document.getElementById(`${tabId}-tab`).classList.add('is-active');
+            showActiveTabContent();
             
 
-            if (tabId === 'themes') {
+            if (e.target.dataset.tab === 'themes' && !document.getElementById('themes-tab').hasChildNodes()) {
                 renderThemes();
             }
         }
     });
 }
+
 
 
 loadInitialTheme();
