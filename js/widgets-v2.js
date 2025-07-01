@@ -244,18 +244,21 @@ class WeatherWidget extends BaseWidget {
         }
     }
 
-    // --- THIS IS THE FINAL, CORRECTED METHOD ---
-    askForLocation() {
-        this.contentElement.innerHTML = `
-            <div class="weather-input-container">
-                <form id="weather-form">
-                    <input type="text" class="weather-location-input" placeholder="Enter Your City">
-                </form>
-            </div>
-        `;
-        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
-        this.addHandle();
 
+
+askForLocation() {
+    this.contentElement.innerHTML = `
+        <div class="weather-input-container">
+            <form id="weather-form">
+                <input type="text" class="weather-location-input" placeholder="Enter Your City">
+            </form>
+        </div>
+    `;
+    this.addHandle();
+    grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+
+
+    setTimeout(() => {
         const form = this.contentElement.querySelector('#weather-form');
         const input = this.contentElement.querySelector('.weather-location-input');
 
@@ -263,7 +266,7 @@ class WeatherWidget extends BaseWidget {
             input.focus();
             
             form.addEventListener('submit', (e) => {
-                // This is the most important line. It MUST be called to stop the reload.
+  
                 e.preventDefault(); 
                 
                 if (input.value) {
@@ -273,7 +276,8 @@ class WeatherWidget extends BaseWidget {
                 }
             });
         }
-    }
+    }, 0); 
+}
 
     async fetchFullForecast(city) {
         this.contentElement.innerHTML = `<p>Loading Weather...</p>`;
