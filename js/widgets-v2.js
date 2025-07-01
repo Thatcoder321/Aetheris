@@ -123,7 +123,9 @@ grid.update(this.element, { w: defaultWidth, h: defaultHeight });
 class TodoWidget extends BaseWidget {
     constructor() {
         
-       
+        // Define the fixed size for the widget here.
+        const defaultWidth = 4;
+        const defaultHeight = 3; 
 
         // 1. Call super() FIRST with the desired layout.
         super({
@@ -134,9 +136,6 @@ class TodoWidget extends BaseWidget {
             width: defaultWidth,
             height: defaultHeight
         });
-         
-         const defaultWidth = 4;
-         const defaultHeight = 3; 
 
 
         grid.update(this.element, { w: defaultWidth, h: defaultHeight });
@@ -213,24 +212,25 @@ class TodoWidget extends BaseWidget {
 }
 
 
+
 class WeatherWidget extends BaseWidget {
     constructor() {
-        const defaultWidth = 3;
-        const defaultHeight = 2;
+
+        this.defaultWidth = 3;
+        this.defaultHeight = 2;
         
         super({
             id: 'weather',
             className: 'weather',
             x: 0, y: 3,
-            width: defaultWidth,
-            height: defaultHeight
+            width: this.defaultWidth,
+            height: this.defaultHeight
         });
         
-        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+        grid.update(this.element, { w: this.defaultWidth, h: this.defaultHeight });
         this.fullForecastData = null;
         this.addHandle();
         this.run();
-
 
         this.element.addEventListener('resizestop', (event) => {
             const width = parseInt(event.target.getAttribute('gs-w'));
@@ -248,35 +248,28 @@ class WeatherWidget extends BaseWidget {
         }
     }
 
+    askForLocation() {
 
-
-
-
-askForLocation() {
-
-    this.contentElement.innerHTML = `
-        <div class="weather-input-container">
-            <input type="text" class="weather-location-input" placeholder="Enter Your City">
-        </div>
-    `;
-    this.addHandle();
-
-    const input = this.contentElement.querySelector('.weather-location-input');
-
-    if (input) {
-        input.focus();
-        
-
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && input.value) {
-
-                const city = input.value;
-                localStorage.setItem('aetheris-city', city);
-                this.fetchFullForecast(city);
-            }
-        });
+        this.contentElement.innerHTML = `
+            <div class="weather-input-container">
+                <input type="text" class="weather-location-input" placeholder="Enter Your City">
+            </div>
+        `;
+        grid.update(this.element, { w: this.defaultWidth, h: this.defaultHeight });
+        this.addHandle();
+        const input = this.contentElement.querySelector('.weather-location-input');
+        if (input) {
+            input.focus();
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && input.value) {
+                    const city = input.value;
+                    localStorage.setItem('aetheris-city', city);
+                    this.fetchFullForecast(city);
+                }
+            });
+        }
     }
-}
+
     async fetchFullForecast(city) {
         this.contentElement.innerHTML = `<p>Loading Weather...</p>`;
         try {
@@ -290,11 +283,9 @@ askForLocation() {
                 throw new Error(errData.error || 'API request failed');
             }
             this.fullForecastData = await response.json();
-            
             const width = parseInt(this.element.getAttribute('gs-w'));
             const height = parseInt(this.element.getAttribute('gs-h'));
             this.updateLayout(width, height);
-
         } catch (error) {
             console.error('Weather Fetch Error:', error);
             this.contentElement.innerHTML = `<p style="color: #ffcccc;">Error: ${error.message}</p>`;
@@ -305,7 +296,7 @@ askForLocation() {
     updateLayout(width, height) {
         if (!this.fullForecastData) return;
         const area = width * height;
-        if (area > 18) { this.renderForecast(width); } 
+        if (area > 18) { this.renderForecast(); } 
         else if (area > 8) { this.renderDetailed(); } 
         else { this.renderCompact(); }
         this.addHandle();
@@ -322,7 +313,7 @@ askForLocation() {
                 </div>
             </div>
         `;
-        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+        grid.update(this.element, { w: this.defaultWidth, h: this.defaultHeight });
     }
 
     renderDetailed() {
@@ -330,7 +321,6 @@ askForLocation() {
         const hourlyForecast = forecast.forecastday[0].hour;
         const now = new Date().getHours();
         const nextHours = hourlyForecast.filter(h => new Date(h.time).getHours() > now).slice(0, 4);
-
         this.contentElement.innerHTML = `
             <div class="weather-detailed">
                 <div class="weather-detailed-top">
@@ -351,13 +341,13 @@ askForLocation() {
                 </div>
             </div>
         `;
-        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+        grid.update(this.element, { w: this.defaultWidth, h: this.defaultHeight });
+
     }
 
     renderForecast() {
         const { location, forecast } = this.fullForecastData;
         const dailyForecast = forecast.forecastday;
-
         this.contentElement.innerHTML = `
             <div class="weather-full-forecast">
                 <div class="forecast-header">${location.name} - 3 Day Forecast</div>
@@ -375,7 +365,8 @@ askForLocation() {
                 </div>
             </div>
         `;
-        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+        grid.update(this.element, { w: this.defaultWidth, h: this.defaultHeight });
+
     }
 }
 class AIWidget extends BaseWidget {
