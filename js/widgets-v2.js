@@ -215,17 +215,17 @@ class TodoWidget extends BaseWidget {
 
 class WeatherWidget extends BaseWidget {
     constructor() {
-
-        this.defaultWidth = 3;
-        this.defaultHeight = 2;
-        
+        const defaultWidth = 3;
+        const defaultHeight = 2;
         super({
             id: 'weather',
             className: 'weather',
             x: 0, y: 3,
-            width: this.defaultWidth,
-            height: this.defaultHeight
+            width: defaultWidth,
+            height: defaultHeight
         });
+        this.defaultWidth = defaultWidth;
+        this.defaultHeight = defaultHeight;
         
         grid.update(this.element, { w: this.defaultWidth, h: this.defaultHeight });
         this.fullForecastData = null;
