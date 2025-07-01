@@ -285,3 +285,17 @@ body {
     font-size: 1rem;
     cursor: pointer;
 }
+
+
+#tour-overlay.cutout-mode {
+    background: transparent; 
+
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
+
+    clip-path: polygon(
+
+        -1px -1px, 9999px -1px, 9999px 9999px, -1px 9999px, -1px -1px,
+
+        0 0, 0 0, 0 0, 0 0
+    );
+}

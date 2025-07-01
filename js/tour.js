@@ -89,33 +89,69 @@ class Tour {
                 this.nextBtn.style.display = 'none'; 
         }
 
-        if (step.target) {
+        
+    if (step.target) {
+       
+        if (step.target === '.widget-toggle-btn[data-widget-id="clock"]') {
+         
+            this.highlight(document.getElementById('settings-panel'));
+            
+     
+            const targetElement = document.querySelector(step.target);
+            if (targetElement) {
+                this.waitForClick(targetElement);
+            }
+        } else {
+          
             setTimeout(() => {
                 const targetElement = document.querySelector(step.target);
-                if(targetElement) {
+                if (targetElement) {
                     this.highlight(targetElement);
-                    if (step.action === 'click') {
-                        this.waitForClick(targetElement);
-                    } else if (step.action === 'interact') {
-                        this.waitForInteraction();
-                    }
+                    if (step.action === 'click') this.waitForClick(targetElement);
+                    else if (step.action === 'interact') this.waitForInteraction();
                 }
             }, 100);
-        } else {
-            this.spotlight.classList.add('hidden');
-            this.positionTooltip();
         }
+    } else {
+        this.spotlight.classList.add('hidden');
+        this.overlay.classList.remove('cutout-mode');
+        this.overlay.style.clipPath = 'none';
+        this.positionTooltip();
     }
+}
     
-    highlight(element) {
+
+
+highlight(element) {
+    const rect = element.getBoundingClientRect();
+
+    if (element.id === 'settings-panel') {
+        this.spotlight.classList.add('hidden'); 
+        this.overlay.classList.add('cutout-mode'); 
+
+        const x1 = rect.left;
+        const y1 = rect.top;
+        const x2 = rect.right;
+        const y2 = rect.bottom;
+        this.overlay.style.clipPath = `polygon(
+            -1px -1px, 9999px -1px, 9999px 9999px, -1px 9999px, -1px -1px,
+            ${x1}px ${y1}px, ${x1}px ${y2}px, ${x2}px ${y2}px, ${x2}px ${y1}px
+        )`;
+
+    } else {
+
+        this.overlay.classList.remove('cutout-mode');
+        this.overlay.style.clipPath = 'none'; 
         this.spotlight.classList.remove('hidden');
-        const rect = element.getBoundingClientRect();
+
         this.spotlight.style.width = `${rect.width + 10}px`;
         this.spotlight.style.height = `${rect.height + 10}px`;
         this.spotlight.style.top = `${rect.top - 5}px`;
         this.spotlight.style.left = `${rect.left - 5}px`;
-        this.positionTooltip(rect);
     }
+    
+    this.positionTooltip(rect); 
+}
 
     
 
