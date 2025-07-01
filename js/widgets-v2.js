@@ -210,7 +210,6 @@ class TodoWidget extends BaseWidget {
         this.render();
     }
 }
-
 class WeatherWidget extends BaseWidget {
     constructor() {
         const defaultWidth = 3;
@@ -298,23 +297,26 @@ class WeatherWidget extends BaseWidget {
     updateLayout() {
         if (!this.fullForecastData) return;
         
-        const area = this.getCurrentArea();
-        console.log('WeatherWidget area:', area);
-        
-        // Adjusted thresholds for better responsiveness
-        if (area >= 12) { 
-            console.log('Rendering full forecast');
-            this.renderForecast(); 
-        }
-        else if (area >= 8) { 
-            console.log('Rendering detailed view');
-            this.renderDetailed(); 
-        }
-        else { 
-            console.log('Rendering compact view');
-            this.renderCompact(); 
-        }
-        this.addHandle();
+        // Use a small timeout to ensure GridStack has finished its resize operations
+        setTimeout(() => {
+            const area = this.getCurrentArea();
+            console.log('WeatherWidget area:', area);
+            
+            // Adjusted thresholds for better responsiveness
+            if (area >= 12) { 
+                console.log('Rendering full forecast');
+                this.renderForecast(); 
+            }
+            else if (area >= 8) { 
+                console.log('Rendering detailed view');
+                this.renderDetailed(); 
+            }
+            else { 
+                console.log('Rendering compact view');
+                this.renderCompact(); 
+            }
+            this.addHandle();
+        }, 100);
     }
 
     renderCompact() {
@@ -328,10 +330,6 @@ class WeatherWidget extends BaseWidget {
                 </div>
             </div>
         `;
-        // Update grid with current dimensions, not default
-        const currentWidth = parseInt(this.element.getAttribute('data-gs-width')) || this.defaultWidth;
-        const currentHeight = parseInt(this.element.getAttribute('data-gs-height')) || this.defaultHeight;
-        grid.update(this.element, { w: currentWidth, h: currentHeight });
     }
 
     renderDetailed() {
@@ -360,10 +358,6 @@ class WeatherWidget extends BaseWidget {
                 </div>
             </div>
         `;
-        // Update grid with current dimensions, not default
-        const currentWidth = parseInt(this.element.getAttribute('data-gs-width')) || this.defaultWidth;
-        const currentHeight = parseInt(this.element.getAttribute('data-gs-height')) || this.defaultHeight;
-        grid.update(this.element, { w: currentWidth, h: currentHeight });
     }
 
     renderForecast() {
@@ -387,10 +381,6 @@ class WeatherWidget extends BaseWidget {
                 </div>
             </div>
         `;
-        // Update grid with current dimensions, not default
-        const currentWidth = parseInt(this.element.getAttribute('data-gs-width')) || this.defaultWidth;
-        const currentHeight = parseInt(this.element.getAttribute('data-gs-height')) || this.defaultHeight;
-        grid.update(this.element, { w: currentWidth, h: currentHeight });
     }
 }
 class AIWidget extends BaseWidget {
