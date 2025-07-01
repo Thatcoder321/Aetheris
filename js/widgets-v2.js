@@ -239,11 +239,18 @@ class WeatherWidget extends BaseWidget {
 
     getCurrentArea() {
         
-        let width = parseInt(this.element.getAttribute('gs-w') || this.element.getAttribute('data-gs-width'));
-        let height = parseInt(this.element.getAttribute('gs-h') || this.element.getAttribute('data-gs-height'));
-        if (isNaN(width)) width = this.defaultWidth;
-        if (isNaN(height)) height = this.defaultHeight;
+        const width = parseInt(this.element.getAttribute('data-gs-width')) || this.defaultWidth;
+        const height = parseInt(this.element.getAttribute('data-gs-height')) || this.defaultHeight;
         return width * height;
+    }
+
+    run() {
+        const savedCity = localStorage.getItem('aetheris-city');
+        if (savedCity) {
+            this.fetchFullForecast(savedCity);
+        } else {
+            this.askForLocation();
+        }
     }
 
     askForLocation() {
