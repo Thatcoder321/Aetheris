@@ -1,4 +1,3 @@
-// /public/js/tour.js - The COMPLETE DIAGNOSTIC version
 
 class Tour {
     constructor() {
@@ -12,7 +11,14 @@ class Tour {
             { title: "Welcome to Aetheris!", content: "This is your new dashboard, a space you can customize completely. Let's take a quick tour.", target: null, action: 'button', showArrow: false },
             { title: "Command Center", content: "This is the **Settings** button. **Click the gear icon to continue.**", target: '#settings-btn', action: 'click', showArrow: true },
             { title: "The Widget Library", content: "This panel contains the widget library. **Find the 'Quote of the Day' and click its 'Add' button.**", target: '#settings-panel', action: 'custom_waitForQuoteAdd', showArrow: false, position: 'top-center' },
-            { title: "Your First Widget!", content: "Perfect! You can drag and resize widgets. **Try moving or resizing the new Quote widget to continue.**", target: '.grid-stack-item[gs-id="quote-of-day"]', action: 'interact', showArrow: true },
+
+{
+    title: "Your First Widget!",
+    content: "Perfect! You can drag widgets to move them and use the handle in the corner to resize them. This makes your dashboard truly your own.",
+    target: '.grid-stack-item[gs-id="quote-of-day"]',
+    action: 'button', 
+    showArrow: true
+},
             { title: "The AI Architect", content: "This is the **AI Layout Architect** (the magic wand icon). Use it to reorganize your dashboard with a simple command.", target: '#reorganize-btn', action: 'button', showArrow: true },
             { title: "You're All Set!", content: "You've mastered the basics. The rest is up to you. Build your perfect space.", target: null, action: 'finish', showArrow: false }
         ];
@@ -104,7 +110,7 @@ class Tour {
         this.arrow.style.transform = `rotate(${angle + 45}deg)`;
     }
 
-    // --- THIS IS THE METHOD WE ARE TESTING ---
+
     waitForInteraction() {
         console.log("Tour Step: Now waiting for interaction...");
 
@@ -115,7 +121,7 @@ class Tour {
                 console.log("Tour Step: Found the Quote widget. Attaching listeners now.");
 
                 const interactionHandler = (event) => {
-                    // This is the most important line in the entire test.
+   
                     console.log(`GRID INTERACTION FIRED! Event type: ${event.type}`); 
                     
                     grid.off('dragstop', interactionHandler);
