@@ -251,26 +251,33 @@ class WeatherWidget extends BaseWidget {
         }
     }
 
-    askForLocation() {
-        this.contentElement.innerHTML = `
-            <div class="weather-input-container">
-                <input type="text" class="weather-location-input" placeholder="Enter Your City">
-            </div>
-        `;
-        grid.update(this.element, { w: defaultWidth, h: defaultHeight });
-        this.addHandle();
-    
-        const input = this.contentElement.querySelector('.weather-location-input');
+
+askForLocation() {
+    this.contentElement.innerHTML = `
+        <div class="weather-input-container">
+            <input type="text" class="weather-location-input" placeholder="Enter Your City">
+        </div>
+    `;
+    grid.update(this.element, { w: defaultWidth, h: defaultHeight });
+    this.addHandle();
+
+
+    const input = this.contentElement.querySelector('.weather-location-input');
+    if (input) {
         input.focus();
         
         input.addEventListener('keypress', (e) => {
+            // Check if the key pressed was 'Enter'
             if (e.key === 'Enter' && input.value) {
+                // Prevent the default form submission behavior
+                e.preventDefault();
                 const city = input.value;
                 localStorage.setItem('aetheris-city', city);
                 this.fetchFullForecast(city);
             }
         });
     }
+}
 
 
 
