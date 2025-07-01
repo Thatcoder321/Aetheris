@@ -162,6 +162,8 @@ function renderWidgetLibrary() {
     libraryTab.appendChild(libraryGrid);
     libraryTab.removeEventListener('click', handleWidgetToggle);
     libraryTab.addEventListener('click', handleWidgetToggle);
+}
+
 function handleWidgetToggle(e) {
     if (e.target.matches('.widget-toggle-btn')) {
         const widgetId = e.target.dataset.widgetId;
@@ -174,15 +176,30 @@ function handleWidgetToggle(e) {
     }
 }
 
-// --- Initialize Default Widgets ---
+
+
+
+
+
 widgetManager.addWidget('greeting');
 widgetManager.addWidget('clock');
 widgetManager.addWidget('todo');
 
-// --- Initialize and Start the Onboarding Tour ---
+
+loadInitialTheme();
+
+
 const tour = new Tour();
 
-window.addEventListener('load', () => setTimeout(() => tour.start(), 500));}
+
+window.addEventListener('load', () => {
+
+    renderWidgetLibrary();
+    renderThemes();
+
+
+    setTimeout(() => tour.start(), 500);
+});
 
 
 const THEMES = [
