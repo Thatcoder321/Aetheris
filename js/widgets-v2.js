@@ -123,9 +123,7 @@ grid.update(this.element, { w: defaultWidth, h: defaultHeight });
 class TodoWidget extends BaseWidget {
     constructor() {
         
-        // Define the fixed size for the widget here.
-        const defaultWidth = 4;
-        const defaultHeight = 3; 
+       
 
         // 1. Call super() FIRST with the desired layout.
         super({
@@ -136,6 +134,9 @@ class TodoWidget extends BaseWidget {
             width: defaultWidth,
             height: defaultHeight
         });
+         
+         const defaultWidth = 4;
+         const defaultHeight = 3; 
 
 
         grid.update(this.element, { w: defaultWidth, h: defaultHeight });
