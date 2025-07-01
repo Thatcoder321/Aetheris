@@ -212,11 +212,11 @@ class TodoWidget extends BaseWidget {
 }
 
 
-
 class WeatherWidget extends BaseWidget {
     constructor() {
         const defaultWidth = 3;
         const defaultHeight = 2;
+        
         super({
             id: 'weather',
             className: 'weather',
@@ -224,10 +224,12 @@ class WeatherWidget extends BaseWidget {
             width: defaultWidth,
             height: defaultHeight
         });
+        
         grid.update(this.element, { w: defaultWidth, h: defaultHeight });
         this.fullForecastData = null;
         this.addHandle();
         this.run();
+
 
         this.element.addEventListener('resizestop', (event) => {
             const width = parseInt(event.target.getAttribute('gs-w'));
