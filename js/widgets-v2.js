@@ -229,9 +229,17 @@ class WeatherWidget extends BaseWidget {
         this.addHandle();
         this.run();
 
+        // Try both events to catch resize
         this.element.addEventListener('resizestop', () => {
             console.log('Resize detected, updating layout...');
-            this.updateLayout();
+            // Don't call updateLayout immediately, let GridStack settle first
+            setTimeout(() => this.updateLayout(), 50);
+        });
+        
+        // Also listen for change event
+        this.element.addEventListener('change', () => {
+            console.log('Change detected, updating layout...');
+            setTimeout(() => this.updateLayout(), 50);
         });
     }
 
@@ -297,26 +305,37 @@ class WeatherWidget extends BaseWidget {
     updateLayout() {
         if (!this.fullForecastData) return;
         
-        // Use a small timeout to ensure GridStack has finished its resize operations
+        const area = this.getCurrentArea();
+        console.log('WeatherWidget area:', area);
+        
+        // Store current dimensions before rendering
+        const currentWidth = parseInt(this.element.getAttribute('data-gs-width')) || this.defaultWidth;
+        const currentHeight = parseInt(this.element.getAttribute('data-gs-height')) || this.defaultHeight;
+        
+        // Render based on area
+        if (area >= 12) { 
+            console.log('Rendering full forecast');
+            this.renderForecast(); 
+        }
+        else if (area >= 8) { 
+            console.log('Rendering detailed view');
+            this.renderDetailed(); 
+        }
+        else { 
+            console.log('Rendering compact view');
+            this.renderCompact(); 
+        }
+        
+        // Force the dimensions to stay at current size after render
         setTimeout(() => {
-            const area = this.getCurrentArea();
-            console.log('WeatherWidget area:', area);
-            
-            // Adjusted thresholds for better responsiveness
-            if (area >= 12) { 
-                console.log('Rendering full forecast');
-                this.renderForecast(); 
+            if (this.element.getAttribute('data-gs-width') != currentWidth || 
+                this.element.getAttribute('data-gs-height') != currentHeight) {
+                console.log('GridStack changed dimensions, forcing back to:', currentWidth, currentHeight);
+                grid.update(this.element, { w: currentWidth, h: currentHeight });
             }
-            else if (area >= 8) { 
-                console.log('Rendering detailed view');
-                this.renderDetailed(); 
-            }
-            else { 
-                console.log('Rendering compact view');
-                this.renderCompact(); 
-            }
-            this.addHandle();
-        }, 100);
+        }, 10);
+        
+        this.addHandle();
     }
 
     renderCompact() {
