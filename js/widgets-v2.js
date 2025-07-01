@@ -239,18 +239,11 @@ class WeatherWidget extends BaseWidget {
 
     getCurrentArea() {
         
-        const width = parseInt(this.element.getAttribute('data-gs-width')) || this.defaultWidth;
-        const height = parseInt(this.element.getAttribute('data-gs-height')) || this.defaultHeight;
+        let width = parseInt(this.element.getAttribute('gs-w') || this.element.getAttribute('data-gs-width'));
+        let height = parseInt(this.element.getAttribute('gs-h') || this.element.getAttribute('data-gs-height'));
+        if (isNaN(width)) width = this.defaultWidth;
+        if (isNaN(height)) height = this.defaultHeight;
         return width * height;
-    }
-
-    run() {
-        const savedCity = localStorage.getItem('aetheris-city');
-        if (savedCity) {
-            this.fetchFullForecast(savedCity);
-        } else {
-            this.askForLocation();
-        }
     }
 
     askForLocation() {
@@ -299,6 +292,7 @@ class WeatherWidget extends BaseWidget {
     updateLayout() {
         if (!this.fullForecastData) return;
         const area = this.getCurrentArea();
+        console.log('WeatherWidget area:', area);
         if (area > 18) { this.renderForecast(); }
         else if (area > 8) { this.renderDetailed(); }
         else { this.renderCompact(); }
