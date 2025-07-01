@@ -246,39 +246,33 @@ class WeatherWidget extends BaseWidget {
 
 
 
+
+
 askForLocation() {
+
     this.contentElement.innerHTML = `
         <div class="weather-input-container">
-            <form id="weather-form">
-                <input type="text" class="weather-location-input" placeholder="Enter Your City">
-            </form>
+            <input type="text" class="weather-location-input" placeholder="Enter Your City">
         </div>
     `;
     this.addHandle();
-    grid.update(this.element, { w: defaultWidth, h: defaultHeight });
 
+    const input = this.contentElement.querySelector('.weather-location-input');
 
-    setTimeout(() => {
-        const form = this.contentElement.querySelector('#weather-form');
-        const input = this.contentElement.querySelector('.weather-location-input');
+    if (input) {
+        input.focus();
+        
 
-        if (form && input) {
-            input.focus();
-            
-            form.addEventListener('submit', (e) => {
-  
-                e.preventDefault(); 
-                
-                if (input.value) {
-                    const city = input.value;
-                    localStorage.setItem('aetheris-city', city);
-                    this.fetchFullForecast(city);
-                }
-            });
-        }
-    }, 0); 
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && input.value) {
+
+                const city = input.value;
+                localStorage.setItem('aetheris-city', city);
+                this.fetchFullForecast(city);
+            }
+        });
+    }
 }
-
     async fetchFullForecast(city) {
         this.contentElement.innerHTML = `<p>Loading Weather...</p>`;
         try {
