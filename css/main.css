@@ -350,14 +350,16 @@ body {
     font-weight: 500;
     border-bottom: 2px solid white;
 }
+
 .tab-content {
-    display: none; 
-}
-.tab-content.is-active {
-    display: block; 
+    display: none;
 }
 
-/* --- Theme Grid --- */
+.settings-content > .tab-content.is-active {
+    display: block;
+}
+
+
 .theme-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
