@@ -209,7 +209,8 @@ class TodoWidget extends BaseWidget {
         localStorage.setItem('aetheris-tasks', JSON.stringify(this.tasks));
         this.render();
     }
-}class WeatherWidget extends BaseWidget {
+}
+class WeatherWidget extends BaseWidget {
     constructor() {
         const defaultWidth = 3;
         const defaultHeight = 2;
@@ -242,25 +243,31 @@ class TodoWidget extends BaseWidget {
     }
 
     getCurrentArea() {
-        // Force a fresh read by checking multiple sources
-        let width = parseInt(this.element.getAttribute('data-gs-width'));
-        let height = parseInt(this.element.getAttribute('data-gs-height'));
-        
-        // Fallback to checking the element's dataset
-        if (!width || !height) {
-            width = parseInt(this.element.dataset.gsWidth) || this.defaultWidth;
-            height = parseInt(this.element.dataset.gsHeight) || this.defaultHeight;
+        // Debug: log all attributes to see what GridStack is actually using
+        console.log('All element attributes:');
+        for (let attr of this.element.attributes) {
+            console.log(`  ${attr.name}: ${attr.value}`);
         }
         
-        // Final fallback
-        if (!width || !height) {
-            width = this.defaultWidth;
-            height = this.defaultHeight;
-        }
+        // Try different possible attribute names that GridStack might use
+        let width = parseInt(this.element.getAttribute('data-gs-width')) ||
+                   parseInt(this.element.getAttribute('gs-w')) ||
+                   parseInt(this.element.getAttribute('data-gs-w')) ||
+                   parseInt(this.element.getAttribute('data-width')) ||
+                   parseInt(this.element.dataset.gsWidth) ||
+                   parseInt(this.element.dataset.gsW) ||
+                   this.defaultWidth;
+                   
+        let height = parseInt(this.element.getAttribute('data-gs-height')) ||
+                    parseInt(this.element.getAttribute('gs-h')) ||
+                    parseInt(this.element.getAttribute('data-gs-h')) ||
+                    parseInt(this.element.getAttribute('data-height')) ||
+                    parseInt(this.element.dataset.gsHeight) ||
+                    parseInt(this.element.dataset.gsH) ||
+                    this.defaultHeight;
         
         const area = width * height;
         console.log(`Current dimensions: ${width}x${height}, Area: ${area}`);
-        console.log('Raw attributes:', this.element.getAttribute('data-gs-width'), this.element.getAttribute('data-gs-height'));
         return area;
     }
 
