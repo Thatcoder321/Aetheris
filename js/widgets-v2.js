@@ -209,8 +209,7 @@ class TodoWidget extends BaseWidget {
         localStorage.setItem('aetheris-tasks', JSON.stringify(this.tasks));
         this.render();
     }
-}
-class WeatherWidget extends BaseWidget {
+}class WeatherWidget extends BaseWidget {
     constructor() {
         const defaultWidth = 3;
         const defaultHeight = 2;
@@ -229,25 +228,39 @@ class WeatherWidget extends BaseWidget {
         this.addHandle();
         this.run();
 
-        // Try both events to catch resize
-        this.element.addEventListener('resizestop', () => {
-            console.log('Resize detected, updating layout...');
-            // Don't call updateLayout immediately, let GridStack settle first
-            setTimeout(() => this.updateLayout(), 50);
-        });
-        
-        // Also listen for change event
-        this.element.addEventListener('change', () => {
-            console.log('Change detected, updating layout...');
-            setTimeout(() => this.updateLayout(), 50);
+        // Use the grid's event system instead of element events
+        grid.on('resizestop', (event, element) => {
+            if (element === this.element) {
+                console.log('Grid resizestop event for weather widget');
+                // Grid event passes the new dimensions
+                const newWidth = parseInt(element.getAttribute('data-gs-width'));
+                const newHeight = parseInt(element.getAttribute('data-gs-height'));
+                console.log('New dimensions from grid event:', newWidth, 'x', newHeight);
+                setTimeout(() => this.updateLayout(), 10);
+            }
         });
     }
 
     getCurrentArea() {
-        const width = parseInt(this.element.getAttribute('data-gs-width')) || this.defaultWidth;
-        const height = parseInt(this.element.getAttribute('data-gs-height')) || this.defaultHeight;
+        // Force a fresh read by checking multiple sources
+        let width = parseInt(this.element.getAttribute('data-gs-width'));
+        let height = parseInt(this.element.getAttribute('data-gs-height'));
+        
+        // Fallback to checking the element's dataset
+        if (!width || !height) {
+            width = parseInt(this.element.dataset.gsWidth) || this.defaultWidth;
+            height = parseInt(this.element.dataset.gsHeight) || this.defaultHeight;
+        }
+        
+        // Final fallback
+        if (!width || !height) {
+            width = this.defaultWidth;
+            height = this.defaultHeight;
+        }
+        
         const area = width * height;
         console.log(`Current dimensions: ${width}x${height}, Area: ${area}`);
+        console.log('Raw attributes:', this.element.getAttribute('data-gs-width'), this.element.getAttribute('data-gs-height'));
         return area;
     }
 
@@ -302,22 +315,13 @@ class WeatherWidget extends BaseWidget {
         }
     }
 
-updateLayout() {
-    console.log('Before render - Width:', this.element.getAttribute('data-gs-width'), 'Height:', this.element.getAttribute('data-gs-height'));
-    // ... render call here ...
-    console.log('After render - Width:', this.element.getAttribute('data-gs-width'), 'Height:', this.element.getAttribute('data-gs-height'));
-}
     updateLayout() {
         if (!this.fullForecastData) return;
         
         const area = this.getCurrentArea();
         console.log('WeatherWidget area:', area);
         
-        // Store current dimensions before rendering
-        const currentWidth = parseInt(this.element.getAttribute('data-gs-width')) || this.defaultWidth;
-        const currentHeight = parseInt(this.element.getAttribute('data-gs-height')) || this.defaultHeight;
-        
-        // Render based on area
+        // Render based on area - no grid updates in render methods
         if (area >= 12) { 
             console.log('Rendering full forecast');
             this.renderForecast(); 
@@ -330,15 +334,6 @@ updateLayout() {
             console.log('Rendering compact view');
             this.renderCompact(); 
         }
-        
-        // Force the dimensions to stay at current size after render
-        setTimeout(() => {
-            if (this.element.getAttribute('data-gs-width') != currentWidth || 
-                this.element.getAttribute('data-gs-height') != currentHeight) {
-                console.log('GridStack changed dimensions, forcing back to:', currentWidth, currentHeight);
-                grid.update(this.element, { w: currentWidth, h: currentHeight });
-            }
-        }, 10);
         
         this.addHandle();
     }
