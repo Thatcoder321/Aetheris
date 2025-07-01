@@ -221,7 +221,8 @@ class WeatherWidget extends BaseWidget {
             id: 'weather',
             className: 'weather',
             x: 0, y: 3,
-            width: defaultWidth ,height: defaultHeight
+            width: defaultWidth,
+            height: defaultHeight
         });
         grid.update(this.element, { w: defaultWidth, h: defaultHeight });
         this.fullForecastData = null;
