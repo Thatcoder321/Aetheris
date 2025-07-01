@@ -302,6 +302,11 @@ class WeatherWidget extends BaseWidget {
         }
     }
 
+updateLayout() {
+    console.log('Before render - Width:', this.element.getAttribute('data-gs-width'), 'Height:', this.element.getAttribute('data-gs-height'));
+    // ... render call here ...
+    console.log('After render - Width:', this.element.getAttribute('data-gs-width'), 'Height:', this.element.getAttribute('data-gs-height'));
+}
     updateLayout() {
         if (!this.fullForecastData) return;
         
