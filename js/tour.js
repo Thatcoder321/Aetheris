@@ -117,18 +117,33 @@ class Tour {
         this.positionTooltip(rect);
     }
 
-    positionTooltip(rect) {
-        if (!rect) {
-            this.tooltip.style.top = '50%';
-            this.tooltip.style.left = '50%';
-            this.tooltip.style.transform = 'translate(-50%, -50%)';
-        } else {
-            const top = rect.bottom + 15;
-            this.tooltip.style.top = `${top}px`;
-            this.tooltip.style.left = `${rect.left}px`;
-            this.tooltip.style.transform = 'none';
+    
+
+positionTooltip(rect) {
+    if (!rect) {
+
+        this.tooltip.style.top = '50%';
+        this.tooltip.style.left = '50%';
+        this.tooltip.style.transform = 'translate(-50%, -50%)';
+    } else {
+
+        const tooltipRect = this.tooltip.getBoundingClientRect();
+        const top = rect.bottom + 15; 
+
+
+        let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+
+ 
+        if (left < 10) left = 10;
+        if (left + tooltipRect.width > window.innerWidth) {
+            left = window.innerWidth - tooltipRect.width - 10;
         }
+
+        this.tooltip.style.top = `${top}px`;
+        this.tooltip.style.left = `${left}px`;
+        this.tooltip.style.transform = 'none'; 
     }
+}
 
     waitForClick(element){
         const clickHandler = (e) => {

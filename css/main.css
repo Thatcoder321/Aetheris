@@ -243,6 +243,7 @@ body {
     height: 100vh;
     background: rgba(0, 0, 0, 0.7);
     z-index: 9990; 
+    pointer-events: none;
 }
 
 #tour-spotlight {
