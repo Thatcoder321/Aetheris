@@ -977,9 +977,11 @@ class StockTickerWidget extends BaseWidget {
                 console.warn("Form not found in DOM after render.");
                 return;
             }
-    
+            console.log('Attaching submit listener');
             form.addEventListener('submit', (e) => {
                 e.preventDefault(); 
+                console.log('Form submitted - default prevented');
+
                 const input = e.target.querySelector('input').value;
                 localStorage.setItem('aetheris-stock-symbols', input);
                 this.run();
