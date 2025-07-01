@@ -986,10 +986,9 @@ class StockTickerWidget extends BaseWidget {
                 const input = e.target.querySelector('input').value.trim();
                 if (!input) return;
     
-                // Save input
+
                 localStorage.setItem('aetheris-stock-symbols', input);
-    
-                // Directly call fetch instead of rerunning everything
+
                 this.fetchStockData(input);
             });
         });
