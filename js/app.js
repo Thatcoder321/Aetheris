@@ -197,10 +197,8 @@ const THEMES = [
     { name: 'Aurora', url: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=2070&auto=format&fit=crop' }
 ];
 
-
 function applyTheme(themeUrl) {
-
-    document.body.style.setProperty('--current-theme-url', `url(${themeUrl})`);
+    document.body.style.backgroundImage = `url(${themeUrl})`;
     localStorage.setItem('aetheris-theme-url', themeUrl);
 }
 
