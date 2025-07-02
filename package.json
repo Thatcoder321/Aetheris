@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Thatcoder321/Aetheris#readme",
   "dependencies": {
+    "@upstash/redis": "^1.35.1",
     "cookie": "^1.0.2",
     "openai": "^5.7.0"
   }

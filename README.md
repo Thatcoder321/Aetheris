@@ -11,7 +11,7 @@ Let’s face it — the modern web is noisy. You’ve got a dozen tabs open, jug
 
 Built from the ground up with a “2.5D” visual style using CSS 3D transforms, widgets float in a parallax-responsive space that feels alive and reactive. You’re not just using a dashboard. You’re inhabiting one.
 
-What started as a lighthearted project for Hack Club’s **Summer of Making** quickly spiraled into something deeper — a full creative and technical sprint driven by curiosity, caffeine, and the dream of a better digital workspace.
+What started as a lighthearted project for Hack Club’s **Summer of Making** quickly went into something deeper — a full creative and technical sprint driven by curiosity, and the dream of a better digital workspace.
 
 ---
 
@@ -27,7 +27,7 @@ No more static dashboards or hardcoded layouts. With Aetheris, you can move, res
 This is your space — and it should adapt to you, not the other way around.
 
 ### 2. **"Everything you need, in one place."**  
-Aetheris is designed to eliminate tab overload by giving you everything you actually use — right in one unified environment. Stocks, weather, notes, timers, chats, widgets — all woven together in a cohesive, seamless UI.
+Aetheris is designed to eliminate tab overload by giving you everything you actually use — right in one unified environment. Stocks, weather, notes, timers, chats, widgets — all put together in a cohesive, seamless UI.
 
 ---
 
