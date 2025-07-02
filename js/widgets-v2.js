@@ -210,11 +210,8 @@ class TodoWidget extends BaseWidget {
         this.render();
     }
 }
-// In public/js/widgets-v2.js
-
 class WeatherWidget extends BaseWidget {
     constructor() {
-        // Store default size on 'this' to be accessible by all methods
         this.defaultWidth = 3;
         this.defaultHeight = 2;
         
@@ -230,9 +227,7 @@ class WeatherWidget extends BaseWidget {
         this.run();
         this.addHandle();
 
-
         grid.on('resizestop', (event, element) => {
-
             if (element === this.element) {
                 this.updateLayout();
             }
@@ -256,6 +251,7 @@ class WeatherWidget extends BaseWidget {
                 </form>
             </div>
         `;
+        grid.update(this.element, { w: this.defaultWidth, h: this.defaultHeight });
         this.addHandle();
 
         const form = this.contentElement.querySelector('#weather-form');
@@ -264,7 +260,7 @@ class WeatherWidget extends BaseWidget {
         if (form && input) {
             input.focus();
             form.addEventListener('submit', (e) => {
-                e.preventDefault(); 
+                e.preventDefault();
                 if (input.value) {
                     const city = input.value;
                     localStorage.setItem('aetheris-city', city);
@@ -296,19 +292,17 @@ class WeatherWidget extends BaseWidget {
 
     updateLayout() {
         if (!this.fullForecastData) return;
-        
-
         const width = parseInt(this.element.getAttribute('gs-w'));
         const height = parseInt(this.element.getAttribute('gs-h'));
         const area = width * height;
 
-        if (area >= 12) { this.renderForecast(); }
-        else if (area >= 8) { this.renderDetailed(); }
-        else { this.renderCompact(); }
+        if (area >= 12) { this.renderForecast(width, height); }
+        else if (area >= 8) { this.renderDetailed(width, height); }
+        else { this.renderCompact(width, height); }
         this.addHandle();
     }
 
-    renderCompact() {
+    renderCompact(w, h) {
         const { current, location } = this.fullForecastData;
         this.contentElement.innerHTML = `
             <div class="weather-compact">
@@ -319,9 +313,10 @@ class WeatherWidget extends BaseWidget {
                 </div>
             </div>
         `;
+        grid.update(this.element, { w: w, h: h });
     }
 
-    renderDetailed() {
+    renderDetailed(w, h) {
         const { current, location, forecast } = this.fullForecastData;
         const hourlyForecast = forecast.forecastday[0].hour;
         const now = new Date().getHours();
@@ -346,9 +341,10 @@ class WeatherWidget extends BaseWidget {
                 </div>
             </div>
         `;
+        grid.update(this.element, { w: w, h: h });
     }
 
-    renderForecast() {
+    renderForecast(w, h) {
         const { location, forecast } = this.fullForecastData;
         const dailyForecast = forecast.forecastday;
         this.contentElement.innerHTML = `
@@ -368,6 +364,7 @@ class WeatherWidget extends BaseWidget {
                 </div>
             </div>
         `;
+        grid.update(this.element, { w: w, h: h });
     }
 }
 class AIWidget extends BaseWidget {
