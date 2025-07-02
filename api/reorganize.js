@@ -1,25 +1,25 @@
-// /api/reorganize.js
+
 
 import { Redis } from '@upstash/redis';
 
-// --- START: Rate Limiter Configuration ---
+
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
   token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
 const MAX_REQUESTS_PER_IP = 10;     
-const WINDOW_SECONDS = 60 * 60; // 1 hour window
-// --- END: Rate Limiter Configuration ---
+const WINDOW_SECONDS = 60 * 60; 
+
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // --- START: Rate Limiter Logic ---
+
   const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket?.remoteAddress || 'unknown';
-  const key = `ratelimit:reorganize:${ip}`; // Use a unique key prefix for this endpoint
+  const key = `ratelimit:reorganize:${ip}`; 
 
   try {
     const current = await redis.get(key);
@@ -32,11 +32,9 @@ export default async function handler(req, res) {
     await pipeline.exec();
   } catch (err) {
     console.error("Redis error in Reorganize API:", err);
-    // Don't block the feature if Redis fails, but log the error.
-  }
-  // --- END: Rate Limiter Logic ---
 
-  // --- Existing AI Reorganization Logic ---
+  }
+
   const { currentLayout, viewport, userPrompt } = req.body;
   if (!currentLayout || !viewport || !userPrompt) {
     return res.status(400).json({ error: 'Missing required parameters for reorganization.' });

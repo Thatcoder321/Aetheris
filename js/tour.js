@@ -14,7 +14,7 @@ class Tour {
 
 {
     title: "Your First Widget!",
-    content: "Perfect! You can drag widgets to move them and use the handle in the corner to resize them. This makes your dashboard truly your own.",
+    content: "Perfect! You can drag widgets to move them and use the handle in the corner to resize(one with the 3 dots) them. This makes your dashboard truly your own.",
     target: '.grid-stack-item[gs-id="quote-of-day"]',
     action: 'button', 
     showArrow: true
