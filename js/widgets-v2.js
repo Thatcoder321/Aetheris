@@ -901,7 +901,6 @@ class StockTickerWidget extends BaseWidget {
             className: 'stock-ticker',
             x: 0, y: 5,
             width: defaultWidth, height: defaultHeight
-
         });
         grid.update(this.element, { w: defaultWidth, h: defaultHeight });
         this.stocks = [];
@@ -919,6 +918,7 @@ class StockTickerWidget extends BaseWidget {
             this.showSetupForm();
         }
     }
+
     showSetupForm() {
         this.cleanup();
         this.contentElement.innerHTML = `
@@ -929,31 +929,18 @@ class StockTickerWidget extends BaseWidget {
                 <button type="submit">Track Stocks</button>
             </form>
         `;
-    
+        const defaultWidth = 4;
+        const defaultHeight = 3;
         grid.update(this.element, { w: defaultWidth, h: defaultHeight });
         this.addHandle();
-    
-        requestAnimationFrame(() => {
-            const form = this.contentElement.querySelector('form');
-            if (!form) {
-                console.warn("Form not found in DOM after render.");
-                return;
-            }
-    
-            console.log('Attaching submit listener');
-    
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                console.log('Form submitted - default prevented');
-    
-                const input = e.target.querySelector('input').value.trim();
-                if (!input) return;
-    
 
-                localStorage.setItem('aetheris-stock-symbols', input);
-
-                this.fetchStockData(input);
-            });
+        const form = this.contentElement.querySelector('.stock-setup-form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = form.querySelector('input').value.trim();
+            if (!input) return;
+            localStorage.setItem('aetheris-stock-symbols', input);
+            this.fetchStockData(input);
         });
     }
 
@@ -986,7 +973,9 @@ class StockTickerWidget extends BaseWidget {
 
         this.contentElement.innerHTML = `<ul class="stock-list"></ul>`;
         const list = this.contentElement.querySelector('.stock-list');
-        
+        const defaultWidth = 4;
+        const defaultHeight = 3;
+
         this.stocks.forEach(stock => {
             const changeClass = stock.change >= 0 ? 'is-up' : 'is-down';
             const sign = stock.change >= 0 ? '+' : '';
@@ -1001,44 +990,38 @@ class StockTickerWidget extends BaseWidget {
             list.appendChild(item);
         });
 
+        // Duplicate list content for seamless scroll
         list.innerHTML += list.innerHTML;
         this.startScrolling();
         this.addHandle();
     }
 
-startScrolling() {
-    this.cleanup();
-    
-    const list = this.contentElement.querySelector('.stock-list');
-    if (!list || list.children.length === 0) return;
+    startScrolling() {
+        this.cleanup();
 
+        const list = this.contentElement.querySelector('.stock-list');
+        if (!list || list.children.length === 0) return;
 
-    const numStocks = list.children.length / 2;
-    if (numStocks <= 0) return;
+        const numStocks = list.children.length / 2;
+        if (numStocks <= 0) return;
 
-    const itemHeight = list.children[0].offsetHeight;
-    let currentIndex = 0;
+        const itemHeight = list.children[0].offsetHeight;
+        let currentIndex = 0;
 
-    this.timerId = setInterval(() => {
-        currentIndex++;
-        
-        // This moves the list up by one item's height
-        list.style.transform = `translateY(-${currentIndex * itemHeight}px)`;
-        // Apply a smooth transition for the scroll
-        list.style.transition = 'transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1.0)';
+        this.timerId = setInterval(() => {
+            currentIndex++;
+            list.style.transform = `translateY(-${currentIndex * itemHeight}px)`;
+            list.style.transition = 'transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1.0)';
 
-
-        if (currentIndex >= numStocks) {
-
-            setTimeout(() => {
-
-                list.style.transition = 'none';
-                currentIndex = 0;
-                list.style.transform = 'translateY(0)';
-            }, 800); 
-        }
-    }, 3000); 
-}
+            if (currentIndex >= numStocks) {
+                setTimeout(() => {
+                    list.style.transition = 'none';
+                    currentIndex = 0;
+                    list.style.transform = 'translateY(0)';
+                }, 800);
+            }
+        }, 3000);
+    }
 
     cleanup() {
         if (this.timerId) {

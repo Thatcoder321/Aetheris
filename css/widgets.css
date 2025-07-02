@@ -893,8 +893,8 @@
 
 .ui-resizable-handle {
     pointer-events: auto !important; 
-    background: transparent !important;
-    /* Our beautiful 3-dot style */
+    background-color: transparent;
+
     background-image:
         radial-gradient(circle at 2px 2px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px),
         radial-gradient(circle at 7px 7px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px),
@@ -902,6 +902,26 @@
     opacity: 0.8;
 }
 
+.grid-stack-item .ui-resizable-handle.ui-resizable-se {
+    width: 16px;
+    height: 16px;
+    bottom: 6px;
+    right: 6px;
+    cursor: se-resize;
+    z-index: 999;
+    background-image:
+      radial-gradient(circle at 2px 2px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px),
+      radial-gradient(circle at 7px 7px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px),
+      radial-gradient(circle at 12px 12px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px) !important;
+    background-color: rgba(0,0,0,0.25);
+    border-radius: 3px;
+    opacity: 0.8;
+    transition: opacity 0.2s ease-in-out;
+}
+  
+  .grid-stack-item .ui-resizable-handle.ui-resizable-se:hover {
+    opacity: 1;
+  }
 /* --- Countdown Widget --- */
 .countdown {
     display: flex;
@@ -1317,3 +1337,19 @@
 .settings-content::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.75);
 }
+
+
+
+
+
+.ui-resizable-handle .ui-icon {
+    display: none !important;
+  }
+  
+
+  .ui-resizable-handle.ui-resizable-se {
+    background: none !important;
+    border: none !important;
+  }
+
+  
