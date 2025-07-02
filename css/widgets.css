@@ -856,37 +856,37 @@
 
 .ui-resizable-handle {
 
-    position: absolute;
-    right: 5px;
-    bottom: 5px;
+
+    display: block !important;
 
 
-    width: 15px;
-    height: 15px;
+
+    position: absolute !important;
+    right: 5px !important;
+    bottom: 5px !important;
 
 
-    z-index: 99;
+    width: 15px !important;
+    height: 15px !important;
+
+
+    z-index: 999 !important;
     pointer-events: auto !important;
-    cursor: se-resize;
+    cursor: se-resize !important;
 
 
-    background-color: transparent;
-
+    background-color: transparent !important;
     background-image:
         radial-gradient(circle at 2px 2px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px),
         radial-gradient(circle at 7px 7px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px),
-        radial-gradient(circle at 12px 12px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px);
-    
-
-    opacity: 0.8;
+        radial-gradient(circle at 12px 12px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px) !important;
+    opacity: 0.8 !important;
 }
 
 
 .grid-stack-item-content:hover .ui-resizable-handle {
     opacity: 1;
 }
-
-/* --- Final Fix: Pointer Events --- */
 
 
 .grid-stack-item-content {
