@@ -6,7 +6,7 @@ const redis = new Redis({
 });
 
 // Rate limit settings
-const MAX_REQUESTS_PER_IP = 10;     
+const MAX_REQUESTS_PER_IP = 12;     
 const WINDOW_SECONDS = 60 * 60;    
 
 export default async function handler(req, res) {
