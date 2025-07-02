@@ -853,26 +853,18 @@
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* --- Brute-Force Fix for Gridstack Resize Handle --- */
 .ui-resizable-handle {
-    /* 
-       This is the most important part. 
-       A massive z-index to force it on top of our widget's content. 
-    */
-    z-index: 999 !important;
+    pointer-events: auto !important;
 
-    /* 
-       This is for debugging. 
-       It will make the handle a solid red square. If you see the red square,
-       we have won. 
-    */
-    background: red !important;
 
-    /* 
-       This is to force the cursor to change, overriding any other style
-       that might be interfering.
-    */
-    cursor: se-resize !important;
+    background-color: transparent;
+
+    background-image:
+        radial-gradient(circle at 2px 2px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px),
+        radial-gradient(circle at 7px 7px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px),
+        radial-gradient(circle at 12px 12px, rgba(255,255,255,0.7) 1.5px, transparent 1.5px);
+    
+    opacity: 0.8;
 }
 
 
