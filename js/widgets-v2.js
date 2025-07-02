@@ -210,23 +210,32 @@ class TodoWidget extends BaseWidget {
         this.render();
     }
 }
+
+
 class WeatherWidget extends BaseWidget {
     constructor() {
-        this.defaultWidth = 3;
-        this.defaultHeight = 2;
+
+        const defaultWidth = 3;
+        const defaultHeight = 2;
         
+
         super({
             id: 'weather',
             className: 'weather',
             x: 0, y: 3,
-            width: this.defaultWidth,
-            height: this.defaultHeight
+            width: defaultWidth,
+            height: defaultHeight
         });
+
+
+        this.defaultWidth = defaultWidth;
+        this.defaultHeight = defaultHeight;
         
         this.fullForecastData = null;
         this.run();
         this.addHandle();
 
+        // Use the official Gridstack event system for resizing
         grid.on('resizestop', (event, element) => {
             if (element === this.element) {
                 this.updateLayout();
@@ -251,7 +260,6 @@ class WeatherWidget extends BaseWidget {
                 </form>
             </div>
         `;
-        grid.update(this.element, { w: this.defaultWidth, h: this.defaultHeight });
         this.addHandle();
 
         const form = this.contentElement.querySelector('#weather-form');
@@ -260,7 +268,7 @@ class WeatherWidget extends BaseWidget {
         if (form && input) {
             input.focus();
             form.addEventListener('submit', (e) => {
-                e.preventDefault();
+                e.preventDefault(); 
                 if (input.value) {
                     const city = input.value;
                     localStorage.setItem('aetheris-city', city);
@@ -296,13 +304,13 @@ class WeatherWidget extends BaseWidget {
         const height = parseInt(this.element.getAttribute('gs-h'));
         const area = width * height;
 
-        if (area >= 12) { this.renderForecast(width, height); }
-        else if (area >= 8) { this.renderDetailed(width, height); }
-        else { this.renderCompact(width, height); }
+        if (area >= 12) { this.renderForecast(); }
+        else if (area >= 8) { this.renderDetailed(); }
+        else { this.renderCompact(); }
         this.addHandle();
     }
 
-    renderCompact(w, h) {
+    renderCompact() {
         const { current, location } = this.fullForecastData;
         this.contentElement.innerHTML = `
             <div class="weather-compact">
@@ -313,10 +321,9 @@ class WeatherWidget extends BaseWidget {
                 </div>
             </div>
         `;
-        grid.update(this.element, { w: w, h: h });
     }
 
-    renderDetailed(w, h) {
+    renderDetailed() {
         const { current, location, forecast } = this.fullForecastData;
         const hourlyForecast = forecast.forecastday[0].hour;
         const now = new Date().getHours();
@@ -341,10 +348,9 @@ class WeatherWidget extends BaseWidget {
                 </div>
             </div>
         `;
-        grid.update(this.element, { w: w, h: h });
     }
 
-    renderForecast(w, h) {
+    renderForecast() {
         const { location, forecast } = this.fullForecastData;
         const dailyForecast = forecast.forecastday;
         this.contentElement.innerHTML = `
@@ -364,7 +370,6 @@ class WeatherWidget extends BaseWidget {
                 </div>
             </div>
         `;
-        grid.update(this.element, { w: w, h: h });
     }
 }
 class AIWidget extends BaseWidget {
