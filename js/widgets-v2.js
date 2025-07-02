@@ -210,65 +210,33 @@ class TodoWidget extends BaseWidget {
         this.render();
     }
 }
+// In public/js/widgets-v2.js
+
 class WeatherWidget extends BaseWidget {
     constructor() {
-        const defaultWidth = 3;
-        const defaultHeight = 2;
+        // Store default size on 'this' to be accessible by all methods
+        this.defaultWidth = 3;
+        this.defaultHeight = 2;
+        
         super({
             id: 'weather',
             className: 'weather',
             x: 0, y: 3,
-            width: defaultWidth,
-            height: defaultHeight
+            width: this.defaultWidth,
+            height: this.defaultHeight
         });
-        this.defaultWidth = defaultWidth;
-        this.defaultHeight = defaultHeight;
         
-        grid.update(this.element, { w: this.defaultWidth, h: this.defaultHeight });
         this.fullForecastData = null;
-        this.addHandle();
         this.run();
+        this.addHandle();
 
-        // Use the grid's event system instead of element events
+
         grid.on('resizestop', (event, element) => {
+
             if (element === this.element) {
-                console.log('Grid resizestop event for weather widget');
-                // Grid event passes the new dimensions
-                const newWidth = parseInt(element.getAttribute('data-gs-width'));
-                const newHeight = parseInt(element.getAttribute('data-gs-height'));
-                console.log('New dimensions from grid event:', newWidth, 'x', newHeight);
-                setTimeout(() => this.updateLayout(), 10);
+                this.updateLayout();
             }
         });
-    }
-
-    getCurrentArea() {
-        // Debug: log all attributes to see what GridStack is actually using
-        console.log('All element attributes:');
-        for (let attr of this.element.attributes) {
-            console.log(`  ${attr.name}: ${attr.value}`);
-        }
-        
-        // Try different possible attribute names that GridStack might use
-        let width = parseInt(this.element.getAttribute('data-gs-width')) ||
-                   parseInt(this.element.getAttribute('gs-w')) ||
-                   parseInt(this.element.getAttribute('data-gs-w')) ||
-                   parseInt(this.element.getAttribute('data-width')) ||
-                   parseInt(this.element.dataset.gsWidth) ||
-                   parseInt(this.element.dataset.gsW) ||
-                   this.defaultWidth;
-                   
-        let height = parseInt(this.element.getAttribute('data-gs-height')) ||
-                    parseInt(this.element.getAttribute('gs-h')) ||
-                    parseInt(this.element.getAttribute('data-gs-h')) ||
-                    parseInt(this.element.getAttribute('data-height')) ||
-                    parseInt(this.element.dataset.gsHeight) ||
-                    parseInt(this.element.dataset.gsH) ||
-                    this.defaultHeight;
-        
-        const area = width * height;
-        console.log(`Current dimensions: ${width}x${height}, Area: ${area}`);
-        return area;
     }
 
     run() {
@@ -283,16 +251,21 @@ class WeatherWidget extends BaseWidget {
     askForLocation() {
         this.contentElement.innerHTML = `
             <div class="weather-input-container">
-                <input type="text" class="weather-location-input" placeholder="Enter Your City">
+                <form id="weather-form">
+                    <input type="text" class="weather-location-input" placeholder="Enter Your City">
+                </form>
             </div>
         `;
-
         this.addHandle();
+
+        const form = this.contentElement.querySelector('#weather-form');
         const input = this.contentElement.querySelector('.weather-location-input');
-        if (input) {
+
+        if (form && input) {
             input.focus();
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && input.value) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault(); 
+                if (input.value) {
                     const city = input.value;
                     localStorage.setItem('aetheris-city', city);
                     this.fetchFullForecast(city);
@@ -316,7 +289,6 @@ class WeatherWidget extends BaseWidget {
             this.fullForecastData = await response.json();
             this.updateLayout();
         } catch (error) {
-
             this.contentElement.innerHTML = `<p style="color: #ffcccc;">Error: ${error.message}</p>`;
             this.addHandle(); 
         }
@@ -325,23 +297,14 @@ class WeatherWidget extends BaseWidget {
     updateLayout() {
         if (!this.fullForecastData) return;
         
-        const area = this.getCurrentArea();
 
-        
+        const width = parseInt(this.element.getAttribute('gs-w'));
+        const height = parseInt(this.element.getAttribute('gs-h'));
+        const area = width * height;
 
-        if (area >= 12) { 
-
-            this.renderForecast(); 
-        }
-        else if (area >= 8) { 
-
-            this.renderDetailed(); 
-        }
-        else { 
-
-            this.renderCompact(); 
-        }
-        
+        if (area >= 12) { this.renderForecast(); }
+        else if (area >= 8) { this.renderDetailed(); }
+        else { this.renderCompact(); }
         this.addHandle();
     }
 
@@ -363,7 +326,6 @@ class WeatherWidget extends BaseWidget {
         const hourlyForecast = forecast.forecastday[0].hour;
         const now = new Date().getHours();
         const nextHours = hourlyForecast.filter(h => new Date(h.time).getHours() > now).slice(0, 4);
-        
         this.contentElement.innerHTML = `
             <div class="weather-detailed">
                 <div class="weather-detailed-top">
@@ -389,7 +351,6 @@ class WeatherWidget extends BaseWidget {
     renderForecast() {
         const { location, forecast } = this.fullForecastData;
         const dailyForecast = forecast.forecastday;
-        
         this.contentElement.innerHTML = `
             <div class="weather-full-forecast">
                 <div class="forecast-header">${location.name} - 3 Day Forecast</div>
