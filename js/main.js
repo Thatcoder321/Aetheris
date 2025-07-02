@@ -50,3 +50,19 @@ function resetLayout() {
     localStorage.removeItem('gridstack');
     location.reload();
 }
+
+
+setInterval(() => {
+
+    const handles = document.querySelectorAll('.ui-resizable-handle');
+
+    handles.forEach(handle => {
+
+        if (handle.style.display !== 'block') {
+            handle.style.display = 'block';
+        }
+        if (handle.style.opacity !== '0.8') {
+             handle.style.opacity = '0.8';
+        }
+    });
+}, 100); 
