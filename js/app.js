@@ -103,10 +103,13 @@ reorganizeForm.addEventListener('submit', async (e) => {
    
 
 if (data.layout && Array.isArray(data.layout)) {
-
-    grid.removeAll();
-
-    grid.load(data.layout); 
+    data.layout.forEach(({ id, x, y, w, h }) => {
+        const el = document.getElementById(id);
+        if (el) {
+            grid.update(el, { x, y, w, h });
+        }
+    });
+    grid.compact();
 } else {
     throw new Error("Received invalid layout data from server.");
 }
