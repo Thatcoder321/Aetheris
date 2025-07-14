@@ -118,5 +118,13 @@ async loginWithGitHub() {
         this.githubLoginBtn.addEventListener('click', () => this.loginWithGitHub());
     }
 }
-
+const githubLoginLink = document.getElementById('github-login-btn');
+if (githubLoginLink) {
+    githubLoginLink.addEventListener('click', (e) => {
+        // First, prevent the browser from doing anything on its own.
+        e.preventDefault();
+        // Then, explicitly tell the window to navigate to the link's href.
+        window.location.href = githubLoginLink.href;
+    });
+}
 new AuthManager();
