@@ -1,12 +1,6 @@
-// /public/js/auth.js - The FINAL version using the official onAuthStateChange listener
-
-// --- Create the Supabase Client ---
-// The 'supabase' variable is now globally available from the CDN script in index.html
-const { createClient } = window.supabase; 
-
+const { createClient } = window.supabase;
 const SUPABASE_URL = 'https://ttocgvyuaktyxzubajjq.supabase.co'; 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0b2Nndnl1YWt0eXh6dWJhampxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NjQ1MjIsImV4cCI6MjA2ODA0MDUyMn0.mkzqkHj2Lb4SwxwqbZ3YbesxPa0dIPt8gOvfdhHEwqM';
-
 const supabase_client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 class AuthManager {
@@ -17,7 +11,7 @@ class AuthManager {
         this.githubLoginBtn = document.getElementById('github-login-btn');
         this.user = null;
         
-        // We set up the listener immediately.
+        // We no longer call initialize(). Instead, we set up our listener.
         this.listenForAuthChanges();
         this.attachStaticListeners();
     }
@@ -27,16 +21,19 @@ class AuthManager {
         // This function fires once on page load, and again every time
         // the user logs in or out. It is the perfect tool for this job.
         supabase_client.auth.onAuthStateChange(async (event, session) => {
+            console.log("Auth State Change Event:", event, session);
+
             const user = session?.user || null;
             this.user = user;
 
-            // When a user successfully signs in after the redirect...
+            // When a user successfully signs in for the first time after a redirect...
             if (event === 'SIGNED_IN' && user) {
                 // We ensure their profile exists in our database.
                 // This is the safest place to put this logic.
-                await supabase_client.from('profiles').upsert({ id: user.id }, { onConflict: 'id' });
+                console.log("User signed in. Ensuring profile exists for ID:", user.id);
+                await supabase_client.from('profiles').upsert({ id: user.id.toString() }, { onConflict: 'id' });
             }
-            
+
             // After every event, we update the UI to reflect the latest state.
             this.updateUI();
         });
@@ -59,9 +56,8 @@ class AuthManager {
 
     showLoginModal() { this.loginModalOverlay.classList.remove('hidden'); this.accountDropdown.classList.add('hidden'); }
     hideLoginModal() { this.loginModalOverlay.classList.add('hidden'); }
-
+    
     async loginWithGitHub() {
-        // This initiates the login flow.
         await supabase_client.auth.signInWithOAuth({
             provider: 'github',
         });
@@ -72,6 +68,7 @@ class AuthManager {
         window.location.reload(); 
     }
 
+    // These listeners are attached once to elements that always exist.
     attachStaticListeners() {
         this.accountButton.addEventListener('click', (e) => { e.stopPropagation(); this.accountDropdown.classList.toggle('hidden'); });
         document.addEventListener('click', (e) => { if (!this.accountButton.contains(e.target) && !this.accountDropdown.contains(e.target)) this.accountDropdown.classList.add('hidden'); });
@@ -80,5 +77,5 @@ class AuthManager {
     }
 }
 
-// Initialize the system
+// --- Initialize the entire system ---
 new AuthManager();
