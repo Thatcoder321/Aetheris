@@ -22,16 +22,22 @@ class AuthManager {
 
 
 
-async checkUser() {
-    const { data: { user } } = await supabase_client.auth.getUser();
-
-    if (user) {
-        this.user = user;
-    } else {
-        this.user = null;
+    async checkUser() {
+       
+        if (document.cookie.includes('github_access_token=')) {
+           
+            try {
+                const res = await fetch('/api/github/stats'); 
+                if (!res.ok) throw new Error();
+                const userData = await res.json();
+                this.renderLoggedIn(userData);
+            } catch {
+                this.renderLoggedOut();
+            }
+        } else {
+            this.renderLoggedOut();
+        }
     }
-    this.updateUI();
-}
     updateUI() {
         if (this.user) {
   
