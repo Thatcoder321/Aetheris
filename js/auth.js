@@ -106,9 +106,17 @@ class AuthManager {
         console.log("AuthManager: Attaching STATIC listeners...");
         this.accountButton.addEventListener('click', (e) => { 
             e.stopPropagation(); 
+            e.preventDefault(); 
+        
             console.log("%cEVENT: #account-button CLICKED.", "color: lime; font-weight: bold;");
-            console.log("AuthManager: Toggling 'hidden' on dropdown. Current user is:", this.user ? 'LOGGED IN' : 'LOGGED OUT');
-            this.accountDropdown.classList.toggle('hidden'); 
+          
+            if (this.accountDropdown.classList.contains('hidden')) {
+                console.log("Dropdown IS hidden. Removing 'hidden' class now.");
+                this.accountDropdown.classList.remove('hidden');
+            } else {
+                console.log("Dropdown IS visible. Adding 'hidden' class now.");
+                this.accountDropdown.classList.add('hidden');
+            }
         });
         
         document.addEventListener('click', (e) => { 
