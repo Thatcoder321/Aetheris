@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="importmap">
+        {
+          "imports": {
+            "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
+          }
+        }
+        </script>
     <title>Aetheris</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -19,7 +26,24 @@
 
 </head>
 <body>
+    <div id="account-button" class="account-btn">
 
+    </div>
+
+    <div id="account-dropdown" class="account-dropdown hidden">
+
+    </div>
+
+    <div id="login-modal-overlay" class="hidden">
+        <div id="login-modal">
+            <h3>Welcome to Aetheris</h3>
+            <p>Sign in to save your dashboard and sync across all your devices</p>
+            <button id="github-login-btn">
+                <img src="https://simpleicons.org/icons/github.svg" alt="GitHub Logo" style="filter: invert(1); width: 20px; height: 20px; margin-right: 10px;">
+                Continue with Github
+            </button>
+        </div>
+    </div>
     <!-- ================================== -->
     <!-- === UI OVERLAYS (Outside 3D Space) === -->
     <!-- ================================== -->
@@ -111,9 +135,9 @@
     
         
         <script src="/js/tour.js" defer></script>
-    
+    <script src="/js/auth.js" type="module" defer></script>
     <!-- Main Application Logic (Runs Last) -->
-    <script src="/js/app.js" defer></script>
+    <script src="/js/app.js" type="module" defer></script>
 
 </body>
 </html>

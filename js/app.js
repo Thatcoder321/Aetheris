@@ -293,3 +293,5 @@ if (settingsBtn && settingsPanel && settingsCloseBtn && tabContainer) {
 
 
 loadInitialTheme();
+
+const authManager = new AuthManager();
