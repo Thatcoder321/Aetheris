@@ -1,7 +1,7 @@
 
 
 import { serialize } from 'cookie';
-import { createClient } from '@supabase/supabase-js';
+
 export default async function handler(req, res) {
     const { code } = req.query; 
 

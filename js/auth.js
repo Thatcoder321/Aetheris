@@ -73,6 +73,9 @@ class AuthManager {
     }
     
     async loginWithGitHub() {
+        console.log('🔍 DEBUG: loginWithGitHub() called');
+        console.log('🔍 DEBUG: About to call supabase_client.auth.signInWithOAuth');
+        
         try {
             const { data, error } = await supabase_client.auth.signInWithOAuth({
                 provider: 'github',
@@ -81,12 +84,15 @@ class AuthManager {
                 }
             });
             
+            console.log('🔍 DEBUG: signInWithOAuth response:', { data, error });
+            
             if (error) {
                 console.error('GitHub login error:', error);
                 alert('Login failed. Please try again.');
                 return;
             }
             
+            console.log('🔍 DEBUG: About to hide login modal');
             // Close the modal immediately - the redirect will happen
             this.hideLoginModal();
         } catch (error) {
@@ -126,7 +132,12 @@ class AuthManager {
             }
         });
         
-        this.githubLoginBtn.addEventListener('click', () => this.loginWithGitHub());
+        this.githubLoginBtn.addEventListener('click', (e) => {
+            console.log('🔍 DEBUG: GitHub login button clicked');
+            console.log('🔍 DEBUG: Button element:', e.target);
+            e.preventDefault(); // Prevent any default form submission
+            this.loginWithGitHub();
+        });
     }
 }
 
