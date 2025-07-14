@@ -1,11 +1,9 @@
-// /public/js/auth.js - The FINAL version with the Event Propagation Fix
+// /public/js/auth.js - The FINAL version using onAuthStateChange
 
 // --- Create the Supabase Client ---
 const { createClient } = window.supabase;
-const SUPABASE_URL = 'https://ttocgvyuaktyxzubajjq.supabase.co'; 
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0b2Nndnl1YWt0eXh6dWJhampxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NjQ1MjIsImV4cCI6MjA2ODA0MDUyMn0.mkzqkHj2Lb4SwxwqbZ3YbesxPa0dIPt8gOvfdhHEwqM';
-
-
+const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co'; 
+const SUPABASE_ANON_KEY = 'YOUR_PUBLIC_ANON_KEY';
 const supabase_client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 class AuthManager {
@@ -16,18 +14,29 @@ class AuthManager {
         this.githubLoginBtn = document.getElementById('github-login-btn');
 
         this.user = null;
-        this.checkUser();
+        
+        // --- THIS IS THE FIX ---
+        // We no longer check the user once. We now LISTEN for any change.
+        this.listenForAuthStateChanges();
         this.attachListeners();
     }
 
-    async checkUser() {
-        const { data: { user } } = await supabase_client.auth.getUser();
-        if (user) {
+    listenForAuthStateChanges() {
+        // This is the official Supabase event listener.
+        // It fires once on page load, and again any time the user logs in or out.
+        supabase_client.auth.onAuthStateChange(async (event, session) => {
+            const user = session?.user || null;
             this.user = user;
-        } else {
-            this.user = null;
-        }
-        this.updateUI();
+            
+            // If a user is newly logged in, ensure their profile exists
+            if (event === 'SIGNED_IN' && user) {
+                // The upsert call silently creates the profile if it doesn't exist.
+                await supabase_client.from('profiles').upsert({ id: user.id }, { onConflict: 'id' });
+            }
+            
+            // Now, update the UI with the latest, correct user state.
+            this.updateUI();
+        });
     }
 
     updateUI() {
@@ -36,12 +45,12 @@ class AuthManager {
             const avatarUrl = this.user.user_metadata.avatar_url || '/images/icon-user.svg';
             this.accountButton.innerHTML = `<img src="${avatarUrl}" alt="User Avatar">`;
             this.accountDropdown.innerHTML = `<h4>${this.user.user_metadata.full_name || this.user.email}</h4><p>Your dashboard is synced.</p><button id="logout-btn">Logout</button>`;
-            this.accountDropdown.querySelector('#logout-btn').addEventListener('click', () => this.logout());
+            this.accountDropdown.querySelector('#logout-btn')?.addEventListener('click', () => this.logout());
         } else {
             // Logged-out (Guest) state
             this.accountButton.innerHTML = `<img src="/images/icon-user.svg" class="user-silhouette" alt="Account">`;
             this.accountDropdown.innerHTML = `<h4>Your Work is Local</h4><p>Create an account to save & sync.</p><button id="login-btn">Log In / Sign Up</button>`;
-            this.accountDropdown.querySelector('#login-btn').addEventListener('click', () => this.showLoginModal());
+            this.accountDropdown.querySelector('#login-btn')?.addEventListener('click', () => this.showLoginModal());
         }
     }
 
@@ -54,43 +63,35 @@ class AuthManager {
         this.loginModalOverlay.classList.add('hidden');
     }
 
+    async loginWithGitHub() {
+        await supabase_client.auth.signInWithOAuth({
+            provider: 'github',
+        });
+    }
+
+    async logout() {
+        await supabase_client.auth.signOut();
+        // A reload is no longer strictly necessary, but it's a clean way to reset state.
+        window.location.reload(); 
+    }
+
     attachListeners() {
         this.accountButton.addEventListener('click', (e) => {
             e.stopPropagation();
             this.accountDropdown.classList.toggle('hidden');
         });
-        
         document.addEventListener('click', (e) => {
             if (!this.accountButton.contains(e.target) && !this.accountDropdown.contains(e.target)) {
                 this.accountDropdown.classList.add('hidden');
             }
         });
-        
         this.loginModalOverlay.addEventListener('click', (e) => {
-            if (e.target === this.loginModalOverlay) {
-                this.hideLoginModal();
-            }
+            if (e.target === this.loginModalOverlay) this.hideLoginModal();
         });
-        
-        // --- THIS IS THE DEFINITIVE FIX ---
-        // We are re-implementing the JavaScript listener with stopPropagation.
-        if (this.githubLoginBtn) {
-            this.githubLoginBtn.addEventListener('click', (e) => {
-                // 1. Stop the browser's default (which is being blocked anyway).
-                e.preventDefault();
-                // 2. Stop the click from bubbling up to any other listeners.
-                e.stopPropagation();
-                // 3. Force the navigation with JavaScript.
-                window.location.href = this.githubLoginBtn.href;
-            });
-        }
-    }
-    
-    async logout() {
-        await supabase_client.auth.signOut();
-        window.location.reload(); 
+        // We still need this listener for the button inside the modal
+        this.githubLoginBtn.addEventListener('click', () => this.loginWithGitHub());
     }
 }
 
-// Initialize the entire system
+// --- Initialize the entire system ---
 new AuthManager();
