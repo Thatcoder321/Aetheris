@@ -54,29 +54,3 @@ export default async function handler(req, res) {
         res.status(500).send('Authentication failed.');
     }
 }
-const { createClient } = require('@supabase/supabase-js');
-
-module.exports = async (req, res) => {
-  const { code } = req.query;
-
-  if (code) {
-    // On the server, we create a privileged client using our secret Service Key
-    const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_KEY // This key has admin rights
-    );
-
-    try {
-      // Exchange the user's code for a session
-      await supabaseAdmin.auth.exchangeCodeForSession(String(code));
-    } catch (error) {
-      console.error("Server-side auth error:", error);
-      // If it fails, just send the user home.
-      return res.redirect('/');
-    }
-  }
-
-  // On success, redirect the user back to the Aetheris homepage.
-  // The browser will now have the correct session cookie.
-  res.redirect('/');
-};
