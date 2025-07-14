@@ -72,23 +72,14 @@ async checkUser() {
 
 
 
+
+
 async loginWithGitHub() {
-
-
    
-    const supabaseUrl = 'https://ttocgvyuaktyxzubajjq.supabase.co'; 
-    const siteUrl = 'https://aetheris-sigma.vercel.app';
-    
-    
-
-    const authUrl = `${supabaseUrl}/auth/v1/authorize?provider=github&options[redirectTo]=${siteUrl}`;
-
-
-    console.log("Attempting to redirect to the following URL:");
-    console.log(authUrl);
-
-    // 4. Redirect the user.
-    window.location.href = authUrl;
+    await supabase_client.auth.signInWithOAuth({
+        provider: 'github',
+        
+    });
 }
     async logout() {
         await supabase_client.auth.signOut();
