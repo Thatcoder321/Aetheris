@@ -1,7 +1,4 @@
-const { createClient } = window.supabase;
-const SUPABASE_URL = 'https://ttocgvyuaktyxzubajjq.supabase.co'; 
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0b2Nndnl1YWt0eXh6dWJhampxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NjQ1MjIsImV4cCI6MjA2ODA0MDUyMn0.mkzqkHj2Lb4SwxwqbZ3YbesxPa0dIPt8gOvfdhHEwqM';
-const supabase_client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// /public/js/auth.js - The final version, using a simple cookie check.
 
 class AuthManager {
     constructor() {
@@ -9,73 +6,61 @@ class AuthManager {
         this.accountDropdown = document.getElementById('account-dropdown');
         this.loginModalOverlay = document.getElementById('login-modal-overlay');
         this.githubLoginBtn = document.getElementById('github-login-btn');
-        this.user = null;
-        
-        // We no longer call initialize(). Instead, we set up our listener.
-        this.listenForAuthChanges();
+        this.user = null; // We'll store user data like { name, avatar_url }
+
+        this.initialize();
         this.attachStaticListeners();
     }
 
-    // --- THIS IS THE CORRECT, EVENT-DRIVEN SOLUTION ---
-    listenForAuthChanges() {
-        // This function fires once on page load, and again every time
-        // the user logs in or out. It is the perfect tool for this job.
-        supabase_client.auth.onAuthStateChange(async (event, session) => {
-            console.log("Auth State Change Event:", event, session);
+    async initialize() {
+        // Check if our cookie exists. This is the only check we need.
+        const isLoggedIn = document.cookie.includes('github_access_token=');
 
-            const user = session?.user || null;
-            this.user = user;
-
-            // When a user successfully signs in for the first time after a redirect...
-            if (event === 'SIGNED_IN' && user) {
-                // We ensure their profile exists in our database.
-                // This is the safest place to put this logic.
-                console.log("User signed in. Ensuring profile exists for ID:", user.id);
-                await supabase_client.from('profiles').upsert({ id: user.id.toString() }, { onConflict: 'id' });
+        if (isLoggedIn) {
+            try {
+                // If we're logged in, use our existing stats route to get user info.
+                const response = await fetch('/api/github/stats');
+                if (!response.ok) throw new Error('Could not fetch user stats');
+                const userData = await response.json();
+                this.user = userData;
+            } catch (error) {
+                console.error("Auth init error:", error);
+                this.user = null; // If stats fail, treat as logged out.
             }
-
-            // After every event, we update the UI to reflect the latest state.
-            this.updateUI();
-        });
+        }
+        this.updateUI();
     }
 
     updateUI() {
         if (this.user) {
-            // Render Logged-In State
-            const avatarUrl = this.user.user_metadata.avatar_url || '/images/icon-user.svg';
-            this.accountButton.innerHTML = `<img src="${avatarUrl}" alt="User Avatar">`;
-            this.accountDropdown.innerHTML = `<h4>${this.user.user_metadata.full_name || this.user.email}</h4><p>Your dashboard is synced.</p><button id="logout-btn">Logout</button>`;
+            // Logged-in state
+            this.accountButton.innerHTML = `<img src="${this.user.avatar_url}" alt="User Avatar">`;
+            this.accountDropdown.innerHTML = `<h4>${this.user.name || 'User'}</h4><p>Logged in with GitHub</p><button id="logout-btn">Logout</button>`;
             this.accountDropdown.querySelector('#logout-btn')?.addEventListener('click', () => this.logout());
         } else {
-            // Render Logged-Out State
+            // Logged-out state
             this.accountButton.innerHTML = `<img src="/images/icon-user.svg" class="user-silhouette" alt="Account">`;
-            this.accountDropdown.innerHTML = `<h4>Your Work is Local</h4><p>Create an account to save & sync.</p><button id="login-btn">Log In / Sign Up</button>`;
+            this.accountDropdown.innerHTML = `<h4>Your Work is Local</h4><p>Log in to save & sync.</p><button id="login-btn">Log In with GitHub</button>`;
             this.accountDropdown.querySelector('#login-btn')?.addEventListener('click', () => this.showLoginModal());
         }
     }
 
     showLoginModal() { this.loginModalOverlay.classList.remove('hidden'); this.accountDropdown.classList.add('hidden'); }
     hideLoginModal() { this.loginModalOverlay.classList.add('hidden'); }
-    
-    async loginWithGitHub() {
-        await supabase_client.auth.signInWithOAuth({
-            provider: 'github',
+
+    logout() {
+        // To log out, we just need to delete the cookie. We'll do this via an API route.
+        fetch('/api/auth/github/logout').then(() => {
+            window.location.reload();
         });
     }
 
-    async logout() {
-        await supabase_client.auth.signOut();
-        window.location.reload(); 
-    }
-
-    // These listeners are attached once to elements that always exist.
     attachStaticListeners() {
         this.accountButton.addEventListener('click', (e) => { e.stopPropagation(); this.accountDropdown.classList.toggle('hidden'); });
         document.addEventListener('click', (e) => { if (!this.accountButton.contains(e.target) && !this.accountDropdown.contains(e.target)) this.accountDropdown.classList.add('hidden'); });
         this.loginModalOverlay.addEventListener('click', (e) => { if (e.target === this.loginModalOverlay) this.hideLoginModal(); });
-        this.githubLoginBtn.addEventListener('click', () => this.loginWithGitHub());
     }
 }
 
-// --- Initialize the entire system ---
+// Initialize the system
 new AuthManager();
