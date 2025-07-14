@@ -478,7 +478,8 @@ body {
 
 
 #login-modal {
-    background: rgba(40, 40, 40, 0.7);
+    background: red;
+    /*background: rgba(40, 40, 40, 0.7);*/
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 16px;
