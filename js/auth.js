@@ -1,6 +1,3 @@
-// /public/js/auth.js - The FINAL version using a direct "Load and Check"
-
-// --- Create the Supabase Client ---
 const { createClient } = window.supabase;
 const SUPABASE_URL = 'https://ttocgvyuaktyxzubajjq.supabase.co'; 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0b2Nndnl1YWt0eXh6dWJhampxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NjQ1MjIsImV4cCI6MjA2ODA0MDUyMn0.mkzqkHj2Lb4SwxwqbZ3YbesxPa0dIPt8gOvfdhHEwqM';
@@ -14,59 +11,47 @@ class AuthManager {
         this.githubLoginBtn = document.getElementById('github-login-btn');
 
         this.user = null;
-        
-        // --- THIS IS THE FIX ---
-        // We call our main logic immediately when the class is created.
         this.initialize();
         this.attachStaticListeners();
     }
 
-    // This is our main startup function.
     async initialize() {
+        // --- START OF DIAGNOSTIC LOGS ---
+        console.log("AuthManager: Initializing... Attempting to get user from Supabase.");
+
         const { data: { user } } = await supabase_client.auth.getUser();
 
+        // This is the most important log. It will tell us what Supabase is actually returning.
+        console.log("AuthManager: Supabase returned user object:", user);
+        // --- END OF DIAGNOSTIC LOGS ---
+
         if (user) {
-            // User is logged in.
+            console.log("AuthManager: User object is NOT null. Proceeding as LOGGED IN.");
             this.user = user;
-            // Silently ensure their profile exists in our DB.
             await supabase_client.from('profiles').upsert({ id: user.id }, { onConflict: 'id' });
         } else {
-            // User is not logged in.
+            console.log("AuthManager: User object is NULL. Proceeding as LOGGED OUT.");
             this.user = null;
         }
         
-        // Now, draw the correct UI based on the result.
         this.updateUI();
     }
 
     updateUI() {
+        console.log("AuthManager: updateUI() called. Current user state:", this.user);
         if (this.user) {
-            // --- RENDER LOGGED-IN STATE ---
+            // Render Logged-In State
             const avatarUrl = this.user.user_metadata.avatar_url || '/images/icon-user.svg';
             this.accountButton.innerHTML = `<img src="${avatarUrl}" alt="User Avatar">`;
-            
-            this.accountDropdown.innerHTML = `
-                <h4>${this.user.user_metadata.full_name || this.user.email}</h4>
-                <p>Your dashboard is synced.</p>
-                <button id="logout-btn">Logout</button>
-            `;
-            // Attach listener to the NEW logout button
+            this.accountDropdown.innerHTML = `<h4>${this.user.user_metadata.full_name || this.user.email}</h4><p>Your dashboard is synced.</p><button id="logout-btn">Logout</button>`;
             this.accountDropdown.querySelector('#logout-btn')?.addEventListener('click', () => this.logout());
-
         } else {
-            // --- RENDER LOGGED-OUT STATE ---
+            // Render Logged-Out State
             this.accountButton.innerHTML = `<img src="/images/icon-user.svg" class="user-silhouette" alt="Account">`;
-            
-            this.accountDropdown.innerHTML = `
-                <h4>Your Work is Local</h4>
-                <p>Create an account to save & sync.</p>
-                <button id="login-btn">Log In / Sign Up</button>
-            `;
-            // Attach listener to the NEW login button
+            this.accountDropdown.innerHTML = `<h4>Your Work is Local</h4><p>Create an account to save & sync.</p><button id="login-btn">Log In / Sign Up</button>`;
             this.accountDropdown.querySelector('#login-btn')?.addEventListener('click', () => this.showLoginModal());
         }
     }
-
     showLoginModal() {
         this.loginModalOverlay.classList.remove('hidden');
         this.accountDropdown.classList.add('hidden');
