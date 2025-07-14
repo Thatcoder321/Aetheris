@@ -85,6 +85,7 @@ class AuthManager {
             });
             
             console.log('🔍 DEBUG: signInWithOAuth response:', { data, error });
+            console.log('🔍 DEBUG: data.url:', data?.url);
             
             if (error) {
                 console.error('GitHub login error:', error);
