@@ -77,14 +77,14 @@ class AuthManager {
             const { data, error } = await supabase_client.auth.signInWithOAuth({
                 provider: 'github',
                 options: {
-                    // Make sure this matches your site's URL
-                    redirectTo: `${window.location.origin}/`
+                    redirectTo: window.location.origin
                 }
             });
             
             if (error) {
                 console.error('GitHub login error:', error);
                 alert('Login failed. Please try again.');
+                return;
             }
             
             // Close the modal immediately - the redirect will happen
