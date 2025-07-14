@@ -19,17 +19,21 @@ class AuthManager {
         this.checkUser();
         this.attachListeners();
     }
+// In /public/js/auth.js
 
-    async checkUser() {
-        const { data, error } = await supabase_client.auth.getUser();
-        if (data.user) {
-            this.user = data.user;
-        } else {
-            this.user = null;
-        }
-        this.updateUI();
+async checkUser() {
+    const { data: { user } } = await supabase_client.auth.getUser();
+
+    if (user) {
+        this.user = user;
+       
+        await supabase_client.from('profiles').upsert({ id: user.id });
+
+    } else {
+        this.user = null;
     }
-
+    this.updateUI(); 
+}
     updateUI() {
         if (this.user) {
   
