@@ -11,15 +11,11 @@ class AuthManager {
         this.githubLoginBtn = document.getElementById('github-login-btn');
         this.user = null;
         
-        // We no longer call initialize(). Instead, we set up our listener.
         this.listenForAuthChanges();
         this.attachStaticListeners();
     }
 
-    // --- THIS IS THE CORRECT, EVENT-DRIVEN SOLUTION ---
     listenForAuthChanges() {
-        // This function fires once on page load, and again every time
-        // the user logs in or out. It is the perfect tool for this job.
         supabase_client.auth.onAuthStateChange(async (event, session) => {
             console.log("Auth State Change Event:", event, session);
 
@@ -28,13 +24,18 @@ class AuthManager {
 
             // When a user successfully signs in for the first time after a redirect...
             if (event === 'SIGNED_IN' && user) {
-                // We ensure their profile exists in our database.
-                // This is the safest place to put this logic.
                 console.log("User signed in. Ensuring profile exists for ID:", user.id);
-                await supabase_client.from('profiles').upsert({ id: user.id.toString() }, { onConflict: 'id' });
+                try {
+                    await supabase_client.from('profiles').upsert({ 
+                        id: user.id.toString() 
+                    }, { 
+                        onConflict: 'id' 
+                    });
+                } catch (error) {
+                    console.error("Error creating profile:", error);
+                }
             }
 
-            // After every event, we update the UI to reflect the latest state.
             this.updateUI();
         });
     }
@@ -44,38 +45,90 @@ class AuthManager {
             // Render Logged-In State
             const avatarUrl = this.user.user_metadata.avatar_url || '/images/icon-user.svg';
             this.accountButton.innerHTML = `<img src="${avatarUrl}" alt="User Avatar">`;
-            this.accountDropdown.innerHTML = `<h4>${this.user.user_metadata.full_name || this.user.email}</h4><p>Your dashboard is synced.</p><button id="logout-btn">Logout</button>`;
+            this.accountDropdown.innerHTML = `
+                <h4>${this.user.user_metadata.full_name || this.user.email}</h4>
+                <p>Your dashboard is synced.</p>
+                <button id="logout-btn">Logout</button>
+            `;
             this.accountDropdown.querySelector('#logout-btn')?.addEventListener('click', () => this.logout());
         } else {
             // Render Logged-Out State
             this.accountButton.innerHTML = `<img src="/images/icon-user.svg" class="user-silhouette" alt="Account">`;
-            this.accountDropdown.innerHTML = `<h4>Your Work is Local</h4><p>Create an account to save & sync.</p><button id="login-btn">Log In / Sign Up</button>`;
+            this.accountDropdown.innerHTML = `
+                <h4>Your Work is Local</h4>
+                <p>Create an account to save & sync.</p>
+                <button id="login-btn">Log In / Sign Up</button>
+            `;
             this.accountDropdown.querySelector('#login-btn')?.addEventListener('click', () => this.showLoginModal());
         }
     }
 
-    showLoginModal() { this.loginModalOverlay.classList.remove('hidden'); this.accountDropdown.classList.add('hidden'); }
-    hideLoginModal() { this.loginModalOverlay.classList.add('hidden'); }
+    showLoginModal() { 
+        this.loginModalOverlay.classList.remove('hidden'); 
+        this.accountDropdown.classList.add('hidden'); 
+    }
+    
+    hideLoginModal() { 
+        this.loginModalOverlay.classList.add('hidden'); 
+    }
     
     async loginWithGitHub() {
-        await supabase_client.auth.signInWithOAuth({
-            provider: 'github',
-        });
+        try {
+            const { data, error } = await supabase_client.auth.signInWithOAuth({
+                provider: 'github',
+                options: {
+                    // Make sure this matches your site's URL
+                    redirectTo: `${window.location.origin}/`
+                }
+            });
+            
+            if (error) {
+                console.error('GitHub login error:', error);
+                alert('Login failed. Please try again.');
+            }
+            
+            // Close the modal immediately - the redirect will happen
+            this.hideLoginModal();
+        } catch (error) {
+            console.error('GitHub login error:', error);
+            alert('Login failed. Please try again.');
+        }
     }
 
     async logout() {
-        await supabase_client.auth.signOut();
-        window.location.reload(); 
+        try {
+            const { error } = await supabase_client.auth.signOut();
+            if (error) {
+                console.error('Logout error:', error);
+            }
+            // The auth state change listener will handle UI updates
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
     }
 
     // These listeners are attached once to elements that always exist.
     attachStaticListeners() {
-        this.accountButton.addEventListener('click', (e) => { e.stopPropagation(); this.accountDropdown.classList.toggle('hidden'); });
-        document.addEventListener('click', (e) => { if (!this.accountButton.contains(e.target) && !this.accountDropdown.contains(e.target)) this.accountDropdown.classList.add('hidden'); });
-        this.loginModalOverlay.addEventListener('click', (e) => { if (e.target === this.loginModalOverlay) this.hideLoginModal(); });
+        this.accountButton.addEventListener('click', (e) => { 
+            e.stopPropagation(); 
+            this.accountDropdown.classList.toggle('hidden'); 
+        });
+        
+        document.addEventListener('click', (e) => { 
+            if (!this.accountButton.contains(e.target) && !this.accountDropdown.contains(e.target)) {
+                this.accountDropdown.classList.add('hidden'); 
+            }
+        });
+        
+        this.loginModalOverlay.addEventListener('click', (e) => { 
+            if (e.target === this.loginModalOverlay) {
+                this.hideLoginModal(); 
+            }
+        });
+        
         this.githubLoginBtn.addEventListener('click', () => this.loginWithGitHub());
     }
 }
 
-// --- Initialize the entire system ---
+// Initialize the entire system
 new AuthManager();
