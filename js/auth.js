@@ -20,6 +20,10 @@ if (!window.authManagerInstance) {
             this.githubLoginBtn = document.getElementById('github-login-btn');
             this.user = null;
             
+            // --- DEBOUNCE VARIABLE ---
+            this.isAllowedToClick = true;
+            // --------------------------
+            
             console.log("AuthManager: Constructor finished. Attaching listeners now.");
             this.listenForAuthChanges();
             this.attachStaticListeners();
@@ -82,7 +86,10 @@ if (!window.authManagerInstance) {
             const { error } = await supabase_client.auth.signInWithOAuth({
                 provider: 'github', options: { redirectTo: window.location.href }
             });
-            if (error) { console.error('GitHub login error:', error); alert('Login failed: ' + error.message); }
+            if (error) { 
+                console.error('GitHub login error:', error); 
+                alert('Login failed: ' + error.message); 
+            }
         }
 
         async logout() {
@@ -91,21 +98,33 @@ if (!window.authManagerInstance) {
 
         attachStaticListeners() {
             console.log("AuthManager: Attaching STATIC listeners...");
+            
+            // --- THE DEBOUNCED CLICK LISTENER ---
             this.accountButton.addEventListener('click', (e) => { 
                 e.stopPropagation(); 
                 e.preventDefault();
 
-                console.log("%cEVENT: #account-button CLICKED.", "color: lime; font-weight: bold;");
-                
-                if (this.accountDropdown.classList.contains('hidden')) {
-                    console.log("Dropdown IS hidden. Removing 'hidden' class now.");
-                    this.accountDropdown.classList.remove('hidden');
-                } else {
-                    console.log("Dropdown IS visible. Adding 'hidden' class now.");
-                    this.accountDropdown.classList.add('hidden');
+                // If we are not allowed to click yet, do nothing.
+                if (!this.isAllowedToClick) {
+                    console.log("%cIGNORING CLICK (Debouncing)", "color: gray");
+                    return;
                 }
+
+                // We got a valid click!
+                console.log("%cEVENT: #account-button CLICKED.", "color: lime; font-weight: bold;");
+                this.accountDropdown.classList.toggle('hidden');
+
+                // Immediately prevent further clicks.
+                this.isAllowedToClick = false;
+                
+                // Set a timer to allow clicks again after a short period (200ms).
+                setTimeout(() => {
+                    this.isAllowedToClick = true;
+                    console.log("%cDebounce period ended. Clicks are now allowed.", "color: green");
+                }, 200); 
             });
             
+            // --- Other listeners remain the same ---
             document.addEventListener('click', (e) => { 
                 if (!this.accountButton.contains(e.target) && !this.accountDropdown.contains(e.target)) {
                     this.accountDropdown.classList.add('hidden'); 
@@ -120,6 +139,7 @@ if (!window.authManagerInstance) {
                 e.preventDefault();
                 this.loginWithGitHub();
             });
+            
             console.log("AuthManager: STATIC listeners attached.");
         }
     }
