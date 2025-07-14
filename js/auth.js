@@ -3,6 +3,8 @@ const SUPABASE_URL = 'https://ttocgvyuaktyxzubajjq.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0b2Nndnl1YWt0eXh6dWJhampxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NjQ1MjIsImV4cCI6MjA2ODA0MDUyMn0.mkzqkHj2Lb4SwxwqbZ3YbesxPa0dIPt8gOvfdhHEwqM';
 const supabase_client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+console.log("--- SCRIPT START: auth.js ---");
+
 class AuthManager {
     constructor() {
         this.accountButton = document.getElementById('account-button');
@@ -11,38 +13,37 @@ class AuthManager {
         this.githubLoginBtn = document.getElementById('github-login-btn');
         this.user = null;
         
+        console.log("AuthManager: Constructor finished. Attaching listeners now.");
         this.listenForAuthChanges();
         this.attachStaticListeners();
     }
 
     listenForAuthChanges() {
+        console.log("AuthManager: Attaching onAuthStateChange listener...");
         supabase_client.auth.onAuthStateChange(async (event, session) => {
-            console.log("Auth State Change Event:", event, session);
+            console.log(`%cAUTH STATE CHANGE FIRED! Event: ${event}`, 'color: yellow; font-weight: bold;', session);
 
-            const user = session?.user || null;
-            this.user = user;
+            this.user = session?.user || null;
+            console.log("AuthManager: User state is now:", this.user ? `Logged in as ${this.user.email}` : "Logged out");
 
-            // When a user successfully signs in for the first time after a redirect...
-            if (event === 'SIGNED_IN' && user) {
-                console.log("User signed in. Ensuring profile exists for ID:", user.id);
+            if (event === 'SIGNED_IN' && this.user) {
+                console.log("AuthManager: SIGNED_IN event. Upserting profile for ID:", this.user.id);
                 try {
-                    await supabase_client.from('profiles').upsert({ 
-                        id: user.id.toString() 
-                    }, { 
-                        onConflict: 'id' 
-                    });
+                    await supabase_client.from('profiles').upsert({ id: this.user.id.toString() }, { onConflict: 'id' });
                 } catch (error) {
                     console.error("Error creating profile:", error);
                 }
             }
 
+            console.log("AuthManager: Calling updateUI() from auth state change...");
             this.updateUI();
         });
     }
 
     updateUI() {
+        console.log("%c--- Running updateUI() ---", "color: cyan");
         if (this.user) {
-            // Render Logged-In State
+            console.log("updateUI: User EXISTS. Rendering LOGGED-IN state.");
             const avatarUrl = this.user.user_metadata.avatar_url || '/images/icon-user.svg';
             this.accountButton.innerHTML = `<img src="${avatarUrl}" alt="User Avatar">`;
             this.accountDropdown.innerHTML = `
@@ -50,80 +51,63 @@ class AuthManager {
                 <p>Your dashboard is synced.</p>
                 <button id="logout-btn">Logout</button>
             `;
-            this.accountDropdown.querySelector('#logout-btn')?.addEventListener('click', () => this.logout());
+            const logoutBtn = this.accountDropdown.querySelector('#logout-btn');
+            console.log("updateUI: Found logout button:", logoutBtn);
+            logoutBtn?.addEventListener('click', () => this.logout());
+            console.log("updateUI: >>> ATTACHED click listener to #logout-btn.");
         } else {
-            // Render Logged-Out State
+            console.log("updateUI: User is NULL. Rendering LOGGED-OUT state.");
             this.accountButton.innerHTML = `<img src="/images/icon-user.svg" class="user-silhouette" alt="Account">`;
             this.accountDropdown.innerHTML = `
                 <h4>Your Work is Local</h4>
                 <p>Create an account to save & sync.</p>
                 <button id="login-btn">Log In / Sign Up</button>
             `;
-            this.accountDropdown.querySelector('#login-btn')?.addEventListener('click', () => this.showLoginModal());
+            const loginBtn = this.accountDropdown.querySelector('#login-btn');
+            console.log("updateUI: Found login button:", loginBtn);
+            loginBtn?.addEventListener('click', () => {
+                console.log("EVENT: #login-btn was clicked. Calling showLoginModal().");
+                this.showLoginModal();
+            });
+            console.log("updateUI: >>> ATTACHED click listener to #login-btn.");
         }
+        console.log("%c--- Finished updateUI() ---", "color: cyan");
     }
 
     showLoginModal() { 
+        console.error("%c!!! CRITICAL: showLoginModal() was called. Showing modal now.", "color: red; font-size: 14px;");
         this.loginModalOverlay.classList.remove('hidden'); 
         this.accountDropdown.classList.add('hidden'); 
     }
     
     hideLoginModal() { 
+        console.log("AuthManager: Hiding login modal.");
         this.loginModalOverlay.classList.add('hidden'); 
     }
     
     async loginWithGitHub() {
-        console.log('🔍 DEBUG: loginWithGitHub() called');
-        console.log('🔍 DEBUG: About to call supabase_client.auth.signInWithOAuth');
-        
-        try {
-            const { data, error } = await supabase_client.auth.signInWithOAuth({
-                provider: 'github',
-                options: {
-                    redirectTo: window.location.origin,
-                    skipBrowserRedirect: true  // Prevent automatic redirect
-                }
-            });
-            
-            console.log('🔍 DEBUG: signInWithOAuth response:', { data, error });
-            console.log('🔍 DEBUG: data.url:', data?.url);
-            
-            if (error) {
-                console.error('GitHub login error:', error);
-                alert('Login failed. Please try again.');
-                return;
-            }
-            
-            // Manually redirect to the Supabase-generated URL
-            if (data?.url) {
-                console.log('🔍 DEBUG: Manually redirecting to:', data.url);
-                window.location.href = data.url;
-            }
-            
-            console.log('🔍 DEBUG: About to hide login modal');
-            this.hideLoginModal();
-        } catch (error) {
+        console.log('AuthManager: loginWithGitHub() called. Redirecting to GitHub...');
+        const { error } = await supabase_client.auth.signInWithOAuth({
+            provider: 'github',
+            options: { redirectTo: window.location.href }
+        });
+        if (error) {
             console.error('GitHub login error:', error);
-            alert('Login failed. Please try again.');
+            alert('Login failed: ' + error.message);
         }
     }
 
     async logout() {
-        try {
-            const { error } = await supabase_client.auth.signOut();
-            if (error) {
-                console.error('Logout error:', error);
-            }
-            // The auth state change listener will handle UI updates
-        } catch (error) {
-            console.error('Logout error:', error);
-        }
+        console.log("AuthManager: logout() called.");
+        await supabase_client.auth.signOut();
     }
 
-    // These listeners are attached once to elements that always exist.
     attachStaticListeners() {
+        console.log("AuthManager: Attaching STATIC listeners...");
         this.accountButton.addEventListener('click', (e) => { 
             e.stopPropagation(); 
+            console.log("%cEVENT: #account-button CLICKED.", "color: lime; font-weight: bold;");
+            console.log("AuthManager: Toggling 'hidden' on dropdown. Current user is:", this.user ? 'LOGGED IN' : 'LOGGED OUT');
             this.accountDropdown.classList.toggle('hidden'); 
         });
         
@@ -134,19 +118,16 @@ class AuthManager {
         });
         
         this.loginModalOverlay.addEventListener('click', (e) => { 
-            if (e.target === this.loginModalOverlay) {
-                this.hideLoginModal(); 
-            }
+            if (e.target === this.loginModalOverlay) { this.hideLoginModal(); }
         });
         
         this.githubLoginBtn.addEventListener('click', (e) => {
-            console.log('🔍 DEBUG: GitHub login button clicked');
-            console.log('🔍 DEBUG: Button element:', e.target);
-            e.preventDefault(); // Prevent any default form submission
+            e.preventDefault();
             this.loginWithGitHub();
         });
+        console.log("AuthManager: STATIC listeners attached.");
     }
 }
 
-// Initialize the entire system
+console.log("AuthManager: Initializing new instance...");
 new AuthManager();
