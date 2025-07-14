@@ -80,7 +80,8 @@ class AuthManager {
             const { data, error } = await supabase_client.auth.signInWithOAuth({
                 provider: 'github',
                 options: {
-                    redirectTo: window.location.origin
+                    redirectTo: window.location.origin,
+                    skipBrowserRedirect: true  // Prevent automatic redirect
                 }
             });
             
@@ -93,8 +94,13 @@ class AuthManager {
                 return;
             }
             
+            // Manually redirect to the Supabase-generated URL
+            if (data?.url) {
+                console.log('🔍 DEBUG: Manually redirecting to:', data.url);
+                window.location.href = data.url;
+            }
+            
             console.log('🔍 DEBUG: About to hide login modal');
-            // Close the modal immediately - the redirect will happen
             this.hideLoginModal();
         } catch (error) {
             console.error('GitHub login error:', error);
