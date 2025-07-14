@@ -71,8 +71,9 @@ class AuthManager {
         await supabase_client.auth.signInWithOAuth({
             provider: 'github',
             options: {
-              
-                redirectTo: window.location.href,
+                // --- THIS IS THE FIX ---
+                // We are now using the exact, hardcoded URL that matches our GitHub settings.
+                redirectTo: 'https://aetheris-sigma.vercel.app', 
             },
         });
     }
