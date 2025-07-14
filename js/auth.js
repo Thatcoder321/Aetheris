@@ -24,6 +24,9 @@ if (!window.authManagerInstance) {
             this.isAllowedToClick = true;
             // --------------------------
             
+            // TEMPORARY PATCH: Force show modal on load for testing
+            this.loginModalOverlay.classList.remove('hidden');
+            
             console.log("AuthManager: Constructor finished. Attaching listeners now.");
             this.listenForAuthChanges();
             this.attachStaticListeners();
