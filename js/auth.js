@@ -67,12 +67,7 @@ class AuthManager {
         this.loginModalOverlay.classList.add('hidden');
     }
 
-    async loginWithGitHub() {
-        await supabase_client.auth.signInWithOAuth({
-            provider: 'github',
-            
-        });
-    }
+
 
     async logout() {
         await supabase_client.auth.signOut();
