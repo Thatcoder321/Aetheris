@@ -24,13 +24,13 @@ if (!window.authManagerInstance) {
             
             console.log("AuthManager: Constructor finished. Attaching listeners now.");
             this.attachStaticListeners();
-            this.listenForAuthChanges(); // This is now async and will handle initial session
+            this.listenForAuthChanges();
         }
 
         listenForAuthChanges() {
             console.log("AuthManager: Attaching onAuthStateChange listener...");
             
-            // This robustly checks for an existing session on page load
+            // Check for existing session on page load
             supabase_client.auth.getSession().then(async ({ data: { session } }) => {
                 if (session) {
                     console.log("AuthManager: Found existing session on page load:", session);
@@ -39,7 +39,7 @@ if (!window.authManagerInstance) {
                     if (typeof window.loadStateFromCloud === 'function') {
                         await window.loadStateFromCloud();
                     } else {
-                        console.warn("loadStateFromCloud not available yet, will retry later");
+                        console.warn("loadStateFromCloud not available yet");
                     }
                     this.updateUI();
                 } else {
@@ -51,13 +51,12 @@ if (!window.authManagerInstance) {
                 }
             });
             
-            // Then, it listens for any subsequent changes (like login or logout)
+            // Listen for auth state changes
             supabase_client.auth.onAuthStateChange(async (event, session) => {
                 console.log(`%cAUTH STATE CHANGE FIRED! Event: ${event}`, 'color: yellow; font-weight: bold;', session);
                 
                 const user = session?.user || null;
 
-                // This logic correctly handles the transition from logged-out to logged-in
                 if (this.user === null && user !== null) {
                     this.user = user; 
                     const isNewUser = !user.last_sign_in_at || (user.created_at === user.last_sign_in_at);
@@ -70,8 +69,6 @@ if (!window.authManagerInstance) {
                             await window.saveStateToCloud();
                         }
                     } else {
-                        // For a returning user logging in, the getSession() above might have already loaded state.
-                        // Or, if this is the first event, we load it now.
                         console.log("Returning user detected. Loading state from cloud...");
                         // Use global function from state.js
                         if (typeof window.loadStateFromCloud === 'function') {
@@ -103,19 +100,14 @@ if (!window.authManagerInstance) {
                     <button id="logout-btn">Logout</button>
                 `;
                 
-                // Add event listener to the logout button with debugging
+                // Add event listener to the logout button
                 const logoutBtn = this.accountDropdown.querySelector('#logout-btn');
-                console.log("updateUI: Looking for logout button:", logoutBtn);
                 if (logoutBtn) {
-                    console.log("updateUI: Found logout button, attaching listener");
                     logoutBtn.addEventListener('click', (e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        console.log("updateUI: Logout button clicked!");
                         this.logout();
                     });
-                } else {
-                    console.error("updateUI: Logout button not found!");
                 }
             } else {
                 console.log("updateUI: User is NULL. Rendering LOGGED-OUT state.");
@@ -132,7 +124,6 @@ if (!window.authManagerInstance) {
                     loginBtn.addEventListener('click', () => this.showLoginModal());
                 }
             }
-            console.log("%c--- Finished updateUI() ---", "color: cyan");
         }
 
         showLoginModal() { 
@@ -163,7 +154,6 @@ if (!window.authManagerInstance) {
                     alert('Logout failed: ' + error.message);
                 } else {
                     console.log("AuthManager: Successfully logged out");
-                    // Hide the dropdown after logout
                     this.accountDropdown.classList.add('hidden');
                 }
             } catch (error) {
@@ -175,34 +165,24 @@ if (!window.authManagerInstance) {
         attachStaticListeners() {
             console.log("AuthManager: Attaching STATIC listeners...");
             
-            // --- THE DEBOUNCED CLICK LISTENER ---
             this.accountButton.addEventListener('click', (e) => { 
                 e.stopPropagation(); 
                 e.preventDefault();
 
-                // If we are not allowed to click yet, do nothing.
                 if (!this.isAllowedToClick) {
                     console.log("%cIGNORING CLICK (Debouncing)", "color: gray");
                     return;
                 }
 
-                // We got a valid click!
                 console.log("%cEVENT: #account-button CLICKED.", "color: lime; font-weight: bold;");
-                
-                // Only toggle the dropdown, don't show login modal
                 this.accountDropdown.classList.toggle('hidden');
 
-                // Immediately prevent further clicks.
                 this.isAllowedToClick = false;
-                
-                // Set a timer to allow clicks again after a short period (200ms).
                 setTimeout(() => {
                     this.isAllowedToClick = true;
-                    console.log("%cDebounce period ended. Clicks are now allowed.", "color: green");
                 }, 200); 
             });
             
-            // --- Other listeners remain the same ---
             document.addEventListener('click', (e) => { 
                 if (!this.accountButton.contains(e.target) && !this.accountDropdown.contains(e.target)) {
                     this.accountDropdown.classList.add('hidden'); 
@@ -217,16 +197,12 @@ if (!window.authManagerInstance) {
                 e.preventDefault();
                 this.loginWithGitHub();
             });
-            
-            console.log("AuthManager: STATIC listeners attached.");
         }
     }
 
-    // Create the one and only instance and attach it to the global window object
+    // Create the singleton instance
     window.authManagerInstance = new AuthManager();
     
-    // Make supabase_client available globally for state.js
+    // Make supabase_client available globally
     window.supabase_client = supabase_client;
-
-// --- End of Singleton Pattern ---
 }
