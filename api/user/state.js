@@ -13,8 +13,6 @@ function collectCurrentState() {
     };
     return { layout, theme, widgets: widgetData, activeWidgets };
 }
-
-
 async function saveStateToCloud() {
     const { data: { session } } = await supabase_client.auth.getSession();
     if (!session) {
