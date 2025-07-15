@@ -36,12 +36,14 @@ if (!window.authManagerInstance) {
             
             // This robustly checks for an existing session on page load
             supabase_client.auth.getSession().then(async ({ data: { session } }) => {
+                console.log("🔐 AuthManager: getSession() result:", session ? "SESSION FOUND" : "NO SESSION");
                 if (session) {
                     console.log("AuthManager: Found existing session on page load:", session);
                     this.user = session.user;
                     await loadStateFromCloud();
                     this.updateUI();
                 } else {
+                    console.log("🔐 AuthManager: No session found, calling loadDefaultGuestState()");
                     loadDefaultGuestState();
                     this.updateUI();
                 }

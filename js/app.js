@@ -176,11 +176,24 @@ function handleWidgetToggle(e) {
 
 
 function loadDefaultGuestState() {
-    console.log("AuthManager has confirmed a guest user. Loading default widgets.");
+    console.log("🎯 loadDefaultGuestState() called - starting to load default widgets...");
+    console.log("🎯 WidgetManager exists:", typeof widgetManager !== 'undefined');
+    console.log("🎯 Grid exists:", typeof grid !== 'undefined');
 
+    if (typeof widgetManager === 'undefined') {
+        console.error("❌ WidgetManager not found!");
+        return;
+    }
+
+    console.log("🎯 Adding greeting widget...");
     widgetManager.addWidget('greeting');
+    console.log("🎯 Adding clock widget...");
     widgetManager.addWidget('clock');
+    console.log("🎯 Adding todo widget...");
     widgetManager.addWidget('todo');
+    
+    console.log("🎯 Active widgets after loading:", widgetManager.activeWidgets.size);
+    console.log("🎯 Active widget keys:", Array.from(widgetManager.activeWidgets.keys()));
 }
 
 loadInitialTheme();

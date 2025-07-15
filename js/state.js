@@ -7,48 +7,39 @@ function collectCurrentState() {
     
     // 3. Collect data from every widget that has savable state
     const widgetData = {
-
         todo: {
             tasks: JSON.parse(localStorage.getItem('aetheris-tasks')) || []
         },
-
         weather: {
             city: localStorage.getItem('aetheris-city')
         },
-
         greeting: {
             name: localStorage.getItem('aetheris-username')
         },
-
         stocks: {
             symbols: localStorage.getItem('aetheris-stock-symbols')
         },
-
         countdown: {
             target: localStorage.getItem('aetheris-countdown-target'),
             title: localStorage.getItem('aetheris-countdown-title')
         },
-
         quickLinks: {
             links: JSON.parse(localStorage.getItem('aetheris-quick-links')) || []
         },
-
         notepad: {
             text: localStorage.getItem('aetheris-notepad-text')
         }
-       
     };
 
-  
     return { layout, theme, widgets: widgetData };
 }
 
 
 
 async function saveStateToCloud() {
-   
-    if (!document.cookie.includes('github_access_token=')) {
-      
+    const { data: { session } } = await supabase_client.auth.getSession();
+    if (!session) {
+        // No user is logged in, so we don't save to the cloud.
         return;
     }
     
@@ -58,7 +49,10 @@ async function saveStateToCloud() {
     try {
         await fetch('/api/state', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session.access_token}` // Send the user's token
+            },
             body: JSON.stringify({ aetheris_config: state })
         });
     } catch (error) {
@@ -69,13 +63,24 @@ async function saveStateToCloud() {
 
 async function loadStateFromCloud() {
     console.log("%cLoading state from cloud...", "color: green");
+    
+    const { data: { session } } = await supabase_client.auth.getSession();
+    if (!session) {
+        console.log("No active session, using local defaults");
+        return false;
+    }
+    
     try {
-        const response = await fetch('/api/state');
+        const response = await fetch('/api/state', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${session.access_token}` // Send the user's token
+            }
+        });
+        
         if (!response.ok) {
-         
-            console.log("No cloud state found. Using local defaults.");
-           
-            return false; 
+            console.log("No cloud state found for user. Using local defaults.");
+            return false;
         }
 
         const state = await response.json();
@@ -85,7 +90,6 @@ async function loadStateFromCloud() {
         }
 
         console.log("Cloud state loaded successfully. Applying now...", state);
-
 
         if (state.theme) {
             applyTheme(state.theme); 
@@ -103,7 +107,6 @@ async function loadStateFromCloud() {
             if (widgets.notepad?.text) localStorage.setItem('aetheris-notepad-text', widgets.notepad.text);
         }
 
-       
         if (state.layout) {
             grid.load(state.layout);
         }
