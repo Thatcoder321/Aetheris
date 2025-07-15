@@ -1,6 +1,4 @@
 // --- Start of Singleton Pattern ---
-// Check if an instance already exists on the window object.
-// If it does, this script will do nothing further.
 if (!window.authManagerInstance) {
 
     const { createClient } = window.supabase;
@@ -8,21 +6,36 @@ if (!window.authManagerInstance) {
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0b2Nndnl1YWt0eXh6dWJhampxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NjQ1MjIsImV4cCI6MjA2ODA0MDUyMn0.mkzqkHj2Lb4SwxwqbZ3YbesxPa0dIPt8gOvfdhHEwqM';
     const supabase_client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    console.log("%c--- SCRIPT START: auth.js (Executing Singleton Body) ---", "color: orange; font-size: 14px;");
-
     class AuthManager {
         constructor() {
+            // Wait for DOM to be ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => this.init());
+            } else {
+                this.init();
+            }
+        }
+
+        init() {
             this.accountButton = document.getElementById('account-button');
             this.accountDropdown = document.getElementById('account-dropdown');
             this.loginModalOverlay = document.getElementById('login-modal-overlay');
             this.githubLoginBtn = document.getElementById('github-login-btn');
             this.user = null;
-            
-            // --- DEBOUNCE VARIABLE ---
             this.isAllowedToClick = true;
-            // --------------------------
             
-            console.log("AuthManager: Constructor finished. Attaching listeners now.");
+            console.log("AuthManager: Elements found:", {
+                accountButton: !!this.accountButton,
+                accountDropdown: !!this.accountDropdown,
+                loginModalOverlay: !!this.loginModalOverlay,
+                githubLoginBtn: !!this.githubLoginBtn
+            });
+            
+            if (!this.accountButton || !this.accountDropdown) {
+                console.error("Critical elements not found!");
+                return;
+            }
+            
             this.attachStaticListeners();
             this.listenForAuthChanges();
         }
@@ -30,20 +43,18 @@ if (!window.authManagerInstance) {
         listenForAuthChanges() {
             console.log("AuthManager: Attaching onAuthStateChange listener...");
             
-            // Check for existing session on page load
             supabase_client.auth.getSession().then(async ({ data: { session } }) => {
                 if (session) {
                     console.log("AuthManager: Found existing session on page load:", session);
                     this.user = session.user;
-                    // Use global function from state.js
+                    // Wait for state.js functions to be available
+                    await this.waitForStateFunctions();
                     if (typeof window.loadStateFromCloud === 'function') {
                         await window.loadStateFromCloud();
-                    } else {
-                        console.warn("loadStateFromCloud not available yet");
                     }
                     this.updateUI();
                 } else {
-                    // Use global function from state.js
+                    await this.waitForStateFunctions();
                     if (typeof window.loadDefaultGuestState === 'function') {
                         window.loadDefaultGuestState();
                     }
@@ -51,9 +62,8 @@ if (!window.authManagerInstance) {
                 }
             });
             
-            // Listen for auth state changes
             supabase_client.auth.onAuthStateChange(async (event, session) => {
-                console.log(`%cAUTH STATE CHANGE FIRED! Event: ${event}`, 'color: yellow; font-weight: bold;', session);
+                console.log(`%cAUTH STATE CHANGE: ${event}`, 'color: yellow; font-weight: bold;');
                 
                 const user = session?.user || null;
 
@@ -61,24 +71,22 @@ if (!window.authManagerInstance) {
                     this.user = user; 
                     const isNewUser = !user.last_sign_in_at || (user.created_at === user.last_sign_in_at);
 
+                    await this.waitForStateFunctions();
                     if (isNewUser) {
-                        console.log("New user detected! Migrating local state to cloud...");
+                        console.log("New user detected!");
                         await supabase_client.from('profiles').upsert({ id: this.user.id.toString() }, { onConflict: 'id' });
-                        // Use global function from state.js
                         if (typeof window.saveStateToCloud === 'function') {
                             await window.saveStateToCloud();
                         }
                     } else {
-                        console.log("Returning user detected. Loading state from cloud...");
-                        // Use global function from state.js
+                        console.log("Returning user detected!");
                         if (typeof window.loadStateFromCloud === 'function') {
                             await window.loadStateFromCloud();
                         }
                     }
                 } else if (this.user !== null && user === null) {
-                    console.log("User has logged out");
+                    console.log("User logged out");
                     this.user = null;
-                    // Load default guest state when user logs out
                     if (typeof window.loadDefaultGuestState === 'function') {
                         window.loadDefaultGuestState();
                     }
@@ -86,6 +94,18 @@ if (!window.authManagerInstance) {
 
                 this.updateUI();
             });
+        }
+
+        // Wait for state.js functions to be available
+        async waitForStateFunctions() {
+            let attempts = 0;
+            while (attempts < 50 && typeof window.loadStateFromCloud !== 'function') {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+            if (attempts >= 50) {
+                console.warn("State functions not available after 5 seconds");
+            }
         }
 
         updateUI() {
@@ -100,7 +120,6 @@ if (!window.authManagerInstance) {
                     <button id="logout-btn">Logout</button>
                 `;
                 
-                // Add event listener to the logout button
                 const logoutBtn = this.accountDropdown.querySelector('#logout-btn');
                 if (logoutBtn) {
                     logoutBtn.addEventListener('click', (e) => {
@@ -118,12 +137,12 @@ if (!window.authManagerInstance) {
                     <button id="login-btn">Log In / Sign Up</button>
                 `;
                 
-                // Add event listener to the login button
                 const loginBtn = this.accountDropdown.querySelector('#login-btn');
                 if (loginBtn) {
                     loginBtn.addEventListener('click', () => this.showLoginModal());
                 }
             }
+            console.log("updateUI complete. Dropdown content:", this.accountDropdown.innerHTML);
         }
 
         showLoginModal() { 
@@ -174,8 +193,10 @@ if (!window.authManagerInstance) {
                     return;
                 }
 
-                console.log("%cEVENT: #account-button CLICKED.", "color: lime; font-weight: bold;");
+                console.log("%cACCOUNT BUTTON CLICKED", "color: lime; font-weight: bold;");
+                console.log("Dropdown current state:", this.accountDropdown.classList.toString());
                 this.accountDropdown.classList.toggle('hidden');
+                console.log("Dropdown new state:", this.accountDropdown.classList.toString());
 
                 this.isAllowedToClick = false;
                 setTimeout(() => {
