@@ -110,6 +110,7 @@ if (data.layout && Array.isArray(data.layout)) {
         }
     });
     grid.compact();
+    saveLayout();
 } else {
     throw new Error("Received invalid layout data from server.");
 }
