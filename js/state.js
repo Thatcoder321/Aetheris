@@ -1,53 +1,28 @@
 function collectCurrentState() {
-    // 1. Save the grid layout (positions and sizes of widgets)
     const layout = grid.save(false);
-
-    // 2. Save the current theme
     const theme = localStorage.getItem('aetheris-theme-url') || '/images/abstract-gradient-image.jpg';
-    const activeWidgets = Array.from(widgetManager.activeWidgets.keys());
-    // 3. Collect data from every widget that has savable state
+    const activeWidgets = Array.from(widgetManager.activeWidgets.keys()); // ✅ Track active widgets
+    
     const widgetData = {
-
-        todo: {
-            tasks: JSON.parse(localStorage.getItem('aetheris-tasks')) || []
-        },
-
-        weather: {
-            city: localStorage.getItem('aetheris-city')
-        },
-
-        greeting: {
-            name: localStorage.getItem('aetheris-username')
-        },
-
-        stocks: {
-            symbols: localStorage.getItem('aetheris-stock-symbols')
-        },
-
-        countdown: {
+        todo: { tasks: JSON.parse(localStorage.getItem('aetheris-tasks')) || [] },
+        weather: { city: localStorage.getItem('aetheris-city') },
+        greeting: { name: localStorage.getItem('aetheris-username') },
+        stocks: { symbols: localStorage.getItem('aetheris-stock-symbols') },
+        countdown: { 
             target: localStorage.getItem('aetheris-countdown-target'),
             title: localStorage.getItem('aetheris-countdown-title')
         },
-
-        quickLinks: {
-            links: JSON.parse(localStorage.getItem('aetheris-quick-links')) || []
-        },
-
-        notepad: {
-            text: localStorage.getItem('aetheris-notepad-text')
-        }
-       
+        quickLinks: { links: JSON.parse(localStorage.getItem('aetheris-quick-links')) || [] },
+        notepad: { text: localStorage.getItem('aetheris-notepad-text') }
     };
-
-    return { layout, theme, widgets: widgetData, activeWidgets };
+    
+    return { layout, theme, widgets: widgetData, activeWidgets }; // ✅ Include activeWidgets
 }
 
-
-
 async function saveStateToCloud() {
-   
-    if (!document.cookie.includes('github_access_token=')) {
-      
+    const { data: { session } } = await supabase_client.auth.getSession();
+    if (!session) {
+        console.log("No session, skipping cloud save");
         return;
     }
     
@@ -57,9 +32,13 @@ async function saveStateToCloud() {
     try {
         await fetch('/api/state', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session.access_token}`
+            },
             body: JSON.stringify({ aetheris_config: state })
         });
+        console.log("✅ State saved successfully");
     } catch (error) {
         console.error("Failed to save state:", error);
     }
@@ -67,11 +46,24 @@ async function saveStateToCloud() {
 
 async function loadStateFromCloud() {
     console.log("%cLoading state from cloud...", "color: green");
+    
+    const { data: { session } } = await supabase_client.auth.getSession();
+    if (!session) {
+        console.log("No active session, using local defaults");
+        return false;
+    }
+    
     try {
-        const response = await fetch('/api/state');
+        const response = await fetch('/api/state', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${session.access_token}`
+            }
+        });
+        
         if (!response.ok) {
-            console.log("No cloud state found. Using local defaults.");
-            return false; 
+            console.log("No cloud state found for user. Using local defaults.");
+            return false;
         }
 
         const state = await response.json();
@@ -82,12 +74,12 @@ async function loadStateFromCloud() {
 
         console.log("Cloud state loaded successfully. Applying now...", state);
 
-        // Apply theme
+
         if (state.theme) {
-            applyTheme(state.theme); 
+            applyTheme(state.theme);
         }
         
-        // Apply widget data to localStorage
+
         if (state.widgets) {
             const widgets = state.widgets;
             if (widgets.todo?.tasks) localStorage.setItem('aetheris-tasks', JSON.stringify(widgets.todo.tasks));
@@ -100,7 +92,6 @@ async function loadStateFromCloud() {
             if (widgets.notepad?.text) localStorage.setItem('aetheris-notepad-text', widgets.notepad.text);
         }
 
-        // **NEW: Restore active widgets FIRST**
         if (state.activeWidgets && Array.isArray(state.activeWidgets)) {
             console.log("Restoring active widgets:", state.activeWidgets);
             state.activeWidgets.forEach(widgetId => {
@@ -112,13 +103,12 @@ async function loadStateFromCloud() {
             });
         }
 
-        // **THEN apply layout positions**
         if (state.layout) {
             console.log("Applying layout positions...");
             grid.load(state.layout);
         }
         
-        return true; 
+        return true;
 
     } catch (error) {
         console.error("Failed to load and apply state:", error);
