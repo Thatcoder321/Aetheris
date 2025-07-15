@@ -2,7 +2,16 @@
 function collectCurrentState() {
     const layout = grid.save(false);
     const theme = localStorage.getItem('aetheris-theme-url') || '/images/abstract-gradient-image.jpg';
-    const activeWidgets = Array.from(widgetManager.activeWidgets.keys()); // ADD THIS LINE
+    const activeWidgets = Array.from(widgetManager.activeWidgets.keys());
+    
+    // DEBUG: Log what we're collecting
+    console.log("DEBUG: Collecting state:", {
+        layoutSize: layout ? layout.length : 0,
+        theme: theme,
+        activeWidgets: activeWidgets,
+        widgetManagerSize: widgetManager.activeWidgets.size
+    });
+    
     const widgetData = {
         todo: { tasks: JSON.parse(localStorage.getItem('aetheris-tasks')) || [] },
         weather: { city: localStorage.getItem('aetheris-city') },
@@ -12,7 +21,7 @@ function collectCurrentState() {
         quickLinks: { links: JSON.parse(localStorage.getItem('aetheris-quick-links')) || [] },
         notepad: { text: localStorage.getItem('aetheris-notepad-text') }
     };
-    return { layout, theme, widgets: widgetData, activeWidgets }; // ADD activeWidgets HERE
+    return { layout, theme, widgets: widgetData, activeWidgets };
 }
 
 
@@ -69,7 +78,12 @@ async function loadStateFromCloud() {
         }
 
         console.log("Cloud state loaded successfully. Applying now...", state);
-
+        console.log("DEBUG: State received:", {
+            hasLayout: !!state.layout,
+            hasActiveWidgets: !!state.activeWidgets,
+            activeWidgetsArray: state.activeWidgets,
+            layoutLength: state.layout ? state.layout.length : 0
+        });
         if (state.theme) applyTheme(state.theme);
         
         // Apply widget data to localStorage
