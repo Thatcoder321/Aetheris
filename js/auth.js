@@ -24,15 +24,23 @@ if (!window.authManagerInstance) {
             this.isAllowedToClick = true;
             // --------------------------
             
-           
-            
             console.log("AuthManager: Constructor finished. Attaching listeners now.");
-            this.listenForAuthChanges();
             this.attachStaticListeners();
+            this.listenForAuthChanges(); // This is now async and will handle initial session
         }
 
-        listenForAuthChanges() {
+        async listenForAuthChanges() {
             console.log("AuthManager: Attaching onAuthStateChange listener...");
+            
+            // First, check for existing session on page load
+            const { data: { session } } = await supabase_client.auth.getSession();
+            if (session) {
+                console.log("AuthManager: Found existing session on page load:", session);
+                this.user = session.user;
+                this.updateUI();
+            }
+            
+            // Then listen for auth changes
             supabase_client.auth.onAuthStateChange(async (event, session) => {
                 console.log(`%cAUTH STATE CHANGE FIRED! Event: ${event}`, 'color: yellow; font-weight: bold;', session);
                 this.user = session?.user || null;
