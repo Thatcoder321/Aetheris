@@ -24,8 +24,7 @@ if (!window.authManagerInstance) {
             this.isAllowedToClick = true;
             // --------------------------
             
-            // TEMPORARY PATCH: Force show modal on load for testing
-            this.loginModalOverlay.classList.remove('hidden');
+           
             
             console.log("AuthManager: Constructor finished. Attaching listeners now.");
             this.listenForAuthChanges();
@@ -62,7 +61,12 @@ if (!window.authManagerInstance) {
                     <p>Your dashboard is synced.</p>
                     <button id="logout-btn">Logout</button>
                 `;
-                this.accountDropdown.querySelector('#logout-btn')?.addEventListener('click', () => this.logout());
+                
+                // Add event listener to the logout button
+                const logoutBtn = this.accountDropdown.querySelector('#logout-btn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => this.logout());
+                }
             } else {
                 console.log("updateUI: User is NULL. Rendering LOGGED-OUT state.");
                 this.accountButton.innerHTML = `<img src="/images/icon-user.svg" class="user-silhouette" alt="Account">`;
@@ -71,7 +75,12 @@ if (!window.authManagerInstance) {
                     <p>Create an account to save & sync.</p>
                     <button id="login-btn">Log In / Sign Up</button>
                 `;
-                this.accountDropdown.querySelector('#login-btn')?.addEventListener('click', () => this.showLoginModal());
+                
+                // Add event listener to the login button
+                const loginBtn = this.accountDropdown.querySelector('#login-btn');
+                if (loginBtn) {
+                    loginBtn.addEventListener('click', () => this.showLoginModal());
+                }
             }
             console.log("%c--- Finished updateUI() ---", "color: cyan");
         }
@@ -115,6 +124,8 @@ if (!window.authManagerInstance) {
 
                 // We got a valid click!
                 console.log("%cEVENT: #account-button CLICKED.", "color: lime; font-weight: bold;");
+                
+                // Only toggle the dropdown, don't show login modal
                 this.accountDropdown.classList.toggle('hidden');
 
                 // Immediately prevent further clicks.
