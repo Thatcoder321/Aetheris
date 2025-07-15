@@ -1,9 +1,8 @@
-// /public/js/state.js
 
-// This function still just collects data. No changes needed here.
 function collectCurrentState() {
     const layout = grid.save(false);
     const theme = localStorage.getItem('aetheris-theme-url') || '/images/abstract-gradient-image.jpg';
+    const activeWidgets = Array.from(widgetManager.activeWidgets.keys()); // ADD THIS LINE
     const widgetData = {
         todo: { tasks: JSON.parse(localStorage.getItem('aetheris-tasks')) || [] },
         weather: { city: localStorage.getItem('aetheris-city') },
@@ -13,14 +12,14 @@ function collectCurrentState() {
         quickLinks: { links: JSON.parse(localStorage.getItem('aetheris-quick-links')) || [] },
         notepad: { text: localStorage.getItem('aetheris-notepad-text') }
     };
-    return { layout, theme, widgets: widgetData };
+    return { layout, theme, widgets: widgetData, activeWidgets }; // ADD activeWidgets HERE
 }
 
-// --- THIS IS THE NEW, SECURE VERSION OF saveStateToCloud ---
+
 async function saveStateToCloud() {
     const { data: { session } } = await supabase_client.auth.getSession();
     if (!session) {
-        // No user is logged in, so we don't save to the cloud.
+
         return;
     }
     
@@ -41,7 +40,6 @@ async function saveStateToCloud() {
     }
 }
 
-// --- THIS IS THE NEW, SECURE VERSION OF loadStateFromCloud ---
 async function loadStateFromCloud() {
     console.log("%cLoading state from cloud...", "color: green");
     
@@ -73,44 +71,61 @@ async function loadStateFromCloud() {
         console.log("Cloud state loaded successfully. Applying now...", state);
 
         if (state.theme) applyTheme(state.theme);
-        // --- THIS IS THE NEW, COMPLETE BLOCK ---
-if (state.widgets) {
-    const widgets = state.widgets;
-    
-    // To-Do List Widget
-    if (widgets.todo?.tasks) {
-        localStorage.setItem('aetheris-tasks', JSON.stringify(widgets.todo.tasks));
-    }
-    // Weather Widget
-    if (widgets.weather?.city) {
-        localStorage.setItem('aetheris-city', widgets.weather.city);
-    }
-    // Greeting Widget
-    if (widgets.greeting?.name) {
-        localStorage.setItem('aetheris-username', widgets.greeting.name);
-    }
-    // Stock Ticker Widget
-    if (widgets.stocks?.symbols) {
-        localStorage.setItem('aetheris-stock-symbols', widgets.stocks.symbols);
-    }
-    // Countdown Widget
-    if (widgets.countdown?.target) {
-        localStorage.setItem('aetheris-countdown-target', widgets.countdown.target);
-    }
-    if (widgets.countdown?.title) {
-        localStorage.setItem('aetheris-countdown-title', widgets.countdown.title);
-    }
-    // Quick Links Widget
-    if (widgets.quickLinks?.links) {
-        localStorage.setItem('aetheris-quick-links', JSON.stringify(widgets.quickLinks.links));
-    }
-    // Notepad Widget
-    if (widgets.notepad?.text) {
-        localStorage.setItem('aetheris-notepad-text', widgets.notepad.text);
-    }
-}
+        
+        // Apply widget data to localStorage
+        if (state.widgets) {
+            const widgets = state.widgets;
+            
+            // To-Do List Widget
+            if (widgets.todo?.tasks) {
+                localStorage.setItem('aetheris-tasks', JSON.stringify(widgets.todo.tasks));
+            }
+            // Weather Widget
+            if (widgets.weather?.city) {
+                localStorage.setItem('aetheris-city', widgets.weather.city);
+            }
+            // Greeting Widget
+            if (widgets.greeting?.name) {
+                localStorage.setItem('aetheris-username', widgets.greeting.name);
+            }
+            // Stock Ticker Widget
+            if (widgets.stocks?.symbols) {
+                localStorage.setItem('aetheris-stock-symbols', widgets.stocks.symbols);
+            }
+            // Countdown Widget
+            if (widgets.countdown?.target) {
+                localStorage.setItem('aetheris-countdown-target', widgets.countdown.target);
+            }
+            if (widgets.countdown?.title) {
+                localStorage.setItem('aetheris-countdown-title', widgets.countdown.title);
+            }
+            // Quick Links Widget
+            if (widgets.quickLinks?.links) {
+                localStorage.setItem('aetheris-quick-links', JSON.stringify(widgets.quickLinks.links));
+            }
+            // Notepad Widget
+            if (widgets.notepad?.text) {
+                localStorage.setItem('aetheris-notepad-text', widgets.notepad.text);
+            }
+        }
 
-        if (state.layout) grid.load(state.layout);
+        // **NEW: Restore active widgets FIRST**
+        if (state.activeWidgets && Array.isArray(state.activeWidgets)) {
+            console.log("Restoring active widgets:", state.activeWidgets);
+            state.activeWidgets.forEach(widgetId => {
+                if (WIDGET_REGISTRY[widgetId]) {
+                    widgetManager.addWidget(widgetId);
+                } else {
+                    console.warn(`Widget ID "${widgetId}" not found in registry`);
+                }
+            });
+        }
+
+        // **THEN apply layout positions**
+        if (state.layout) {
+            console.log("Applying layout positions...");
+            grid.load(state.layout);
+        }
         
         return true; 
 
