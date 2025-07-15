@@ -29,30 +29,47 @@ if (!window.authManagerInstance) {
             this.listenForAuthChanges(); // This is now async and will handle initial session
         }
 
+        // In /public/js/auth.js
+
         async listenForAuthChanges() {
             console.log("AuthManager: Attaching onAuthStateChange listener...");
             
-            // First, check for existing session on page load
-            const { data: { session } } = await supabase_client.auth.getSession();
-            if (session) {
-                console.log("AuthManager: Found existing session on page load:", session);
-                this.user = session.user;
-                this.updateUI();
+           
+            const { data: { session: initialSession } } = await supabase_client.auth.getSession();
+            if (initialSession) {
+                console.log("AuthManager: Found existing session on page load:", initialSession);
+                this.user = initialSession.user;
+
+                await loadStateFromCloud();
+                this.updateUI(); 
             }
             
-            // Then listen for auth changes
+          
             supabase_client.auth.onAuthStateChange(async (event, session) => {
                 console.log(`%cAUTH STATE CHANGE FIRED! Event: ${event}`, 'color: yellow; font-weight: bold;', session);
-                this.user = session?.user || null;
-                console.log("AuthManager: User state is now:", this.user ? `Logged in as ${this.user.email}` : "Logged out");
-                if (event === 'SIGNED_IN' && this.user) {
-                    console.log("AuthManager: SIGNED_IN event. Upserting profile for ID:", this.user.id);
-                    try {
+                
+                const user = session?.user || null;
+
+                if (this.user === null && user !== null) {
+                    console.log("User has just logged in via redirect.");
+                    this.user = user; 
+
+                    const isNewUser = !user.last_sign_in_at || (user.created_at === user.last_sign_in_at);
+
+                    if (isNewUser) {
+                        console.log("New user detected! Migrating local state to cloud...");
+                       
                         await supabase_client.from('profiles').upsert({ id: this.user.id.toString() }, { onConflict: 'id' });
-                    } catch (error) {
-                        console.error("Error creating profile:", error);
+                        await saveStateToCloud();
+                    } else {
+                       
+                        console.log("Returning user detected. State should already be loaded.");
                     }
+                } else {
+                   
+                    this.user = user;
                 }
+
                 console.log("AuthManager: Calling updateUI() from auth state change...");
                 this.updateUI();
             });

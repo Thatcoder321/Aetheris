@@ -290,7 +290,22 @@ if (settingsBtn && settingsPanel && settingsCloseBtn && tabContainer) {
     });
 }
 
+let saveTimeout;
 
+function debouncedSave() {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(saveStateToCloud, 2500); 
+}
+
+
+grid.on('dragstop', debouncedSave);
+grid.on('resizestop', debouncedSave);
+grid.on('added', debouncedSave);
+grid.on('removed', debouncedSave);
+
+
+document.body.addEventListener('change', debouncedSave);
+document.body.addEventListener('input', debouncedSave); 
 
 loadInitialTheme();
 
