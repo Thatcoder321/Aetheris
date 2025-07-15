@@ -70,10 +70,19 @@ if (!window.authManagerInstance) {
                     <button id="logout-btn">Logout</button>
                 `;
                 
-                // Add event listener to the logout button
+                // Add event listener to the logout button with debugging
                 const logoutBtn = this.accountDropdown.querySelector('#logout-btn');
+                console.log("updateUI: Looking for logout button:", logoutBtn);
                 if (logoutBtn) {
-                    logoutBtn.addEventListener('click', () => this.logout());
+                    console.log("updateUI: Found logout button, attaching listener");
+                    logoutBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log("updateUI: Logout button clicked!");
+                        this.logout();
+                    });
+                } else {
+                    console.error("updateUI: Logout button not found!");
                 }
             } else {
                 console.log("updateUI: User is NULL. Rendering LOGGED-OUT state.");
@@ -113,7 +122,21 @@ if (!window.authManagerInstance) {
         }
 
         async logout() {
-            await supabase_client.auth.signOut();
+            console.log("AuthManager: Logout method called");
+            try {
+                const { error } = await supabase_client.auth.signOut();
+                if (error) {
+                    console.error('Logout error:', error);
+                    alert('Logout failed: ' + error.message);
+                } else {
+                    console.log("AuthManager: Successfully logged out");
+                    // Hide the dropdown after logout
+                    this.accountDropdown.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('Logout failed: ' + error.message);
+            }
         }
 
         attachStaticListeners() {
