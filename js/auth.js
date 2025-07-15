@@ -34,21 +34,28 @@ if (!window.authManagerInstance) {
         listenForAuthChanges() {
             console.log("AuthManager: Attaching onAuthStateChange listener...");
             
+            // Ensure Supabase client is ready before proceeding
+            if (!supabase_client) {
+                console.error("AuthManager: Supabase client not available, falling back to default widgets");
+                loadDefaultGuestState();
+                this.updateUI();
+                return;
+            }
+            
             // This robustly checks for an existing session on page load
             supabase_client.auth.getSession().then(async ({ data: { session } }) => {
-                console.log("🔐 AuthManager: getSession() result:", session ? "SESSION FOUND" : "NO SESSION");
                 if (session) {
-                    console.log("AuthManager: Found existing session on page load:", session);
+                    console.log("AuthManager: Found existing session, loading cloud state");
                     this.user = session.user;
                     await loadStateFromCloud();
                     this.updateUI();
                 } else {
-                    console.log("🔐 AuthManager: No session found, calling loadDefaultGuestState()");
+                    console.log("AuthManager: No session found, loading default guest state");
                     loadDefaultGuestState();
                     this.updateUI();
                 }
             }).catch(error => {
-                console.error("🔐 AuthManager: Error in getSession(), falling back to default widgets:", error);
+                console.error("AuthManager: Error in getSession(), falling back to default widgets:", error);
                 // Fallback to default widgets if there's an error
                 loadDefaultGuestState();
                 this.updateUI();

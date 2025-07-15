@@ -176,24 +176,11 @@ function handleWidgetToggle(e) {
 
 
 function loadDefaultGuestState() {
-    console.log("🎯 loadDefaultGuestState() called - starting to load default widgets...");
-    console.log("🎯 WidgetManager exists:", typeof widgetManager !== 'undefined');
-    console.log("🎯 Grid exists:", typeof grid !== 'undefined');
+    console.log("Loading default widgets for guest user...");
 
-    if (typeof widgetManager === 'undefined') {
-        console.error("❌ WidgetManager not found!");
-        return;
-    }
-
-    console.log("🎯 Adding greeting widget...");
     widgetManager.addWidget('greeting');
-    console.log("🎯 Adding clock widget...");
     widgetManager.addWidget('clock');
-    console.log("🎯 Adding todo widget...");
     widgetManager.addWidget('todo');
-    
-    console.log("🎯 Active widgets after loading:", widgetManager.activeWidgets.size);
-    console.log("🎯 Active widget keys:", Array.from(widgetManager.activeWidgets.keys()));
 }
 
 loadInitialTheme();
@@ -209,13 +196,13 @@ window.addEventListener('load', () => {
 
     setTimeout(() => tour.start(), 500);
     
-    // Fallback mechanism: If no widgets are loaded after 3 seconds, load default widgets
+    // Fallback mechanism: If no widgets are loaded after 1 second, load default widgets
     setTimeout(() => {
         if (widgetManager.activeWidgets.size === 0) {
-            console.log("🚨 FALLBACK: No widgets loaded after 3 seconds, loading default widgets...");
+            console.log("FALLBACK: No widgets loaded, ensuring default widgets are available");
             loadDefaultGuestState();
         }
-    }, 3000);
+    }, 1000);
 });
 
 
