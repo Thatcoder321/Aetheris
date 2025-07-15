@@ -20,6 +20,10 @@ function collectCurrentState() {
 }
 
 async function saveStateToCloud() {
+    if (typeof supabase_client === 'undefined') {
+        console.log("supabase_client not available, skipping cloud save");
+        return;
+    }
     const { data: { session } } = await supabase_client.auth.getSession();
     if (!session) {
         console.log("No session, skipping cloud save");
@@ -46,7 +50,10 @@ async function saveStateToCloud() {
 
 async function loadStateFromCloud() {
     console.log("%cLoading state from cloud...", "color: green");
-    
+    if (typeof supabase_client === 'undefined') {
+        console.log("supabase_client not available, using local defaults");
+        return false;
+    }
     const { data: { session } } = await supabase_client.auth.getSession();
     if (!session) {
         console.log("No active session, using local defaults");
