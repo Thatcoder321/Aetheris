@@ -175,11 +175,13 @@ function handleWidgetToggle(e) {
 
 
 
+function loadDefaultGuestState() {
+    console.log("AuthManager has confirmed a guest user. Loading default widgets.");
 
-widgetManager.addWidget('greeting');
-widgetManager.addWidget('clock');
-widgetManager.addWidget('todo');
-
+    widgetManager.addWidget('greeting');
+    widgetManager.addWidget('clock');
+    widgetManager.addWidget('todo');
+}
 
 loadInitialTheme();
 

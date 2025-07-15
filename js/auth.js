@@ -31,40 +31,52 @@ if (!window.authManagerInstance) {
 
         // In /public/js/auth.js
 
-        async listenForAuthChanges() {
+        listenForAuthChanges() {
             console.log("AuthManager: Attaching onAuthStateChange listener...");
             
-            // This is now the single point of entry for deciding the initial state.
+            // This robustly checks for an existing session on page load
+            supabase_client.auth.getSession().then(async ({ data: { session } }) => {
+                if (session) {
+                    console.log("AuthManager: Found existing session on page load:", session);
+                    this.user = session.user;
+                    await loadStateFromCloud();
+                    this.updateUI();
+                } else {
+                    loadDefaultGuestState();
+                    this.updateUI();
+                }
+            });
+            
+            // Then, it listens for any subsequent changes (like login or logout)
             supabase_client.auth.onAuthStateChange(async (event, session) => {
                 console.log(`%cAUTH STATE CHANGE FIRED! Event: ${event}`, 'color: yellow; font-weight: bold;', session);
                 
                 const user = session?.user || null;
-    
-                if (user) {
-                    // --- USER IS LOGGED IN ---
-                    this.user = user;
-                    
-                    // Check if this is the very first time the user logs in
-                    if (event === 'SIGNED_IN') {
-                        // Ensure their profile row exists, then save their current local state as the first cloud save.
-                        await supabase_client.from('profiles').upsert({ id: user.id.toString() }, { onConflict: 'id' });
+
+                // This logic correctly handles the transition from logged-out to logged-in
+                if (this.user === null && user !== null) {
+                    this.user = user; 
+                    const isNewUser = !user.last_sign_in_at || (user.created_at === user.last_sign_in_at);
+
+                    if (isNewUser) {
+                        console.log("New user detected! Migrating local state to cloud...");
+                        await supabase_client.from('profiles').upsert({ id: this.user.id.toString() }, { onConflict: 'id' });
                         await saveStateToCloud();
                     } else {
-                        // For any subsequent page load, load their state from the cloud.
+                        // For a returning user logging in, the getSession() above might have already loaded state.
+                        // Or, if this is the first event, we load it now.
+                        console.log("Returning user detected. Loading state from cloud...");
                         await loadStateFromCloud();
                     }
-                    
-                } else {
-                    // --- USER IS LOGGED OUT (GUEST MODE) ---
+                } else if (this.user !== null && user === null) {
+                    console.log("User has logged out");
                     this.user = null;
-                    // If there's no user, we explicitly load the default guest setup.
-                    loadDefaultGuestState();
                 }
-    
-                // Finally, update the UI for the account button itself.
+
                 this.updateUI();
             });
         }
+
         updateUI() {
             console.log("%c--- Running updateUI() ---", "color: cyan");
             if (this.user) {
