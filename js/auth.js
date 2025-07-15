@@ -38,6 +38,8 @@ if (!window.authManagerInstance) {
             
             this.attachStaticListeners();
             this.listenForAuthChanges();
+            console.log("MANUAL updateUI() call for debugging:");
+            this.updateUI();
         }
 
         listenForAuthChanges() {
