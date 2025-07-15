@@ -208,6 +208,7 @@ if (!window.authManagerInstance) {
                         id: this.user.id.toString() 
                     }, { onConflict: 'id' });
                     
+                    // For new users, save their current local state instead of loading empty cloud state
                     if (typeof window.saveStateToCloud === 'function') {
                         await window.saveStateToCloud();
                     }
@@ -219,7 +220,7 @@ if (!window.authManagerInstance) {
                 }
                 
                 this.updateUI();
-                this.hideLoginModal(); // Hide the login modal if it's open
+                this.hideLoginModal();
             }
         }
         attachStaticListeners() {

@@ -75,13 +75,17 @@ async function loadStateFromCloud() {
         });
         
         if (!response.ok) {
-            console.log("No cloud state found for user. Using local defaults.");
+            console.log("No cloud state found for user. Saving current local state to cloud...");
+            // NEW: Save current local state to cloud instead of clearing everything
+            await saveStateToCloud();
             return false;
         }
 
         const state = await response.json();
         if (!state || Object.keys(state).length === 0) {
-            console.log("Cloud state is empty. Using local defaults.");
+            console.log("Cloud state is empty. Saving current local state to cloud...");
+            // NEW: Save current local state to cloud instead of clearing everything
+            await saveStateToCloud();
             return false;
         }
 
@@ -108,8 +112,18 @@ async function loadStateFromCloud() {
         // Restore active widgets FIRST
         if (state.activeWidgets && Array.isArray(state.activeWidgets)) {
             console.log("Restoring active widgets:", state.activeWidgets);
+            
+            // Clear existing widgets first
+            if (typeof widgetManager !== 'undefined' && widgetManager.activeWidgets) {
+                widgetManager.activeWidgets.clear();
+                // Clear the grid
+                if (typeof grid !== 'undefined') {
+                    grid.removeAll();
+                }
+            }
+            
             state.activeWidgets.forEach(widgetId => {
-                if (WIDGET_REGISTRY[widgetId]) {
+                if (WIDGET_REGISTRY && WIDGET_REGISTRY[widgetId]) {
                     widgetManager.addWidget(widgetId);
                 } else {
                     console.warn(`Widget ID "${widgetId}" not found in registry`);
