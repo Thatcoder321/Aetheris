@@ -4,7 +4,7 @@ function collectCurrentState() {
 
     // 2. Save the current theme
     const theme = localStorage.getItem('aetheris-theme-url') || '/images/abstract-gradient-image.jpg';
-    
+    const activeWidgets = Array.from(widgetManager.activeWidgets.keys());
     // 3. Collect data from every widget that has savable state
     const widgetData = {
 
@@ -39,8 +39,7 @@ function collectCurrentState() {
        
     };
 
-  
-    return { layout, theme, widgets: widgetData };
+    return { layout, theme, widgets: widgetData, activeWidgets };
 }
 
 
@@ -66,15 +65,12 @@ async function saveStateToCloud() {
     }
 }
 
-
 async function loadStateFromCloud() {
     console.log("%cLoading state from cloud...", "color: green");
     try {
         const response = await fetch('/api/state');
         if (!response.ok) {
-         
             console.log("No cloud state found. Using local defaults.");
-           
             return false; 
         }
 
@@ -86,11 +82,12 @@ async function loadStateFromCloud() {
 
         console.log("Cloud state loaded successfully. Applying now...", state);
 
-
+        // Apply theme
         if (state.theme) {
             applyTheme(state.theme); 
         }
         
+        // Apply widget data to localStorage
         if (state.widgets) {
             const widgets = state.widgets;
             if (widgets.todo?.tasks) localStorage.setItem('aetheris-tasks', JSON.stringify(widgets.todo.tasks));
@@ -103,8 +100,21 @@ async function loadStateFromCloud() {
             if (widgets.notepad?.text) localStorage.setItem('aetheris-notepad-text', widgets.notepad.text);
         }
 
-       
+        // **NEW: Restore active widgets FIRST**
+        if (state.activeWidgets && Array.isArray(state.activeWidgets)) {
+            console.log("Restoring active widgets:", state.activeWidgets);
+            state.activeWidgets.forEach(widgetId => {
+                if (WIDGET_REGISTRY[widgetId]) {
+                    widgetManager.addWidget(widgetId);
+                } else {
+                    console.warn(`Widget ID "${widgetId}" not found in registry`);
+                }
+            });
+        }
+
+        // **THEN apply layout positions**
         if (state.layout) {
+            console.log("Applying layout positions...");
             grid.load(state.layout);
         }
         
