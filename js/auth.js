@@ -9,7 +9,7 @@ if (!window.authManagerInstance) {
     const SUPABASE_URL = 'https://ttocgvyuaktyxzubajjq.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0b2Nndnl1YWt0eXh6dWJhampxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NjQ1MjIsImV4cCI6MjA2ODA0MDUyMn0.mkzqkHj2Lb4SwxwqbZ3YbesxPa0dIPt8gOvfdhHEwqM';
     const supabase_client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+    window.supabase_client = supabase_client; 
     console.log("%c--- SCRIPT START: auth.js (Executing Singleton Body) ---", "color: orange; font-size: 14px;");
 
     class AuthManager {
