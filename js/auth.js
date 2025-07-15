@@ -15,7 +15,7 @@ if (!window.authManagerInstance) {
                 this.init();
             }
         }
-
+    
         init() {
             this.accountButton = document.getElementById('account-button');
             this.accountDropdown = document.getElementById('account-dropdown');
@@ -96,7 +96,6 @@ if (!window.authManagerInstance) {
             });
         }
 
-        // Wait for state.js functions to be available
         async waitForStateFunctions() {
             let attempts = 0;
             while (attempts < 50 && typeof window.loadStateFromCloud !== 'function') {
