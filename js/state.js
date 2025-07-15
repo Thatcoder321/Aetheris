@@ -33,7 +33,7 @@ async function saveStateToCloud() {
     const state = collectCurrentState();
     
     try {
-        const response = await fetch('/api/user/state', {
+        const response = await fetch('/api/user/state.js', {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ async function loadStateFromCloud() {
     }
     
     try {
-        const response = await fetch('/api/user/state', {
+        const response = await fetch('/api/user/state.js', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${session.access_token}`
