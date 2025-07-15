@@ -1,17 +1,7 @@
-
 function collectCurrentState() {
     const layout = grid.save(false);
     const theme = localStorage.getItem('aetheris-theme-url') || '/images/abstract-gradient-image.jpg';
-    const activeWidgets = Array.from(widgetManager.activeWidgets.keys());
-    
-    // DEBUG: Log what we're collecting
-    console.log("DEBUG: Collecting state:", {
-        layoutSize: layout ? layout.length : 0,
-        theme: theme,
-        activeWidgets: activeWidgets,
-        widgetManagerSize: widgetManager.activeWidgets.size
-    });
-    
+    const activeWidgets = Array.from(widgetManager.activeWidgets.keys()); 
     const widgetData = {
         todo: { tasks: JSON.parse(localStorage.getItem('aetheris-tasks')) || [] },
         weather: { city: localStorage.getItem('aetheris-city') },
