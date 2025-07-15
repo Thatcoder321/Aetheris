@@ -31,46 +31,47 @@ if (!window.authManagerInstance) {
 
         // In /public/js/auth.js
 
-        async listenForAuthChanges() {
+        listenForAuthChanges() {
             console.log("AuthManager: Attaching onAuthStateChange listener...");
             
-           
-            const { data: { session: initialSession } } = await supabase_client.auth.getSession();
-            if (initialSession) {
-                console.log("AuthManager: Found existing session on page load:", initialSession);
-                this.user = initialSession.user;
-
-                await loadStateFromCloud();
-                this.updateUI(); 
-            }
+            // This robustly checks for an existing session on page load
+            supabase_client.auth.getSession().then(async ({ data: { session } }) => {
+                if (session) {
+                    console.log("AuthManager: Found existing session on page load:", session);
+                    this.user = session.user;
+                    await loadStateFromCloud();
+                    this.updateUI();
+                } else {
+                    this.updateUI();
+                }
+            });
             
-          
+            // Then, it listens for any subsequent changes (like login or logout)
             supabase_client.auth.onAuthStateChange(async (event, session) => {
                 console.log(`%cAUTH STATE CHANGE FIRED! Event: ${event}`, 'color: yellow; font-weight: bold;', session);
                 
                 const user = session?.user || null;
 
+                // This logic correctly handles the transition from logged-out to logged-in
                 if (this.user === null && user !== null) {
-                    console.log("User has just logged in via redirect.");
                     this.user = user; 
-
                     const isNewUser = !user.last_sign_in_at || (user.created_at === user.last_sign_in_at);
 
                     if (isNewUser) {
                         console.log("New user detected! Migrating local state to cloud...");
-                       
                         await supabase_client.from('profiles').upsert({ id: this.user.id.toString() }, { onConflict: 'id' });
                         await saveStateToCloud();
                     } else {
-                       
-                        console.log("Returning user detected. State should already be loaded.");
+                        // For a returning user logging in, the getSession() above might have already loaded state.
+                        // Or, if this is the first event, we load it now.
+                        console.log("Returning user detected. Loading state from cloud...");
+                        await loadStateFromCloud();
                     }
-                } else {
-                   
-                    this.user = user;
+                } else if (this.user !== null && user === null) {
+                    console.log("User has logged out");
+                    this.user = null;
                 }
 
-                console.log("AuthManager: Calling updateUI() from auth state change...");
                 this.updateUI();
             });
         }
