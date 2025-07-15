@@ -207,8 +207,15 @@ window.addEventListener('load', () => {
     renderWidgetLibrary();
     renderThemes();
 
-
     setTimeout(() => tour.start(), 500);
+    
+    // Fallback mechanism: If no widgets are loaded after 3 seconds, load default widgets
+    setTimeout(() => {
+        if (widgetManager.activeWidgets.size === 0) {
+            console.log("🚨 FALLBACK: No widgets loaded after 3 seconds, loading default widgets...");
+            loadDefaultGuestState();
+        }
+    }, 3000);
 });
 
 

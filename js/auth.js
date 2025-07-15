@@ -47,6 +47,11 @@ if (!window.authManagerInstance) {
                     loadDefaultGuestState();
                     this.updateUI();
                 }
+            }).catch(error => {
+                console.error("🔐 AuthManager: Error in getSession(), falling back to default widgets:", error);
+                // Fallback to default widgets if there's an error
+                loadDefaultGuestState();
+                this.updateUI();
             });
             
             // Then, it listens for any subsequent changes (like login or logout)
