@@ -35,9 +35,14 @@ if (!window.authManagerInstance) {
                 console.error("Critical elements not found!");
                 return;
             }
+
+        
             
             this.attachStaticListeners();
-            this.listenForAuthChanges();
+            this.handleOAuthCallback().then(() => {
+                this.listenForAuthChanges();
+                console.log("AuthManager: OAuth callback and auth listeners initialized.");
+            });
             console.log("MANUAL updateUI() call for debugging:");
             this.updateUI();
         }
@@ -181,7 +186,42 @@ if (!window.authManagerInstance) {
                 alert('Logout failed: ' + error.message);
             }
         }
-
+        async handleOAuthCallback() {
+            // Check if we're returning from an OAuth redirect
+            const { data, error } = await supabase_client.auth.getSession();
+            
+            if (error) {
+                console.error('Error getting session after OAuth:', error);
+                return;
+            }
+            
+            if (data.session) {
+                console.log('Found session after OAuth redirect:', data.session);
+                this.user = data.session.user;
+                await this.waitForStateFunctions();
+                
+                const isNewUser = !this.user.last_sign_in_at || (this.user.created_at === this.user.last_sign_in_at);
+                
+                if (isNewUser) {
+                    console.log("New user detected after OAuth!");
+                    await supabase_client.from('profiles').upsert({ 
+                        id: this.user.id.toString() 
+                    }, { onConflict: 'id' });
+                    
+                    if (typeof window.saveStateToCloud === 'function') {
+                        await window.saveStateToCloud();
+                    }
+                } else {
+                    console.log("Returning user detected after OAuth!");
+                    if (typeof window.loadStateFromCloud === 'function') {
+                        await window.loadStateFromCloud();
+                    }
+                }
+                
+                this.updateUI();
+                this.hideLoginModal(); // Hide the login modal if it's open
+            }
+        }
         attachStaticListeners() {
             console.log("AuthManager: Attaching STATIC listeners...");
             
