@@ -18,13 +18,7 @@ const WIDGET_REGISTRY = {
     'unit-converter': { name: 'Unit Converter', class: UnitConverterWidget, preview: '/images/unit-converter-preview.png' },
     'calculator': { name: 'Calculator', class: CalculatorWidget, preview: '/images/calculator-preview.png' },
 };
-function loadDefaultGuestState() {
-    console.log("Loading default state for guest user.");
 
-    widgetManager.addWidget('greeting');
-    widgetManager.addWidget('clock');
-    widgetManager.addWidget('todo');
-}
 
 // --- The Brain that Manages Widgets ---
 class WidgetManager {
@@ -182,6 +176,9 @@ function handleWidgetToggle(e) {
 
 
 
+widgetManager.addWidget('greeting');
+widgetManager.addWidget('clock');
+widgetManager.addWidget('todo');
 
 
 loadInitialTheme();
