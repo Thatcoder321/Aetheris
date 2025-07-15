@@ -1,16 +1,13 @@
 // --- Start of Singleton Pattern ---
 // Check if an instance already exists on the window object.
 // If it does, this script will do nothing further.
-
-const { createClient } = window.supabase;
-const SUPABASE_URL = 'https://ttocgvyuaktyxzubajjq.supabase.co'; 
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0b2Nndnl1YWt0eXh6dWJhampxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NjQ1MjIsImV4cCI6MjA2ODA0MDUyMn0.mkzqkHj2Lb4SwxwqbZ3YbesxPa0dIPt8gOvfdhHEwqM';
-const supabase_client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 if (!window.authManagerInstance) {
 
-    // --- Original auth.js code goes inside this block ---
-
+    const { createClient } = window.supabase;
+    const SUPABASE_URL = 'https://ttocgvyuaktyxzubajjq.supabase.co'; 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0b2Nndnl1YWt0eXh6dWJhampxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NjQ1MjIsImV4cCI6MjA2ODA0MDUyMn0.mkzqkHj2Lb4SwxwqbZ3YbesxPa0dIPt8gOvfdhHEwqM';
+    const supabase_client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
     console.log("%c--- SCRIPT START: auth.js (Executing Singleton Body) ---", "color: orange; font-size: 14px;");
 
     class AuthManager {
@@ -30,8 +27,6 @@ if (!window.authManagerInstance) {
             this.listenForAuthChanges(); // This is now async and will handle initial session
         }
 
-        // In /public/js/auth.js
-
         listenForAuthChanges() {
             console.log("AuthManager: Attaching onAuthStateChange listener...");
             
@@ -40,10 +35,18 @@ if (!window.authManagerInstance) {
                 if (session) {
                     console.log("AuthManager: Found existing session on page load:", session);
                     this.user = session.user;
-                    await loadStateFromCloud();
+                    // Use global function from state.js
+                    if (typeof window.loadStateFromCloud === 'function') {
+                        await window.loadStateFromCloud();
+                    } else {
+                        console.warn("loadStateFromCloud not available yet, will retry later");
+                    }
                     this.updateUI();
                 } else {
-                    loadDefaultGuestState();
+                    // Use global function from state.js
+                    if (typeof window.loadDefaultGuestState === 'function') {
+                        window.loadDefaultGuestState();
+                    }
                     this.updateUI();
                 }
             });
@@ -62,16 +65,26 @@ if (!window.authManagerInstance) {
                     if (isNewUser) {
                         console.log("New user detected! Migrating local state to cloud...");
                         await supabase_client.from('profiles').upsert({ id: this.user.id.toString() }, { onConflict: 'id' });
-                        await saveStateToCloud();
+                        // Use global function from state.js
+                        if (typeof window.saveStateToCloud === 'function') {
+                            await window.saveStateToCloud();
+                        }
                     } else {
                         // For a returning user logging in, the getSession() above might have already loaded state.
                         // Or, if this is the first event, we load it now.
                         console.log("Returning user detected. Loading state from cloud...");
-                        await loadStateFromCloud();
+                        // Use global function from state.js
+                        if (typeof window.loadStateFromCloud === 'function') {
+                            await window.loadStateFromCloud();
+                        }
                     }
                 } else if (this.user !== null && user === null) {
                     console.log("User has logged out");
                     this.user = null;
+                    // Load default guest state when user logs out
+                    if (typeof window.loadDefaultGuestState === 'function') {
+                        window.loadDefaultGuestState();
+                    }
                 }
 
                 this.updateUI();
@@ -211,6 +224,9 @@ if (!window.authManagerInstance) {
 
     // Create the one and only instance and attach it to the global window object
     window.authManagerInstance = new AuthManager();
+    
+    // Make supabase_client available globally for state.js
+    window.supabase_client = supabase_client;
 
 // --- End of Singleton Pattern ---
 }
