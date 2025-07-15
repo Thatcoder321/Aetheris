@@ -118,6 +118,10 @@ if (!window.authManagerInstance) {
             console.log("%c--- Running updateUI() ---", "color: cyan");
             if (this.user) {
                 console.log("updateUI: User EXISTS. Rendering LOGGED-IN state.");
+
+                this.accountButton.classList.remove('needs-login');
+
+
                 const avatarUrl = this.user.user_metadata.avatar_url || '/images/icon-user.svg';
                 this.accountButton.innerHTML = `<img src="${avatarUrl}" alt="User Avatar">`;
                 this.accountDropdown.innerHTML = `
@@ -136,6 +140,10 @@ if (!window.authManagerInstance) {
                 }
             } else {
                 console.log("updateUI: User is NULL. Rendering LOGGED-OUT state.");
+                
+                this.accountButton.classList.add('needs-login');
+
+                
                 this.accountButton.innerHTML = `<img src="/images/icon-user.svg" class="user-silhouette" alt="Account">`;
                 this.accountDropdown.innerHTML = `
                     <h4>Your Work is Local</h4>

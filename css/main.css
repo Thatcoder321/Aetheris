@@ -227,14 +227,14 @@ body {
 }
 
 
-.action-btn img {
-    width: 60%; 
+.action-btn img,
+.account-btn img.user-silhouette {
+    width: 60%;
     height: 60%;
-
-    filter: invert(1); 
+    filter: invert(1);
 }
 
-/* --- Onboarding Tour (v2 - Arrow Pointer) --- */
+/* --- Onboarding Tour --- */
 
 
 #tour-tooltip {
@@ -540,4 +540,36 @@ body {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+}
+
+
+.account-btn.needs-login::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 10px;
+    height: 10px;
+    background-color: #5a78ff; 
+    border-radius: 50%;
+    border: 2px solid rgba(30, 30, 30, 0.8);
+    
+
+    animation: pulse 2s infinite;
+}
+
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(90, 120, 255, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(90, 120, 255, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(90, 120, 255, 0);
+    }
 }
