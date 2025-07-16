@@ -210,6 +210,7 @@ const THEMES = [
 function applyTheme(themeUrl) {
     document.body.style.backgroundImage = `url(${themeUrl})`;
     localStorage.setItem('aetheris-theme-url', themeUrl);
+    debouncedSave();
 }
 
 function renderThemes() {
