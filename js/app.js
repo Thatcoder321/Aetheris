@@ -1,4 +1,4 @@
-
+let saveTimeout;
 // --- List of All Widgets ---
 const WIDGET_REGISTRY = {
     'greeting': { name: 'Greeting', class: GreetingWidget, preview: '/images/greeting-preview.png' },
@@ -294,7 +294,7 @@ if (settingsBtn && settingsPanel && settingsCloseBtn && tabContainer) {
     });
 }
 
-let saveTimeout;
+
 
 function debouncedSave() {
     clearTimeout(saveTimeout);
