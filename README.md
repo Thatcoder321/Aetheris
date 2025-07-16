@@ -1,102 +1,91 @@
-# ✨ Project Aetheris ✨  
-**Your Space. Your Web.**
+# ✨ Aetheris  
+**Your space. Your web.**
 
 ---
 
-## 🌌 What is Aetheris?
+## 🌌 What is this?
 
-Let’s face it — the modern web is noisy. You’ve got a dozen tabs open, juggling a dozen different tools. It’s fragmented, distracting, and honestly... kind of exhausting.
+The modern web is a mess — a dozen tabs, a dozen tools, all fighting for your attention.
 
-**Aetheris is your personal command center — a desktop for the web, right in your browser.**
+**Aetheris is a browser-based personal dashboard.**  
+Think of it like a desktop for the web: draggable widgets, parallax motion, 3D-style layout — all running on plain HTML/CSS/JS.
 
-Built from the ground up with a “2.5D” visual style using CSS 3D transforms, widgets float in a parallax-responsive space that feels alive and reactive. You’re not just using a dashboard. You’re inhabiting one.
-
-What started as a lighthearted project for Hack Club’s **Summer of Making** quickly went into something deeper — a full creative and technical sprint driven by curiosity, and the dream of a better digital workspace.
-
----
-
-## 🧭 Philosophy
-
-Aetheris is built on two simple beliefs:
-
-### 1. **"It's your space. You should control it."**  
-No more static dashboards or hardcoded layouts. With Aetheris, you can move, resize, customize, and even *redesign the entire thing* with natural language prompts like:
-
-
-
-This is your space — and it should adapt to you, not the other way around.
-
-### 2. **"Everything you need, in one place."**  
-Aetheris is designed to eliminate tab overload by giving you everything you actually use — right in one unified environment. Stocks, weather, notes, timers, chats, widgets — all put together in a cohesive, seamless UI.
+It started as a fun summer project, but turned into something bigger — a rethink of what a personal workspace could feel like.
 
 ---
 
-## ⚡️ Features
+## 🧠 Why?
 
-Aetheris ships with **16+ powerful widgets** out of the box — all fully resizable and customizable:
+Because I believe two things:
 
--  **AI Chat** – Talk to GPT-4o mini, built right in.
-- 🌦 **Smart Weather** – The more you expand it, the more it shows (hourly & daily).
-- 📈 **Live Stock Ticker** – Streaming market data via Finnhub.
--  **Productivity Suite** – Pomodoro, To-Do list, Countdown, Notepad.
-- 🔢 **Calculator + Unit Converter** – Clean, fast, and keyboard-friendly.
-- 🖥 **System Stats, GitHub Stats, News Feed, Quotes, Quick Links** – and more.
+### 1. **It should feel like *your* space.**  
+Move things around. Resize them. Change the theme. Or literally ask the AI:  
+> “Hey, make it a productivity layout with weather + notes in the corner.”  
+Boom — done.
 
-### But that’s just the surface. The real magic lies in:
-
--  **AI Layout Architect** – Rearrange your dashboard with a simple command.
--  **Responsive 12-Column Grid** – Precision meets flexibility.
-- 🎨 **Custom Themes** – Instantly change the vibe with curated backgrounds.
+### 2. **Everything you actually use, in one place.**  
+No more jumping tabs to check the weather or jot a note. Just open Aetheris and it’s all there.
 
 ---
 
-##  Try It Live  
- [**Launch Aetheris on Vercel →**](https://aetheris-sigma.vercel.app)
+## ⚡️ What it does
+
+Comes with **16+ widgets** out of the box — all resizable, customizable, and (we hope) useful:
+
+- 💬 **AI Chat** – GPT-4o mini, built right in.
+- 🌦 **Weather** – Smart layout that expands for more detail.
+- 📈 **Live Stocks** – Real-time market data from Finnhub.
+- ✅ **Productivity tools** – Pomodoro, to-do list, notepad, countdowns.
+- 🔢 **Calculator + Unit Converter** – Clean and keyboard-friendly.
+- 🖥 **Other widgets:** System stats, GitHub profile, quotes, news, quick links, and more.
+
+### And the cool stuff:
+
+- 🎯 **AI Layout Architect** – Rearrange everything with natural language.
+- 🎛 **12-Column Grid System** – Drag and snap, precision-style.
+- 🎨 **Themes** – One click to vibe-switch your whole dashboard.
+- ☁️ **Cloud Sync** – All your layouts saved, cross-device.
 
 ---
 
-## 🛠 The Journey
-
-This wasn’t just a weekend hack. Aetheris took shape across **95+ commits**, **14 devlogs**, and one infamously stubborn bug known only as...
-
-> **The Glass Pane.**  
-> _The resize handles showed up... but you couldn’t click them. Not even a little._  
-
-What followed was a war between 3D CSS, z-indexes, pointer-events, and Gridstack.js itself. It took days. It almost broke me. But it also marked a turning point — proof that even the weirdest bugs yield to enough patience and console logs.
-
-Every widget you see, every animation, every pixel — it’s all part of that journey.
+## 🚀 Try it out  
+👉 [**Launch Aetheris on Vercel →**](https://aetheris-sigma.vercel.app/#)
 
 ---
 
-##  Tech Stack
+## 🛠 Built with
 
-Aetheris is fast, minimal, and framework-free. It’s built on **foundational tech** that respects performance and flexibility:
+Aetheris doesn’t rely on big frameworks. Just the essentials:
 
-- **Frontend:** HTML, CSS, Vanilla JS (ES6+). No React, Vue, or frameworks.
-- **Layout Engine:** [Gridstack.js](https://gridstackjs.com/) for drag-and-drop awesomeness.
-- **Backend:** Node.js Serverless Functions (API routes).
-- **Auth:** GitHub OAuth2 for secure integration.
-- **Hosting:** [Vercel](https://vercel.com) + CI/CD via GitHub.
-
----
-
-##  The Road Ahead: “Rolling Thunder” Releases
-
-Aetheris v1.0 is just the beginning. Here's what's next:
-
-1. **☁️ Cloud Sync & Accounts** – Move beyond `localStorage` with cross-device sync.
-2. **🔌 Widget API** – Let widgets talk to each other (e.g., “Focus Mode” links Pomodoro + Notes).
-3. **📱 Full Mobile Layout** – A one-column, touch-friendly mobile UI.
+- **Frontend:** HTML, CSS (with CSS 3D), and Vanilla JS
+- **Layout Engine:** [Gridstack.js](https://gridstackjs.com/)
+- **Backend:** Node.js (Serverless API routes)
+- **Auth:** GitHub OAuth2
+- **Hosting:** Vercel + GitHub CI
 
 ---
 
-## ❤️ Final Thoughts
+## 🧪 The Build Journey
 
-Thanks for taking the time to check out Aetheris.
+This wasn’t just a weekend sprint. Over **95 commits**, **14 devlogs**, and one ridiculously stubborn bug (shoutout to *The Glass Pane™*)...
 
-This started as a small experiment and grew into something I truly care about. I’ve tried to pour thoughtfulness, creativity, and love into every line of code — and I hope it makes your digital life feel a little more human.
+> “The handles were there. But they wouldn’t click. At all. For days.”  
 
-Stay curious,  
-**— The Creator of Aetheris**
+Turns out 3D transforms + z-index + Gridstack = chaos.  
+But hey, it made everything smoother in the end.
 
 ---
+
+## 📍 Coming Soon (v1.2)
+
+- 🔌 **Widget-to-Widget API** – Let tools talk to each other (e.g., Pomodoro ↔ Notes)
+
+---
+
+## ❤️ Thanks
+
+If you made it this far — thank you.
+
+This project had it's ups and downs, but here we are, with an amazing project, hope you like it!
+
+— Aetheris Dev ✌
