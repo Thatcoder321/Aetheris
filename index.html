@@ -71,35 +71,34 @@
                 
                 </div>
 
-            <div id="layouts-tab" class="tab-content">
-                <p style="text-align: center; opacity: 0.5; padding-top: 20px;">Coming soon!</p>
-
-                </div>
-        </div>
-        <div id="layouts-tab" class="tab-content">
-            <h3>Layout Style</h3>
-            <div class="layout-options">
-                <button class="layout-option" data-layout="original" onclick="window.layoutManager.switchLayout('original')">
-                    <span>Original Grid</span>
-                </button>
-                <button class="layout-option" data-layout="bento" onclick="window.layoutManager.switchLayout('bento')">
-                    <span>Bento Grid</span>
-                </button>
-            </div>
-        </div>
-                
-                <button class="layout-option" data-layout="bento">
-                    <div class="layout-preview">
-                        <div class="preview-grid bento-preview">
-                            <div class="preview-card"></div>
-                            <div class="preview-card"></div>
-                            <div class="preview-card"></div>
-                        </div>
+                <div id="layouts-tab" class="tab-content">
+                    <h3>Layout Style</h3>
+                    <div class="layout-options" style="display: flex; gap: 15px; padding: 20px;">
+                        <button class="layout-option" data-layout="original" onclick="window.layoutManager.switchLayout('original')" style="
+                            padding: 15px 25px;
+                            background: rgba(255, 255, 255, 0.1);
+                            border: 2px solid rgba(255, 255, 255, 0.2);
+                            border-radius: 8px;
+                            color: white;
+                            cursor: pointer;
+                            transition: all 0.2s;
+                        ">
+                            <span>📊 Original Grid</span>
+                        </button>
+                        
+                        <button class="layout-option" data-layout="bento" onclick="window.layoutManager.switchLayout('bento')" style="
+                            padding: 15px 25px;
+                            background: rgba(255, 255, 255, 0.1);
+                            border: 2px solid rgba(255, 255, 255, 0.2);
+                            border-radius: 8px;
+                            color: white;
+                            cursor: pointer;
+                            transition: all 0.2s;
+                        ">
+                            <span>🎨 Bento Grid</span>
+                        </button>
                     </div>
-                    <span>Bento Grid</span>
-                </button>
-            </div>
-        </div>
+                </div>
     </aside>
 
     <!-- The AI Reorganization Modal -->
@@ -156,12 +155,13 @@
     <script src="/js/auth.js" defer></script>
     <script src="/js/tour.js" defer></script>
     <!-- Main Application Logic (Runs Last) -->
-    <script src="/js/app.js"  defer></script>
+
 
     <link rel="stylesheet" href="/css/command-palette.css">
 <link rel="stylesheet" href="/css/bento-grid.css">
 <script src="/js/layout-manager.js" defer></script>
 <script src="/js/command-palette.js" defer></script>
+<script src="/js/app.js"  defer></script>
 
 </body>
 </html>
