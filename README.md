@@ -1,91 +1,71 @@
-# ✨ Aetheris  
-**Your space. Your web.**
-
----
+# ✨ Aetheris
+**A new web**
 
 ## 🌌 What is this?
-
-The modern web is a mess — a dozen tabs, a dozen tools, all fighting for your attention.
+The web gets messy fast. Tabs everywhere. Tools scattered.
 
 **Aetheris is a browser-based personal dashboard.**  
-Think of it like a desktop for the web: draggable widgets, parallax motion, 3D-style layout — all running on plain HTML/CSS/JS.
+It feels like a desktop for the web: draggable widgets, subtle motion, layered 3D effects. All in plain HTML, CSS, and JavaScript.
 
-It started as a fun summer project, but turned into something bigger — a rethink of what a personal workspace could feel like.
 
 ---
 
-## 🧠 Why?
+## 🧠 Why build it?
+Two simple reasons:
 
-Because I believe two things:
+### 1) It should feel like your space  
+Put things where you want. Resize them. Switch themes. Or just say:  
+> “Make a productivity layout with weather and notes in the corner.”  
+Done.
 
-### 1. **It should feel like *your* space.**  
-Move things around. Resize them. Change the theme. Or literally ask the AI:  
-> “Hey, make it a productivity layout with weather + notes in the corner.”  
-Boom — done.
-
-### 2. **Everything you actually use, in one place.**  
-No more jumping tabs to check the weather or jot a note. Just open Aetheris and it’s all there.
+### 2) Everything you use, in one place  
+No hopping between tabs to check the weather, jot a note, or run a timer. Open Aetheris and get to work.
 
 ---
 
 ## ⚡️ What it does
+Comes with **16+ widgets**, all resizable and customizable:
 
-Comes with **16+ widgets** out of the box — all resizable, customizable, and (we hope) useful:
+-  **AI Chat** using GPT-4o mini
+-  **Weather** with expandable detail
+-  **Live Stocks** via Finnhub
+-  **Productivity**: Pomodoro, to-do, notepad, countdowns
+-  **Calculator** and **Unit Converter**
+-  **Extras**: system stats, GitHub profile, quotes, news, quick links, more
 
-- 💬 **AI Chat** – GPT-4o mini, built right in.
-- 🌦 **Weather** – Smart layout that expands for more detail.
-- 📈 **Live Stocks** – Real-time market data from Finnhub.
-- ✅ **Productivity tools** – Pomodoro, to-do list, notepad, countdowns.
-- 🔢 **Calculator + Unit Converter** – Clean and keyboard-friendly.
-- 🖥 **Other widgets:** System stats, GitHub profile, quotes, news, quick links, and more.
-
-### And the cool stuff:
-
-- 🎯 **AI Layout Architect** – Rearrange everything with natural language.
-- 🎛 **12-Column Grid System** – Drag and snap, precision-style.
-- 🎨 **Themes** – One click to vibe-switch your whole dashboard.
-- ☁️ **Cloud Sync** – All your layouts saved, cross-device.
+### The cool stuff added on
+-  **AI Layout Architect** to rearrange with natural language
+-  **12-column grid** with drag and snap
+-  **Themes** that restyle everything in one click
+-  **Cloud sync** across devices
 
 ---
 
-## 🚀 Try it out  
-👉 [**Launch Aetheris on Vercel →**](https://aetheris-sigma.vercel.app/#)
+##  Try it
+ **Launch on Vercel:** https://aetheris-sigma.vercel.app/#
 
 ---
 
 ## 🛠 Built with
-
-Aetheris doesn’t rely on big frameworks. Just the essentials:
-
-- **Frontend:** HTML, CSS (with CSS 3D), and Vanilla JS
-- **Layout Engine:** [Gridstack.js](https://gridstackjs.com/)
-- **Backend:** Node.js (Serverless API routes)
-- **Auth:** GitHub OAuth2
-- **Hosting:** Vercel + GitHub CI
+- **Frontend:** HTML, CSS (with CSS 3D), Vanilla JS  
+- **Layout:** Gridstack.js  
+- **Backend:** Node.js serverless routes  
+- **Auth:** GitHub OAuth2  
+- **Hosting:** Vercel with GitHub CI
 
 ---
 
-## 🧪 The Build Journey
+## 🧪 The build
+This wasn’t a weekend hack. More than 145 commits, 14 devlogs, and MANY BUGS
+---
 
-This wasn’t just a weekend sprint. Over **95 commits**, **14 devlogs**, and one ridiculously stubborn bug (shoutout to *The Glass Pane™*)...
-
-> “The handles were there. But they wouldn’t click. At all. For days.”  
-
-Turns out 3D transforms + z-index + Gridstack = chaos.  
-But hey, it made everything smoother in the end.
+## 📍 Coming soon (v1.2)
+- 🔌 **Widget-to-Widget API** so tools can talk to each other  
+  Example: Pomodoro can add notes to your notepad automatically
 
 ---
 
-## 📍 Coming Soon (v1.2)
+## Thanks!
+Hopefully Aetheris went well for you
 
-- 🔌 **Widget-to-Widget API** – Let tools talk to each other (e.g., Pomodoro ↔ Notes)
-
----
-
-## ❤️ Thanks
-
-If you made it this far — thank you.
-
-This project had it's ups and downs, but here we are, with an amazing project, hope you like it!
-
-— Aetheris Dev ✌
+— Aetheris Dev 
