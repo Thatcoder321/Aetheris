@@ -1,0 +1,33 @@
+/* Bento Grid Style */
+.layout-bento .grid-stack-item {
+    border-radius: 24px !important;
+    padding: 24px !important;
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+}
+
+.layout-bento .grid-stack {
+    gap: 20px; /* More spacing between cards */
+}
+
+.layout-bento .grid-stack-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 10px 15px -3px rgba(0, 0, 0, 0.2),
+        0 4px 6px -2px rgba(0, 0, 0, 0.1),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Bento widgets are slightly larger by default */
+.layout-bento .grid-stack-item[gs-w="2"] {
+    min-height: 180px;
+}
+
+.layout-bento .grid-stack-item[gs-w="4"] {
+    min-height: 220px;
+}

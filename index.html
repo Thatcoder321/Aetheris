@@ -76,6 +76,30 @@
 
                 </div>
         </div>
+        <div id="layouts-tab" class="tab-content">
+            <h3>Layout Style</h3>
+            <div class="layout-options">
+                <button class="layout-option" data-layout="original" onclick="window.layoutManager.switchLayout('original')">
+                    <span>Original Grid</span>
+                </button>
+                <button class="layout-option" data-layout="bento" onclick="window.layoutManager.switchLayout('bento')">
+                    <span>Bento Grid</span>
+                </button>
+            </div>
+        </div>
+                
+                <button class="layout-option" data-layout="bento">
+                    <div class="layout-preview">
+                        <div class="preview-grid bento-preview">
+                            <div class="preview-card"></div>
+                            <div class="preview-card"></div>
+                            <div class="preview-card"></div>
+                        </div>
+                    </div>
+                    <span>Bento Grid</span>
+                </button>
+            </div>
+        </div>
     </aside>
 
     <!-- The AI Reorganization Modal -->
@@ -133,6 +157,11 @@
     <script src="/js/tour.js" defer></script>
     <!-- Main Application Logic (Runs Last) -->
     <script src="/js/app.js"  defer></script>
+
+    <link rel="stylesheet" href="/css/command-palette.css">
+<link rel="stylesheet" href="/css/bento-grid.css">
+<script src="/js/layout-manager.js" defer></script>
+<script src="/js/command-palette.js" defer></script>
 
 </body>
 </html>
